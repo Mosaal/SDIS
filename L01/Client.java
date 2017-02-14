@@ -22,11 +22,13 @@ public class Client {
 			portNumber = args[PORT];
 			plateNumber = args[PLATE];
 			ownerName = args[OWNER];
+
 			return true;
 		} else if (args[OPER].equals("lookup") && args.length == 4) {
 			hostname = args[HOST];
 			portNumber = args[PORT];
 			plateNumber = args[PLATE];
+			
 			return true;
 		}
 		
