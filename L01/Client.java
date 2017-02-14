@@ -53,6 +53,7 @@ public class Client {
 		// send request
 		// receive response
 		// process response
+		// tou a testar umas coisas
 	}
 	
 }
