@@ -5,19 +5,13 @@ import java.net.InetAddress;
 
 public class Client {
 	
-	// Args
-	private static int portNumber;
-	private static String hostname;
-	private static String plateNumber;
-	private static String ownerName;
-	
 	// Consts
 	private static final byte HOST = 0;
 	private static final byte PORT = 1;
 	private static final byte OPER = 2;
 	private static final byte PLATE = 3;
 	private static final byte OWNER = 4;
-	private static final int MAX_SIZE = 256;
+	private static final int MAX_SIZE = 1024;
 	
 	public static void printUsage() {
 		System.out.println("Usage: java Client <host_name> <port_number> <oper> <opnd>");
@@ -34,29 +28,47 @@ public class Client {
 		if (args.length != 4 && args.length != 5)
 			return false;
 		
-		if (args[OPER].equals("register") && args.length == 5) {
-			hostname = args[HOST];
-			portNumber = Integer.parseInt(args[PORT]);
-			plateNumber = args[PLATE];
-			ownerName = args[OWNER];
-
+		if (args[OPER].equals("register") && args.length == 5)
 			return true;
-		} else if (args[OPER].equals("lookup") && args.length == 4) {
-			hostname = args[HOST];
-			portNumber = Integer.parseInt(args[PORT]);
-			plateNumber = args[PLATE];
-			
+		else if (args[OPER].equals("lookup") && args.length == 4)
 			return true;
-		}
 		
 		return false;
 	}
 
 	public static void main(String[] args) throws IOException {
-		if (!procArgs(args))
+		if (!procArgs(args)) {
 			printUsage();
+			return;
+		}
 		
-		byte[] rBuf = new byte[MAX_SIZE];
+		// Creste request
+		String request = null;
+		if (args[OPER].equals("register"))
+			request = "REGISTER:" + args[PLATE] + ":" + args[OWNER];
+		else if (args[OPER].equals("lookup"))
+			request = "LOOKUP:" + args[PLATE];
+		
+		// Create socket and get address
+		DatagramSocket socket = new DatagramSocket();
+		InetAddress address = InetAddress.getByName(args[HOST]);
+		
+		// Send request
+		DatagramPacket output = new DatagramPacket(request.getBytes(), request.getBytes().length, address, Integer.parseInt(args[PORT]));
+		System.out.println("SENT REQUEST: " + request);
+		socket.send(output);
+		
+		// Receive reply
+		byte[] buf = new byte[MAX_SIZE];
+		DatagramPacket incoming = new DatagramPacket(buf, buf.length);
+		socket.receive(incoming);
+		
+		// Print out details of reply
+		String temp = new String(buf, 0, incoming.getLength());
+		System.out.println("RECEIVED REPLY: " + temp);
+		socket.close();
+		
+		/*byte[] rBuf = new byte[MAX_SIZE];
 		byte[] sBuf = new byte[MAX_SIZE];
 		
 		String request = null;
@@ -65,6 +77,7 @@ public class Client {
 		else if (args[OPER].equals("lookup"))
 			request = "LOOKUP:" + plateNumber;
 		
+		System.out.println("SENT REQUEST: " + request);
 		sBuf = request.getBytes();
 		
 		// Open socket, get address and create packet to store sent data
@@ -79,8 +92,8 @@ public class Client {
 		
 		// Process response
 		String response = new String(rPacket.getData());
-		System.out.println("REPLY: " + response);
-		socket.close();
+		System.out.println("RECEIVED REPLY: " + response);
+		socket.close();*/
 	}
 	
 }
