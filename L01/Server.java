@@ -52,13 +52,13 @@ public class Server {
 		String[] temp = data.split(":");
 
 		if (temp[0].equals("REGISTER")) {
-			if (dataBase.put(temp[1], temp[2]) != null) {
+			if (!dataBase.containsKey(temp[1])) {
+				dataBase.put(temp[1], temp[2]);
 				writeToFile(temp[1], temp[2]);
-				System.out.println(dataBase.toString());
 				return String.valueOf(dataBase.size());
 			}
 		} else if (temp[0].equals("LOOKUP")) {
-			if (dataBase.get(temp[1]) != null) {
+			if (dataBase.containsKey(temp[1])) {
 				return temp[1] + " -> " + dataBase.get(temp[1]);
 			}
 		}
@@ -89,6 +89,7 @@ public class Server {
 			String temp = new String(data, 0, incoming.getLength());
 
 			// Print out details of request
+			if (temp.equals("QUIT")) break;
 			System.out.println("RECEIVED REQUEST: " + temp);
 			String reply = parseReceivedData(temp);
 
@@ -97,6 +98,8 @@ public class Server {
 			DatagramPacket output = new DatagramPacket(reply.getBytes(), reply.getBytes().length, incoming.getAddress(), incoming.getPort());
 			socket.send(output);
 		}
+		
+		socket.close();
 	}
 
 }

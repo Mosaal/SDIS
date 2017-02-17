@@ -25,12 +25,14 @@ public class Client {
 	}
 	
 	public static boolean procArgs(String[] args) {
-		if (args.length != 4 && args.length != 5)
+		if (args.length != 3 && args.length != 4 && args.length != 5)
 			return false;
 		
 		if (args[OPER].equals("register") && args.length == 5)
 			return true;
 		else if (args[OPER].equals("lookup") && args.length == 4)
+			return true;
+		else if (args[OPER].equals("quit") && args.length == 3)
 			return true;
 		
 		return false;
@@ -48,6 +50,8 @@ public class Client {
 			request = "REGISTER:" + args[PLATE] + ":" + args[OWNER];
 		else if (args[OPER].equals("lookup"))
 			request = "LOOKUP:" + args[PLATE];
+		else if (args[OPER].equals("quit"))
+			request = "QUIT";
 		
 		// Create socket and get address
 		DatagramSocket socket = new DatagramSocket();
@@ -58,14 +62,17 @@ public class Client {
 		System.out.println("SENT REQUEST: " + request);
 		socket.send(output);
 		
-		// Receive reply
-		byte[] buf = new byte[MAX_SIZE];
-		DatagramPacket incoming = new DatagramPacket(buf, buf.length);
-		socket.receive(incoming);
+		if (!args[OPER].equals("quit")) {
+			// Receive reply
+			byte[] buf = new byte[MAX_SIZE];
+			DatagramPacket incoming = new DatagramPacket(buf, buf.length);
+			socket.receive(incoming);
+			
+			// Print out details of reply
+			String temp = new String(buf, 0, incoming.getLength());
+			System.out.println("RECEIVED REPLY: " + temp);
+		}
 		
-		// Print out details of reply
-		String temp = new String(buf, 0, incoming.getLength());
-		System.out.println("RECEIVED REPLY: " + temp);
 		socket.close();
 	}
 	
