@@ -67,33 +67,6 @@ public class Client {
 		String temp = new String(buf, 0, incoming.getLength());
 		System.out.println("RECEIVED REPLY: " + temp);
 		socket.close();
-		
-		/*byte[] rBuf = new byte[MAX_SIZE];
-		byte[] sBuf = new byte[MAX_SIZE];
-		
-		String request = null;
-		if (args[OPER].equals("register"))
-			request = "REGISTER:" + plateNumber + ":" + ownerName;
-		else if (args[OPER].equals("lookup"))
-			request = "LOOKUP:" + plateNumber;
-		
-		System.out.println("SENT REQUEST: " + request);
-		sBuf = request.getBytes();
-		
-		// Open socket, get address and create packet to store sent data
-		DatagramSocket socket = new DatagramSocket();
-		InetAddress address = InetAddress.getByName(hostname);
-		DatagramPacket sPacket = new DatagramPacket(sBuf, sBuf.length, address, portNumber);
-		socket.send(sPacket);
-		
-		// Create packet to store received data
-		DatagramPacket rPacket = new DatagramPacket(rBuf, rBuf.length);
-		socket.receive(rPacket);
-		
-		// Process response
-		String response = new String(rPacket.getData());
-		System.out.println("RECEIVED REPLY: " + response);
-		socket.close();*/
 	}
 	
 }
