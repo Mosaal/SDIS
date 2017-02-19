@@ -27,7 +27,7 @@ public class Server {
 		try {
 			String line = null;
 			dataBase = new HashMap<String, String>();
-			BufferedReader reader = new BufferedReader(new FileReader("res/db.txt"));
+			BufferedReader reader = new BufferedReader(new FileReader("db.txt"));
 
 			while ((line = reader.readLine()) != null)
 				dataBase.put(line.split(":")[0], line.split(":")[1]);
@@ -39,7 +39,7 @@ public class Server {
 	}
 
 	public static void writeToFile(String plate, String owner) {
-		try (FileWriter fw = new FileWriter("res/db.txt", true);
+		try (FileWriter fw = new FileWriter("db.txt", true);
 			BufferedWriter bw = new BufferedWriter(fw);
 			PrintWriter out = new PrintWriter(bw)) {
 			out.print("\n" + plate + ":" + owner);
