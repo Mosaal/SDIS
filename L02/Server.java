@@ -4,6 +4,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 
 public class Server {
@@ -68,10 +72,29 @@ public class Server {
 		return "ERROR";
 	}
 
-	public static void main(String[] args) {
-		if (args.length != 3) {
-			printUsage();
-			return;
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		//if (args.length != 3) {
+			//printUsage();
+			//return;
+		//}
+		
+		// loadDataBase();
+		
+		InetAddress address = InetAddress.getByName("228.5.6.7");
+		MulticastSocket socket = new MulticastSocket(Integer.parseInt("6789"));
+		socket.joinGroup(address);
+		
+		while (true) {
+			byte[] buf = new byte[MAX_SIZE];
+			DatagramPacket packet = new DatagramPacket(buf, buf.length);
+			socket.receive(packet);
+			
+			String data = new String(packet.getData(), 0, packet.getLength());
+			System.out.println("RECEIVED: " + data);
+			if (data.equals("quit")) break;
 		}
+		
+		socket.leaveGroup(address);
+		socket.close();
 	}
 }
