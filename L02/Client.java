@@ -43,7 +43,7 @@ public class Client {
 			return;
 		}
 
-		// Creste request
+		// Create request
 		String request = null;
 		if (args[OPER].equals("register"))
 			request = "REGISTER:" + args[PLATE] + ":" + args[OWNER];
@@ -60,7 +60,7 @@ public class Client {
 		DatagramPacket incoming = new DatagramPacket(buf, buf.length);
 		mSocket.receive(incoming);
 
-		// Parse informartion
+		// Parse information
 		String portData = new String(incoming.getData(), 0, incoming.getLength());
 		System.out.println("RECEIVED PORT: " + portData);
 
