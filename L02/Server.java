@@ -104,8 +104,7 @@ public class Server {
 						DatagramPacket packet = new DatagramPacket(args[SRVC_PORT].getBytes(), args[SRVC_PORT].getBytes().length, mAddress, mPort);
 						mSocket.send(packet);
 						
-						// Print out info and wait for 1 sec
-						System.out.println("SENT PORT: " + args[SRVC_PORT]);
+						// Wait for 1 second
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
