@@ -13,7 +13,7 @@ public class Server {
 
 	// Const
 	private static final byte PORT = 0;
-	
+
 	// Args
 	private static HashMap<String, String> dataBase;
 
@@ -65,7 +65,7 @@ public class Server {
 
 		return "ERROR";
 	}
-	
+
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
 		if (args.length != 1) {
@@ -73,20 +73,24 @@ public class Server {
 			return;
 		}
 
+		loadDataBase();
+
 		// Create socket
 		ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[PORT]));
-		Socket clientSocket = serverSocket.accept();
-		
+
 		while (true) {
+			// Accept client connection
+			Socket clientSocket = serverSocket.accept();
+
 			// Create writer and reader
 			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			
+
 			// Print out details of request
 			String temp = in.readLine();
 			System.out.println("RECEIVED REQUEST: " + temp);
 			String reply = parseReceivedData(temp);
-			
+
 			// Send reply
 			System.out.println("SENT REPLY: " + reply);
 			out.println(reply);
