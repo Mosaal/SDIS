@@ -1,3 +1,6 @@
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
 public class Client {
 
     // Const
@@ -30,7 +33,7 @@ public class Client {
 		return false;
 	}
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         if (!procArgs(args)) {
             System.out.println("ERROR: Wrong number of arguments.");
             printUsage();
@@ -43,5 +46,14 @@ public class Client {
 			request = "REGISTER:" + args[PLATE] + ":" + args[OWNER];
 		else if (args[OPER].equals("lookup"))
 			request = "LOOKUP:" + args[PLATE];
+		
+		// Locate registry
+		Registry reg = LocateRegistry.getRegistry(args[HOST]);
+		Database stub = (Database) reg.lookup(args[REMT]);
+
+		// Send request and receive response
+		String reply = stub.makeRequest(request);
+		System.out.println("SENT: " + request);
+		System.out.println("RECEIVED: " + reply);
     }
 }

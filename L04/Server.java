@@ -4,9 +4,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
-public class Server {
+public class Server implements Database {
 
     // Const
 	private static final byte REMT = 0;
@@ -62,7 +65,15 @@ public class Server {
 		return "ERROR";
 	}
     
-    public static void main(String[] args) {
+	@Override
+	public String makeRequest(String request) {
+		System.out.println("RECEIVED: " + request);
+		String reply = parseReceivedData(request);
+		System.out.println("SENT: " + reply);
+		return reply;
+	}
+
+    public static void main(String[] args) throws Exception {
         if (args.length != 1) {
             System.out.println("ERROR: Wrong number of arguments.");
             printUsage();
@@ -70,5 +81,13 @@ public class Server {
         }
 
         loadDataBase();
+
+		// Start server
+		Server obj = new Server();
+	    Database stub = (Database) UnicastRemoteObject.exportObject(obj, 0);
+
+	    // Bind the remote object's stub in the registry
+	    Registry registry = LocateRegistry.getRegistry();
+	    registry.bind(args[REMT], stub);
     }
 }
