@@ -1,12 +1,22 @@
+JAVA = java
 JAVAC = javac
-JFLAGS = -g -d bin/
-SOURCES = $(wildcard src/*.java)
-CLASSES = $(SOURCES:.java=.class)
+JFLAGS = -cp ./bin
+JCFLAGS = -d ./bin
 
-all: $(CLASSES)
+SOURCES = $(shell find ./src -type f -iname '*.java')
+CLASSES = $(shell find ./bin -type f -iname '*.class')
 
-clean :
-	rm -f bin/*.class
+all:
+	@for src in $(SOURCES); do \
+		echo $(JAVAC) $(JCFLAGS) $$src; \
+		$(JAVAC) $(JCFLAGS) $$src; \
+	done
 
-%.class : %.java
-	$(JAVAC) $(JFLAGS) $<
+run:
+	$(JAVA) $(JFLAGS) ${args}
+
+clean:
+	@for cls in $(CLASSES); do \
+		echo $(RM) $$cls; \
+		$(RM) $$cls; \
+	done
