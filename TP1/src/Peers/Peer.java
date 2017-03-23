@@ -2,9 +2,9 @@ package Peers;
 
 public class Peer {
 
-	/** Prints the correct way to execute this class */
+	/** Prints the correct way to initialize and execute an instance of this class */
 	public static void printUsage() {
-		System.out.println("Usage: java -cp ./bin/ Peers.Peer <options>");
+		System.out.println("Usage: java -cp ./bin Peers.Peer <options>");
 		System.out.println("Where:");
 	}
 

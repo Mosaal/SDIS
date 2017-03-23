@@ -8,7 +8,7 @@ public class Chunk {
 	private final byte[] data;
 
 	/**
-	 * Creates an instance of a Chunk
+	 * Creates a Chunk instance
 	 * @param fileID the identifier of the file the chunk belongs to
 	 * @param chunkNo the number of the chunk
 	 */
