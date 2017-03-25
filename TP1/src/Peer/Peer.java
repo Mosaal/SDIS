@@ -11,6 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class Peer {
 
+	/** Prints the correct way to initialize and execute an instance of this class */
 	public static void printUsage() {
 		System.out.println("Usage: java -cp ./bin Peers.Peer <protocol_version> <server_id> <access_point> <mc_channel_ip>:<port> <mdb_channel_ip>:<port> <mdr_channel_ip>:<port>");
 		System.out.println("Where:");
@@ -22,6 +23,10 @@ public class Peer {
 		System.out.println("\t<mdr_channel_ip>:<port> is the IP address of Multicast Data Recovery Channel followed by its Port");
 	}
 
+	/**
+	 * Processes the arguments passed on the command line 
+	 * @param args string array of arguments to be processed
+	 */
 	private static boolean procArgs(String[] args) {
 		if (args.length != 6) {
 			System.out.println("ERROR: Wrong number of arguments.");

@@ -10,6 +10,7 @@ import java.rmi.registry.Registry;
 
 public class TestApp {
 
+	/** Prints the correct way to initialize and execute an instance of this class */
 	private static void printUsage() {
 		System.out.println("Usage: java -cp ./bin Interface.TestApp <hostname>:<remote_object_name> <sub_protocol> <opnd_1> <opnd_2>");
 		System.out.println("Where:");
@@ -19,6 +20,10 @@ public class TestApp {
 		System.out.println("\t<opnd_2> is an integer that specifies the desired replication degree and applies only to the BACKUP protocol");
 	}
 
+	/**
+	 * Processes the arguments passed on the command line 
+	 * @param args string array of arguments to be processed
+	 */
 	private static boolean procArgs(String[] args) {
 		if (args.length < 2) {
 			System.out.println("ERROR: Wrong number of arguments.");
