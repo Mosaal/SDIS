@@ -1,5 +1,11 @@
 package Interface;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+
 import Utils.Utils;
 
 public class TestApp {
@@ -85,6 +91,27 @@ public class TestApp {
 			return;
 		}
 		
-		System.out.println("Hello");
+		// Create TCP client
+		PrintWriter out = null;
+		BufferedReader in = null;
+		Socket clientSocket = null;
+		
+		// Parse address and port
+		String address = args[0].split(":")[0];
+		String port = args[0].split(":")[1];
+		
+		// Initialize and try to connect to Peer
+		try {
+			clientSocket = new Socket(address, Integer.parseInt(port));
+			out = new PrintWriter(clientSocket.getOutputStream(), true);
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		} catch (IOException e) {
+			System.out.println("Failed to connect to " + address + ":" + port);
+			System.exit(-1);
+		}
+		System.out.println("Connection to service Peer successful.");
+		
+		// Send a message to the Peer
+		String message;
 	}
 }
