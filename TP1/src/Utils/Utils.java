@@ -2,25 +2,13 @@ package Utils;
 
 import java.io.File;
 
-public class Utils
-{
-	public Utils() {}
+public class Utils {
 
-	public static boolean isStringInteger(String paramString)
-	{
-		try
-		{
-			Integer.parseInt(paramString);
-		} catch (NumberFormatException localNumberFormatException) {
-			return false;
-		}
+	public static boolean isStringInteger(String str) {
+		try { Integer.parseInt(str); }
+		catch (NumberFormatException e) { return false; }
 		return true;
 	}
 
-
-
-	public static boolean fileExists(String paramString)
-	{
-		return new File(paramString).exists();
-	}
+	public static boolean fileExists(String path) { return new File(path).exists(); }
 }

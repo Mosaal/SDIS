@@ -3,17 +3,15 @@ package Peer;
 import RMI.RMIInterface;
 import RMI.RMIServer;
 import Utils.Utils;
-import java.io.PrintStream;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
-public class Peer
-{
-	public Peer() {}
+public class Peer {
 
-	public static void printUsage()
-	{
+	public static void printUsage() {
 		System.out.println("Usage: java -cp ./bin Peers.Peer <protocol_version> <server_id> <access_point> <mc_channel_ip>:<port> <mdb_channel_ip>:<port> <mdr_channel_ip>:<port>");
 		System.out.println("Where:");
 		System.out.println("\t<protocol_version> is the version of the protocol used");
@@ -24,33 +22,26 @@ public class Peer
 		System.out.println("\t<mdr_channel_ip>:<port> is the IP address of Multicast Data Recovery Channel followed by its Port");
 	}
 
-
-
-
-
-	private static boolean procArgs(String[] paramArrayOfString)
-	{
-		if (paramArrayOfString.length != 6) {
+	private static boolean procArgs(String[] args) {
+		if (args.length != 6) {
 			System.out.println("ERROR: Wrong number of arguments.");
 			return false;
 		}
 
-
-		if (!Utils.isStringInteger(paramArrayOfString[1])) {
-			System.out.println("ERROR: Argument '" + paramArrayOfString[1] + "' is not an integer.");
+		if (!Utils.isStringInteger(args[1])) {
+			System.out.println("ERROR: Argument '" + args[1] + "' is not an integer.");
 			return false;
 		}
 
-
-		if ((paramArrayOfString[3].contains(":")) && (paramArrayOfString[4].contains(":")) && (paramArrayOfString[5].contains(":"))) {
-			if (!Utils.isStringInteger(paramArrayOfString[3].split(":")[1])) {
-				System.out.println("ERROR: Port '" + paramArrayOfString[3].split(":")[1] + "' is not an integer.");
+		if ((args[3].contains(":")) && (args[4].contains(":")) && (args[5].contains(":"))) {
+			if (!Utils.isStringInteger(args[3].split(":")[1])) {
+				System.out.println("ERROR: Port '" + args[3].split(":")[1] + "' is not an integer.");
 				return false; }
-			if (!Utils.isStringInteger(paramArrayOfString[4].split(":")[1])) {
-				System.out.println("ERROR: Port '" + paramArrayOfString[4].split(":")[1] + "' is not an integer.");
+			if (!Utils.isStringInteger(args[4].split(":")[1])) {
+				System.out.println("ERROR: Port '" + args[4].split(":")[1] + "' is not an integer.");
 				return false; }
-			if (!Utils.isStringInteger(paramArrayOfString[5].split(":")[1])) {
-				System.out.println("ERROR: Port '" + paramArrayOfString[5].split(":")[1] + "' is not an integer.");
+			if (!Utils.isStringInteger(args[5].split(":")[1])) {
+				System.out.println("ERROR: Port '" + args[5].split(":")[1] + "' is not an integer.");
 				return false;
 			}
 		} else {
@@ -61,23 +52,20 @@ public class Peer
 		return true;
 	}
 
+	public static void main(String[] args) {
+		if (!procArgs(args)) {
+			printUsage();
+			return;
+		}
 
+		try {
+			RMIServer rmiServer = new RMIServer();
+			RMIInterface stub = (RMIInterface) UnicastRemoteObject.exportObject(rmiServer, 0);
 
-
-
-	public static void main(String[] paramArrayOfString)
-	{
-		try
-		{
-			RMIServer localRMIServer = new RMIServer();
-			RMIInterface localRMIInterface = (RMIInterface)java.rmi.server.UnicastRemoteObject.exportObject(localRMIServer, 0);
-
-
-			Registry localRegistry = java.rmi.registry.LocateRegistry.getRegistry();
-			localRegistry.bind("kappa", localRMIInterface);
-		} catch (RemoteException|AlreadyBoundException localRemoteException) {
-			localRemoteException.printStackTrace();
-
+			Registry registry = LocateRegistry.getRegistry();
+			registry.bind("kappa", stub);
+		} catch (RemoteException | AlreadyBoundException e) {
+			e.printStackTrace();
 			printUsage();
 			System.exit(-1);
 		}
