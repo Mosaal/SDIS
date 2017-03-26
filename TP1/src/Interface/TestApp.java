@@ -149,7 +149,8 @@ public class TestApp {
 				System.out.println("An error ocurred while making the request.");
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Failed to read reply from the Peer.");
+			System.exit(-1);
 		}
 
 		try {
@@ -159,7 +160,8 @@ public class TestApp {
 			out.close();
 			clientSocket.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Failed to shut down correctly. Exiting anyway...");
+			System.exit(-1);
 		}
 	}
 }

@@ -138,7 +138,8 @@ public class PeerRunnable implements Runnable {
 					out.println("ERROR");
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Failed to read request from the Client.");
+				System.exit(-1);
 			}
 		}
 	}
