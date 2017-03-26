@@ -1,7 +1,3 @@
-/Chunk/
-/Interface/
 /Peer/
-/Protocols/
-/RMI/
-/Utils/
-/TCP/
+/Channels/
+/Interface/

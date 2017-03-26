@@ -1,17 +1,10 @@
 package Peer;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 import Utils.Utils;
 
 public class Peer {
-
-	private static String port;
 
 	/** Prints the correct way to initialize and execute an instance of this class */
 	public static void printUsage() {
@@ -42,9 +35,8 @@ public class Peer {
 			return false;
 		}
 
-		port = args[2];
-		if (!Utils.isStringInteger(port)) {
-			System.out.println("ERROR: Argument '" + port + "' is not an integer.");
+		if (!Utils.isStringInteger(args[2])) {
+			System.out.println("ERROR: Argument '" + args[2] + "' is not an integer.");
 			return false;
 		}
 
@@ -73,50 +65,23 @@ public class Peer {
 			printUsage();
 			return;
 		}
+		
+		// Initialize everything
+		String[] mc = args[3].split(":");
+		String[] mdb = args[4].split(":");
+		String[] mdr = args[5].split(":");
+		int tcpPort = Integer.parseInt(args[2]);
 
 		// Start Peer loop
-		peerThread.start();
+		new Thread(new PeerRunnable(tcpPort, mc, mdb, mdr)).start();
 
 		// Give the user the option to cancel the Peer
-		System.out.println("Press Enter to stop executing...");
+		System.out.println("Press the [Enter] key to stop executing...");
 		try { System.in.read(); } 
 		catch (IOException e) { e.printStackTrace(); }
 		
+		// Close everything
 		System.out.println("Shutting down...");
 		System.exit(0);
 	}
-
-	private static Thread peerThread = new Thread(new Runnable() {
-		// Create TCP server
-		public PrintWriter out = null;
-		public BufferedReader in = null;
-		public Socket clientSocket = null;
-		public ServerSocket serverSocket = null;
-
-		@Override
-		public void run() {
-			// Initialize TCP server
-			try {
-				serverSocket = new ServerSocket(Integer.parseInt(port));
-			} catch (IOException e) {
-				System.out.println("Failed to initalize TCP server.");
-				System.exit(-1);
-			}
-
-			while (true) {
-				// Wait for a connection
-				try {
-					System.out.println("Waiting for a connection...");
-					clientSocket = serverSocket.accept();
-					System.out.println("A connection was made to " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
-
-					out = new PrintWriter(clientSocket.getOutputStream(), true);
-					in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-				} catch (IOException e) {
-					System.out.println("Error on setup.");
-					System.exit(-1);
-				}
-			}
-		}
-	});
 }

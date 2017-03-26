@@ -90,28 +90,72 @@ public class TestApp {
 			printUsage();
 			return;
 		}
-		
+
 		// Create TCP client
 		PrintWriter out = null;
 		BufferedReader in = null;
 		Socket clientSocket = null;
-		
+
 		// Parse address and port
 		String address = args[0].split(":")[0];
 		String port = args[0].split(":")[1];
-		
+
 		// Initialize and try to connect to Peer
 		try {
 			clientSocket = new Socket(address, Integer.parseInt(port));
 			out = new PrintWriter(clientSocket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			System.out.println("Connection to service Peer successful.");
 		} catch (IOException e) {
 			System.out.println("Failed to connect to " + address + ":" + port);
 			System.exit(-1);
 		}
-		System.out.println("Connection to service Peer successful.");
-		
-		// Send a message to the Peer
-		String message;
+
+		// Create message to be sent
+		String request = args[1];
+		switch (args[1]) {
+		case "BACKUP":
+			request += " " + args[2] + " " + args[3];
+			break;
+		case "RESTORE":
+			// TODO
+			break;
+		case "DELETE":
+			// TODO
+			break;
+		case "RECLAIM":
+			// TODO
+			break;
+		case "STATE":
+			// TODO
+			break;
+		}
+
+		// Send request to Peer
+		out.println(request);
+
+		try {
+			// Wait for reply
+			String reply = in.readLine();
+			
+			// Parse reply
+			if (reply.equals("OK")) {
+				System.out.println("Request successful.");
+			} else if (reply.equals("ERROR")) {
+				System.out.println("An error ocurred while making the request.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			// Close everything
+			System.out.println("Shutting down...");
+			in.close();
+			out.close();
+			clientSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
