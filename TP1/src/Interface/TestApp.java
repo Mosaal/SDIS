@@ -10,6 +10,12 @@ import Utils.Utils;
 
 public class TestApp {
 
+	// Static constant variables
+	private static final int TCP = 0;
+	private static final int PROT = 1;
+	private static final int FILE = 2;
+	private static final int REPL = 3;
+	
 	/** Prints the correct way to initialize and execute an instance of this class */
 	private static void printUsage() {
 		System.out.println("Usage: java -cp ./bin Interface.TestApp <ip_address>:<port> <sub_protocol> <file_path> <rep_degree>");
@@ -32,48 +38,51 @@ public class TestApp {
 		}
 
 		// Check if the first argument has the correct format
-		if (!args[0].contains(":")) {
+		if (!args[TCP].contains(":")) {
 			System.out.println("ERROR: The first argument has an incorrect format.");
+			return false;
+		} else if (!Utils.isStringInteger(args[TCP].split(":")[1])) {
+			System.out.println("ERROR: The port '" + args[TCP].split(":")[1] + "' is not an integer.");
 			return false;
 		}
 
 		// Check remaining arguments
 		switch (args.length) {
 		case 2:
-			if (!args[1].equals("STATE")) {
-				System.out.println("ERROR: '" + args[1] + "' is not a valid argument.");
+			if (!args[PROT].equals(Utils.STATE_STRING)) {
+				System.out.println("ERROR: '" + args[PROT] + "' is not a valid argument.");
 				return false;
 			}
 			break;
 		case 3:
-			if (args[1].equals("RECLAIM")) {
-				if (!Utils.isStringInteger(args[2])) {
-					System.out.println("ERROR: Argument '" + args[2] + "' is not an integer.");
+			if (args[PROT].equals(Utils.RECLAIM_STRING)) {
+				if (!Utils.isStringInteger(args[FILE])) {
+					System.out.println("ERROR: Argument '" + args[FILE] + "' is not an integer.");
 					return false;
 				}
-			} else if (args[1].equals("RESTORE") || args[1].equals("DELETE")) {
-				if (!Utils.fileExists(args[2])) {
-					System.out.println("ERROR: The file '" + args[2] + "' does not exist.");
+			} else if (args[PROT].equals(Utils.RESTORE_STRING) || args[PROT].equals(Utils.DELETE_STRING)) {
+				if (!Utils.fileExists(args[FILE])) {
+					System.out.println("ERROR: The file '" + args[FILE] + "' does not exist.");
 					return false;
 				}
 			} else {
-				System.out.println("ERROR: '" + args[1] + "' is not a valid argument.");
+				System.out.println("ERROR: '" + args[PROT] + "' is not a valid argument.");
 				return false;
 			}
 			break;
 		case 4:
-			if (args[1].equals("BACKUP")) {
-				if (!Utils.fileExists(args[2])) {
-					System.out.println("ERROR: The file '" + args[2] + "' does not exist.");
+			if (args[PROT].equals(Utils.BACKUP_STRING)) {
+				if (!Utils.fileExists(args[FILE])) {
+					System.out.println("ERROR: The file '" + args[FILE] + "' does not exist.");
 					return false;
 				}
 
-				if (!Utils.isStringInteger(args[3])) {
-					System.out.println("ERROR: Argument '" + args[3] + "' is not an integer.");
+				if (!Utils.isStringInteger(args[REPL])) {
+					System.out.println("ERROR: Argument '" + args[REPL] + "' is not an integer.");
 					return false;
 				}
 			} else {
-				System.out.println("ERROR: '" + args[1] + "' is not a valid argument.");
+				System.out.println("ERROR: '" + args[PROT] + "' is not a valid argument.");
 				return false;
 			}
 			break;
@@ -97,8 +106,8 @@ public class TestApp {
 		Socket clientSocket = null;
 
 		// Parse address and port
-		String address = args[0].split(":")[0];
-		String port = args[0].split(":")[1];
+		String address = args[TCP].split(":")[0];
+		String port = args[TCP].split(":")[1];
 
 		// Initialize and try to connect to Peer
 		try {
@@ -112,19 +121,19 @@ public class TestApp {
 		}
 
 		// Create message to be sent
-		String request = args[1];
-		switch (args[1]) {
-		case "BACKUP":
-			request += " " + args[2] + " " + args[3];
+		String request = args[PROT];
+		switch (args[PROT]) {
+		case Utils.BACKUP_STRING:
+			request += " " + args[FILE] + " " + args[REPL];
 			break;
-		case "RESTORE":
-			request += " " + args[2];
+		case Utils.RESTORE_STRING:
+			request += " " + args[FILE];
 			break;
-		case "DELETE":
-			request += " " + args[2];
+		case Utils.DELETE_STRING:
+			request += " " + args[FILE];
 			break;
-		case "RECLAIM":
-			request += " " + args[2];
+		case Utils.RECLAIM_STRING:
+			request += " " + args[FILE];
 			break;
 		}
 

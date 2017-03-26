@@ -9,5 +9,13 @@ public class MDRChannel extends MChannel {
 	 */
 	public MDRChannel(final String ipAddress, final int port) {
 		super(ipAddress, port);
+		mcastThread.start();
 	}
+	
+	Thread mcastThread = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			System.out.println("I started on the mdr channel...");
+		}
+	});
 }

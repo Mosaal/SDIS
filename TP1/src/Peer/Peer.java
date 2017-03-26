@@ -6,6 +6,14 @@ import Utils.Utils;
 
 public class Peer {
 
+	// Static constant variables
+	private static final int PRO = 0;
+	private static final int SER = 1;
+	private static final int TCP = 2;
+	private static final int MCC = 3;
+	private static final int MDB = 4;
+	private static final int MDR = 5;
+	
 	/** Prints the correct way to initialize and execute an instance of this class */
 	public static void printUsage() {
 		System.out.println("Usage: java -cp ./bin Peers.Peer <protocol_version> <server_id> <tcp_port> <mc_channel_ip>:<port> <mdb_channel_ip>:<port> <mdr_channel_ip>:<port>");
@@ -28,28 +36,34 @@ public class Peer {
 			System.out.println("ERROR: Wrong number of arguments.");
 			return false;
 		}
-
-		// Check if server_id and tcp_port are integers
-		if (!Utils.isStringInteger(args[1])) {
-			System.out.println("ERROR: Argument '" + args[1] + "' is not an integer.");
+		
+		// Check if protocol version is a double
+		if (!Utils.isStringDouble(args[PRO])) {
+			System.out.println("ERROR: Argument '" + args[PRO] + "' is not a valid protocol version.");
 			return false;
 		}
 
-		if (!Utils.isStringInteger(args[2])) {
-			System.out.println("ERROR: Argument '" + args[2] + "' is not an integer.");
+		// Check if server_id and tcp_port are integers
+		if (!Utils.isStringInteger(args[SER])) {
+			System.out.println("ERROR: Argument '" + args[SER] + "' is not an integer.");
+			return false;
+		}
+
+		if (!Utils.isStringInteger(args[TCP])) {
+			System.out.println("ERROR: Argument '" + args[TCP] + "' is not an integer.");
 			return false;
 		}
 
 		// Check the format of the remaining arguments
-		if (args[3].contains(":") && args[4].contains(":") && args[5].contains(":")) {
-			if (!Utils.isStringInteger(args[3].split(":")[1])) {
-				System.out.println("ERROR: Port '" + args[3].split(":")[1] + "' is not an integer.");
+		if (args[MCC].contains(":") && args[MDB].contains(":") && args[MDR].contains(":")) {
+			if (!Utils.isStringInteger(args[MCC].split(":")[1])) {
+				System.out.println("ERROR: Port '" + args[MCC].split(":")[1] + "' is not an integer.");
 				return false; }
-			if (!Utils.isStringInteger(args[4].split(":")[1])) {
-				System.out.println("ERROR: Port '" + args[4].split(":")[1] + "' is not an integer.");
+			if (!Utils.isStringInteger(args[MDB].split(":")[1])) {
+				System.out.println("ERROR: Port '" + args[MDB].split(":")[1] + "' is not an integer.");
 				return false; }
-			if (!Utils.isStringInteger(args[5].split(":")[1])) {
-				System.out.println("ERROR: Port '" + args[5].split(":")[1] + "' is not an integer.");
+			if (!Utils.isStringInteger(args[MDR].split(":")[1])) {
+				System.out.println("ERROR: Port '" + args[MDR].split(":")[1] + "' is not an integer.");
 				return false;
 			}
 		} else {
@@ -67,14 +81,13 @@ public class Peer {
 		}
 		
 		// Initialize everything
-		String[] mc = args[3].split(":");
-		String[] mdb = args[4].split(":");
-		String[] mdr = args[5].split(":");
-		int peerID = Integer.parseInt(args[1]);
-		int tcpPort = Integer.parseInt(args[2]);
+		String[] mc = args[MCC].split(":");
+		String[] mdb = args[MDB].split(":");
+		String[] mdr = args[MDR].split(":");
+		int tcpPort = Integer.parseInt(args[TCP]);
 
 		// Start Peer loop
-		new Thread(new PeerRunnable(peerID, tcpPort, mc, mdb, mdr)).start();
+		new Thread(new PeerRunnable(tcpPort, mc, mdb, mdr)).start();
 
 		// Give the user the option to cancel the Peer
 		System.out.println("Press the [Enter] key to stop executing...");

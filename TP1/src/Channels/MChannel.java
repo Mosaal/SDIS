@@ -41,4 +41,26 @@ public abstract class MChannel {
 			e.printStackTrace();
 		}
 	}
+	
+	// Instance methods
+	/** Returns the byte array with the current data */
+	public byte[] getData() { return data; }
+	
+	/** Returns the port number the multicast socket is on */
+	public final int getPort() { return port; }
+	
+	/** Returns the IP address */
+	public final String getAddress() { return ipAddress; }
+	
+	/** Returns the running thread */
+	public Thread getMCastThread() { return mcastThread; }
+	
+	/** Returns the data packet */
+	public DatagramPacket getPacket() { return packet; }
+	
+	/** Returns the data socket */
+	public DatagramSocket getDataSocket() { return dataSocket; }
+	
+	/** Returns the multicast socket */
+	public MulticastSocket getMCastSocket() { return mcastSocket; }
 }
