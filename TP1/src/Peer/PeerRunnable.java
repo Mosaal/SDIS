@@ -54,11 +54,11 @@ public class PeerRunnable implements Runnable {
 		mdbChannel = new MDBChannel(mdb[0], Integer.parseInt(mdb[1]));
 		mdrChannel = new MDRChannel(mdr[0], Integer.parseInt(mdr[1]));
 		
-		stateProtocol = new StateProtocol();
-		backupProtocol = new BackupProtocol();
-		deleteProtocol = new DeleteProtocol();
-		restoreProtocol = new RestoreProtocol();
-		reclaimProtocol = new ReclaimProtocol();
+		stateProtocol = new StateProtocol(mcChannel);
+		deleteProtocol = new DeleteProtocol(mcChannel);
+		reclaimProtocol = new ReclaimProtocol(mcChannel);
+		backupProtocol = new BackupProtocol(mcChannel, mdbChannel);
+		restoreProtocol = new RestoreProtocol(mcChannel, mdrChannel);
 	}
 	
 	/**

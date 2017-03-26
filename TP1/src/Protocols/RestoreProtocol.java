@@ -1,11 +1,23 @@
 package Protocols;
 
-public class RestoreProtocol {
+import Channels.MCChannel;
+import Channels.MDRChannel;
 
+public class RestoreProtocol extends Protocol {
+
+	// Instance variables
+	private MDRChannel mdrChannel;
+	
 	/**
-	 * Creates a RestoreProtocol instance
+	 * Create a RestoreProtocol instance
+	 * @param mcChannel multicast channel all protocols subscribe to
 	 */
-	public RestoreProtocol() {
-		
+	public RestoreProtocol(MCChannel mcChannel, MDRChannel mdrChannel) {
+		super(mcChannel);
+		this.mdrChannel = mdrChannel;
 	}
+	
+	// Instance methods
+	/** Returns the multicast data recovery channel */
+	public MDRChannel getMDRChannel() { return mdrChannel; }
 }
