@@ -9,5 +9,13 @@ public class MCChannel extends MChannel {
 	 */
 	public MCChannel(final String ipAddress, final int port) {
 		super(ipAddress, port);
+		mcastThread.start();
 	}
+	
+	Thread mcastThread = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			System.out.println("I started on the mc channel...");
+		}
+	});
 }

@@ -4,6 +4,10 @@ import java.io.File;
 
 public class Utils {
 
+	// Static variables
+	public static final int BUFFER_MAX_SIZE = 64000;
+	
+	// Static methods
 	/**
 	 * Checks if a given string is an integer
 	 * @param str string to be checked

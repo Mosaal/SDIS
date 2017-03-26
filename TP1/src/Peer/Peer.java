@@ -70,10 +70,11 @@ public class Peer {
 		String[] mc = args[3].split(":");
 		String[] mdb = args[4].split(":");
 		String[] mdr = args[5].split(":");
+		int peerID = Integer.parseInt(args[1]);
 		int tcpPort = Integer.parseInt(args[2]);
 
 		// Start Peer loop
-		new Thread(new PeerRunnable(tcpPort, mc, mdb, mdr)).start();
+		new Thread(new PeerRunnable(peerID, tcpPort, mc, mdb, mdr)).start();
 
 		// Give the user the option to cancel the Peer
 		System.out.println("Press the [Enter] key to stop executing...");

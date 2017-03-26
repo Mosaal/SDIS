@@ -118,16 +118,13 @@ public class TestApp {
 			request += " " + args[2] + " " + args[3];
 			break;
 		case "RESTORE":
-			// TODO
+			request += " " + args[2];
 			break;
 		case "DELETE":
-			// TODO
+			request += " " + args[2];
 			break;
 		case "RECLAIM":
-			// TODO
-			break;
-		case "STATE":
-			// TODO
+			request += " " + args[2];
 			break;
 		}
 
@@ -135,10 +132,8 @@ public class TestApp {
 		out.println(request);
 
 		try {
-			// Wait for reply
+			// Wait and parse reply
 			String reply = in.readLine();
-			
-			// Parse reply
 			if (reply.equals("OK")) {
 				System.out.println("Request successful.");
 			} else if (reply.equals("ERROR")) {

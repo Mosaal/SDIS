@@ -7,9 +7,11 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-//import Channels.MCChannel;
-//import Channels.MDBChannel;
-//import Channels.MDRChannel;
+import Storage.FileManager;
+
+import Channels.MCChannel;
+import Channels.MDBChannel;
+import Channels.MDRChannel;
 
 public class PeerRunnable implements Runnable {
 
@@ -23,9 +25,9 @@ public class PeerRunnable implements Runnable {
 	private ServerSocket serverSocket;
 	
 	// Multicast channels
-//	private MCChannel mcChannel;
-//	private MDBChannel mdbChannel;
-//	private MDRChannel mdrChannel;
+	private MCChannel mcChannel;
+	private MDBChannel mdbChannel;
+	private MDRChannel mdrChannel;
 	
 	/**
 	 * Creates a PeerRunnable instance
@@ -34,11 +36,11 @@ public class PeerRunnable implements Runnable {
 	 * @param mdb string array with the arguments for the data backup channel
 	 * @param mdr string array with the arguments for the data recovery channel
 	 */
-	public PeerRunnable(int tcpPort, String[] mc, String[] mdb, String[] mdr) {
+	public PeerRunnable(int peerID, int tcpPort, String[] mc, String[] mdb, String[] mdr) {
 		this.tcpPort = tcpPort;
-//		this.mcChannel = new MCChannel(mc[0], Integer.parseInt(mc[1]));
-//		this.mdbChannel = new MDBChannel(mdb[0], Integer.parseInt(mdb[1]));
-//		this.mdrChannel = new MDRChannel(mdr[0], Integer.parseInt(mdr[1]));
+		mcChannel = new MCChannel(mc[0], Integer.parseInt(mc[1]));
+		// mdbChannel = new MDBChannel(mdb[0], Integer.parseInt(mdb[1]));
+		// mdrChannel = new MDRChannel(mdr[0], Integer.parseInt(mdr[1]));
 	}
 	
 	@Override
@@ -72,11 +74,10 @@ public class PeerRunnable implements Runnable {
 				
 				// Parse request
 				if (request.contains(" ")) {
-					System.out.println("Request received. Processing...");
 					out.println("OK");
 				} else {
 					System.out.println("Invalid request received. Cancelling connection...");
-					out.print("ERROR");
+					out.println("ERROR");
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
