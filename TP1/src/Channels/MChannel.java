@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 import Utils.Utils;
 
@@ -14,6 +16,7 @@ public abstract class MChannel {
 	protected byte[] buf;
 	protected final int port;
 	protected final String ipAddress;
+	// protected HashMap<Integer, LinkedList<byte[]>> messageQueue;
 	
 	// Multicast variables
 	protected DatagramPacket packet;
@@ -29,6 +32,7 @@ public abstract class MChannel {
 		this.port = port;
 		this.ipAddress = ipAddress;
 		buf = new byte[Utils.BUFFER_MAX_SIZE];
+		// messageQueue = new HashMap<Integer, LinkedList<byte[]>>();
 		
 		try {
 			dataSocket = new DatagramSocket();

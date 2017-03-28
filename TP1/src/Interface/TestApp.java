@@ -23,7 +23,7 @@ public class TestApp {
 		System.out.println("\t<ip_address>:<port> is the address of the service Peer followed by its Port");
 		System.out.println("\t<sub_protocol> is the operation the peer of the backup service must execute (BACKUP, RESTORE, DELETE, RECLAIM, STATE)");
 		System.out.println("\t<file_path> is either the path name of the file to BACKUP/RESTORE/DELETE or the amount of space to RECLAIM (in KByte)");
-		System.out.println("\t<rep_degree> is an integer that specifies the desired replication degree and applies only to the BACKUP protocol");
+		System.out.println("\t<rep_degree> is an integer that specifies the desired replication degree and applies only to the BACKUP protocol (between 1 and 9)");
 	}
 
 	/**
@@ -79,6 +79,9 @@ public class TestApp {
 
 				if (!Utils.isStringInteger(args[REPL])) {
 					System.out.println("ERROR: Argument '" + args[REPL] + "' is not an integer.");
+					return false;
+				} else if (Integer.parseInt(args[REPL]) < 1 && Integer.parseInt(args[REPL]) > 9) {
+					System.out.println("ERROR: Replication degree must be in the following interval [1, 9]");
 					return false;
 				}
 			} else {
