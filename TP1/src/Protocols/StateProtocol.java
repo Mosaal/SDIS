@@ -11,4 +11,9 @@ public class StateProtocol extends Protocol {
 	public StateProtocol(MCChannel mcChannel) {
 		super(mcChannel);
 	}
+	
+	// Instance methods
+	public boolean getState() {
+		return true;
+	}
 }

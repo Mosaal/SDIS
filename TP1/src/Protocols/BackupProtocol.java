@@ -20,4 +20,8 @@ public class BackupProtocol extends Protocol {
 	// Instance methods
 	/** Returns the multicast data backup channel */
 	public MDBChannel getMDBChannel() { return mdbChannel; }
+	
+	public boolean backupFile(String filePath, int repDeg) {
+		return true;
+	}
 }

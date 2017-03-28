@@ -11,15 +11,14 @@ import Utils.Utils;
 public abstract class MChannel {
 
 	// Instance variables
-	private byte[] data;
-	private final int port;
-	private final String ipAddress;
+	protected byte[] buf;
+	protected final int port;
+	protected final String ipAddress;
 	
 	// Multicast variables
-	private Thread mcastThread;
-	private DatagramPacket packet;
-	private DatagramSocket dataSocket;
-	private MulticastSocket mcastSocket;
+	protected DatagramPacket packet;
+	protected DatagramSocket dataSocket;
+	protected MulticastSocket mcastSocket;
 
 	/**
 	 * Creates a MChannel instance
@@ -29,11 +28,11 @@ public abstract class MChannel {
 	public MChannel(final String ipAddress, final int port) {
 		this.port = port;
 		this.ipAddress = ipAddress;
-		data = new byte[Utils.BUFFER_MAX_SIZE];
+		buf = new byte[Utils.BUFFER_MAX_SIZE];
 		
 		try {
 			dataSocket = new DatagramSocket();
-			packet = new DatagramPacket(data, Utils.BUFFER_MAX_SIZE);
+			packet = new DatagramPacket(buf, Utils.BUFFER_MAX_SIZE);
 			
 			mcastSocket = new MulticastSocket(port);
 			mcastSocket.joinGroup(InetAddress.getByName(ipAddress));
@@ -43,17 +42,14 @@ public abstract class MChannel {
 	}
 	
 	// Instance methods
-	/** Returns the byte array with the current data */
-	public byte[] getData() { return data; }
+	/** Returns the buffer used in the packet */
+	public byte[] getBuffer() { return buf; }
 	
 	/** Returns the port number the multicast socket is on */
 	public final int getPort() { return port; }
 	
 	/** Returns the IP address */
 	public final String getAddress() { return ipAddress; }
-	
-	/** Returns the running thread */
-	public Thread getMCastThread() { return mcastThread; }
 	
 	/** Returns the data packet */
 	public DatagramPacket getPacket() { return packet; }

@@ -65,25 +65,25 @@ public class PeerRunnable implements Runnable {
 	 * Parses the string received as a request
 	 * @param request string to be parsed
 	 */
-	private int parseRequest(String request) {
+	private String[] parseRequest(String request) {
 		if (request.contains(" ")) {
 			String[] args = request.split(" ");
 			
 			if (args.length == 2) {
 				if (args[0].equals(Utils.RESTORE_STRING))
-					return 2;
+					return new String[] { "2", args[1] };
 				else if (args[0].equals(Utils.DELETE_STRING))
-					return 4;
+					return new String[] { "4", args[1] };
 				else if (args[0].equals(Utils.RECLAIM_STRING))
-					return 5;
+					return new String[] { "5", args[1] };
 			} else if (args.length == 3 && args[0].equals(Utils.BACKUP_STRING)) {
-				return 3;
+				return new String[] { "3", args[1], args[2] };
 			}
 		} else if (request.equals(Utils.STATE_STRING)) {
-			return 1;
+			return new String[] { "1" };
 		}
 		
-		return 0;
+		return null;
 	}
 	
 	@Override
@@ -114,27 +114,41 @@ public class PeerRunnable implements Runnable {
 			try {
 				// A connection was made. Wait and parse request
 				String request = in.readLine();
-				int res = parseRequest(request);
+				String[] res = parseRequest(request);
+				
+				// Check if result is null
+				if (res == null) {
+					System.out.println("Invalid request received. Closing connection...");
+					out.println("ERROR");
+					continue;
+				}
 				
 				// Call for the corresponding protocol
-				switch (res) {
+				boolean success = false;
+				switch (Integer.parseInt(res[0])) {
 				case Utils.STATE_INT:
-					// TODO
+					success = stateProtocol.getState();
 					break;
 				case Utils.RESTORE_INT:
-					// TODO
+					success = restoreProtocol.restoreFile(res[1]);
 					break;
 				case Utils.BACKUP_INT:
-					// TODO
+					success = backupProtocol.backupFile(res[1], Integer.parseInt(res[2]));
 					break;
 				case Utils.DELETE_INT:
-					// TODO
+					success = deleteProtocol.deleteFile(res[1]);
 					break;
 				case Utils.RECLAIM_INT:
-					// TODO
+					success = reclaimProtocol.reclaimSpace(Integer.parseInt(res[1]));
 					break;
-				default:
-					System.out.println("Invalid request received. Cancelling connection...");
+				}
+				
+				// Send a reply confirming what happened
+				if (success) {
+					System.out.println("The request was processed successfully. Closing connection...");
+					out.println("OK");
+				} else {
+					System.out.println("There was an error processing the request. Closing connection...");
 					out.println("ERROR");
 				}
 			} catch (IOException e) {

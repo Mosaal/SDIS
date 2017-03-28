@@ -11,4 +11,9 @@ public class DeleteProtocol extends Protocol {
 	public DeleteProtocol(MCChannel mcChannel) {
 		super(mcChannel);
 	}
+	
+	// Instance methods
+	public boolean deleteFile(String fileName) {
+		return true;
+	}
 }

@@ -146,7 +146,7 @@ public class TestApp {
 			if (reply.equals("OK")) {
 				System.out.println("Request successful.");
 			} else if (reply.equals("ERROR")) {
-				System.out.println("An error ocurred while making the request.");
+				System.out.println("An error ocurred while processing the request.");
 			}
 		} catch (IOException e) {
 			System.out.println("Failed to read reply from the Peer.");

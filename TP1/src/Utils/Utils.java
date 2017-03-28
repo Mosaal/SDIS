@@ -1,6 +1,7 @@
 package Utils;
 
 import java.io.File;
+import java.util.Random;
 
 public class Utils {
 
@@ -17,6 +18,12 @@ public class Utils {
 	public static final String BACKUP_STRING = "BACKUP";
 	public static final String DELETE_STRING = "DELETE";
 	public static final String RECLAIM_STRING = "RECLAIM";
+	
+	public static final String PUTCHUNK_STRING = "PUTCHUNK";
+	public static final String STORED_STRING = "STORED";
+	public static final String GETCHUNK_STRING = "GETCHUNK";
+	public static final String CHUNK_STRING = "CHUNK";
+	public static final String REMOVED_STRING = "REMOVED";
 	
 	// Static methods
 	/**
@@ -44,4 +51,7 @@ public class Utils {
 	 * @param path path of the file to be checked
 	 */
 	public static boolean fileExists(String path) { return new File(path).exists(); }
+	
+	/** Returns a random number between 0 and 400 */
+	public static int randomDelay() { return new Random().nextInt(401); }
 }

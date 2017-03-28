@@ -20,4 +20,8 @@ public class RestoreProtocol extends Protocol {
 	// Instance methods
 	/** Returns the multicast data recovery channel */
 	public MDRChannel getMDRChannel() { return mdrChannel; }
+	
+	public boolean restoreFile(String fileName) {
+		return true;
+	}
 }

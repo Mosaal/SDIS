@@ -11,4 +11,9 @@ public class ReclaimProtocol extends Protocol {
 	public ReclaimProtocol(MCChannel mcChannel) {
 		super(mcChannel);
 	}
+	
+	// Instance methods
+	public boolean reclaimSpace(int spaceToReclaim) {
+		return true;
+	}
 }
