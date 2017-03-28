@@ -3,10 +3,15 @@ package Protocols;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.rmi.CORBA.Util;
 
 import Channels.MCChannel;
 import Channels.MDBChannel;
+import Chunk.Chunk;
+import Utils.Utils;
 
 public class BackupProtocol extends Protocol {
 
@@ -28,7 +33,13 @@ public class BackupProtocol extends Protocol {
 	
 	public boolean backupFile(String filePath, int repDeg) {
 		// Separate data on chunks
-		try {
+		ArrayList<Chunk> chunks = Chunk.splitIntoChinks(filePath);
+		
+		for (int i = 0; i < chunks.size(); i++) {
+			mdbChannel.send(Utils.createMessage(Utils.PUTCHUNK_STRING, "1.0", 1234, "lol", i, 1, chunks.get(i).getData()));
+		}
+		
+		/*try {
 			byte[] data = Files.readAllBytes(Paths.get(filePath));
 			byte[][] chunks = new byte[1][];
 			int i = 0;
@@ -53,9 +64,8 @@ public class BackupProtocol extends Protocol {
 			//fodeu
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		return true;
 	}
 	

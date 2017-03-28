@@ -3,7 +3,6 @@ package Channels;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import Utils.Utils;
 
@@ -19,13 +18,14 @@ public class MDBChannel extends MChannel {
 		mcastThread.start();
 	}
 	
-	public boolean send(byte[] chunk){
-		try {
-			DatagramPacket temp = new DatagramPacket(chunk, chunk.length, InetAddress.getByName(ipAddress), port);
-			dataSocket.send(temp);
-		} catch (IOException e) {
-			return false;
-		}
+	/**
+	 * 
+	 * @param message
+	 * @return
+	 */
+	public boolean send(byte[] message) {
+		try { dataSocket.send(new DatagramPacket(message, message.length, InetAddress.getByName(ipAddress), port)); }
+		catch (IOException e) { return false; }
 		return true;
 	}
 	
@@ -43,15 +43,9 @@ public class MDBChannel extends MChannel {
 					byte[] data = packet.getData();
 					String str = new String(data, 0, packet.getLength());
 					
+					System.out.println(str);
 					// Process string and its data
 					if (str.contains(Utils.PUTCHUNK_STRING)) {
-						String[] temp = str.split(" ");
-						String temp1= temp[5].substring(9);
-
-						//Save data
-						
-						// Send STORED message
-						System.out.println("STORED " + temp[0] + temp[1] + temp[2] + temp[3] + temp[5].substring(0,8));
 						
 					}
 					
