@@ -47,18 +47,18 @@ public class PeerRunnable implements Runnable {
 	 * @param mdb string array with the arguments for the data backup channel
 	 * @param mdr string array with the arguments for the data recovery channel
 	 */
-	public PeerRunnable(int tcpPort, String[] mc, String[] mdb, String[] mdr) {
+	public PeerRunnable(String proVer, int peerID, int tcpPort, String[] mc, String[] mdb, String[] mdr) {
 		this.tcpPort = tcpPort;
 		
 		mcChannel = new MCChannel(mc[0], Integer.parseInt(mc[1]));
 		mdbChannel = new MDBChannel(mdb[0], Integer.parseInt(mdb[1]));
 		mdrChannel = new MDRChannel(mdr[0], Integer.parseInt(mdr[1]));
 		
-		stateProtocol = new StateProtocol(mcChannel);
-		deleteProtocol = new DeleteProtocol(mcChannel);
-		reclaimProtocol = new ReclaimProtocol(mcChannel);
-		backupProtocol = new BackupProtocol(mcChannel, mdbChannel);
-		restoreProtocol = new RestoreProtocol(mcChannel, mdrChannel);
+		stateProtocol = new StateProtocol(proVer, peerID, mcChannel);
+		deleteProtocol = new DeleteProtocol(proVer, peerID, mcChannel);
+		reclaimProtocol = new ReclaimProtocol(proVer, peerID, mcChannel);
+		backupProtocol = new BackupProtocol(proVer, peerID, mcChannel, mdbChannel);
+		restoreProtocol = new RestoreProtocol(proVer, peerID, mcChannel, mdrChannel);
 	}
 	
 	/**

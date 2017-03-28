@@ -1,13 +1,5 @@
 package Protocols;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import javax.rmi.CORBA.Util;
-
 import Channels.MCChannel;
 import Channels.MDBChannel;
 import Chunk.Chunk;
@@ -22,51 +14,82 @@ public class BackupProtocol extends Protocol {
 	 * Creates a BackupProtocol instance
 	 * @param mcChannel multicast control channel all protocols subscribe to
 	 */
-	public BackupProtocol(MCChannel mcChannel, MDBChannel mdbChannel) {
-		super(mcChannel);
+	public BackupProtocol(String proVer, int peerID, MCChannel mcChannel, MDBChannel mdbChannel) {
+		super(proVer, peerID, mcChannel);
 		this.mdbChannel = mdbChannel;
+		
+		processStored.start();
+		processPutchunk.start();
 	}
 	
 	// Instance methods
 	/** Returns the multicast data backup channel */
 	public MDBChannel getMDBChannel() { return mdbChannel; }
 	
+	/**
+	 * Backup a given file
+	 * @param filePath path of the file to be backed up
+	 * @param repDeg replication degree for the backup
+	 */
 	public boolean backupFile(String filePath, int repDeg) {
+		// Get file ID
+		// TODO: apply SHA256 to some bit string
+		String fileID = "lol";
+		
 		// Separate data on chunks
-		ArrayList<Chunk> chunks = Chunk.splitIntoChinks(filePath);
+		Chunk[] chunks = Chunk.splitIntoChinks(filePath, fileID);
 		
-		for (int i = 0; i < chunks.size(); i++) {
-			mdbChannel.send(Utils.createMessage(Utils.PUTCHUNK_STRING, "1.0", 1234, "lol", i, 1, chunks.get(i).getData()));
+		// Send them one by one
+		for (int i = 0; i < chunks.length; i++) {
+			// Save metadata
+			// TODO: Dont forget to change arguments
+			mdbChannel.send(Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, i, repDeg, chunks[i].getData()));
 		}
-		
-		/*try {
-			byte[] data = Files.readAllBytes(Paths.get(filePath));
-			byte[][] chunks = new byte[1][];
-			int i = 0;
-			for(int aux = 0;aux < data.length; aux+=64000){
-				if((aux+64000) < data.length) {
-					chunks[i]= Arrays.copyOfRange(data,aux,aux+64000);
-				}
-				else if((aux+64000) > data.length){
-					chunks[i]= Arrays.copyOfRange(data,aux,data.length);
-				}
-				else {
-					chunks[i]= Arrays.copyOfRange(data,aux,aux+64000);
-					chunks[i+1]= null;
-				}
-				i++;	
-			}
-			//send all chunks
-			for(int aux = 0;aux < chunks.length; aux++){
-				mdbChannel.send(chunks[aux]);
-			}
-			
-			//fodeu
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
+
 		return true;
 	}
 	
+	/** Thread that is constantly processing STORED messages */
+	Thread processStored = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			while (true) {
+				// Receive data if its there to be received
+				byte[] data = null;
+				do { data = mdbChannel.receive(Utils.STORED_INT); }
+				while (data == null);
+				
+				// Process it
+				String str = new String(data, 0, data.length);
+				String[] temp = str.split(" ");
+				
+				if (Integer.parseInt(temp[2]) != peerID)
+					System.out.println("Peer: " + temp[2] + " sent a " + temp[0]);
+				
+				// If valid reply
+			}
+		}
+	});
+	
+	/** Thread that is constantly processing PUTCHUNK messages */
+	Thread processPutchunk = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			while (true) {
+				// Receive data if its there to be received
+				byte[] data = null;
+				do { data = mdbChannel.receive(Utils.PUTCHUNK_INT); }
+				while (data == null);
+				
+				// Process it
+				String str = new String(data, 0, data.length);
+				String[] temp = str.split(" ");
+				
+				if (Integer.parseInt(temp[2]) != peerID)
+					System.out.println("Peer: " + temp[2] + " sent a " + temp[0]);
+				
+				// If valid reply
+			}
+		}
+	});
 }

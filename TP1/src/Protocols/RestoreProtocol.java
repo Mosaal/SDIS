@@ -12,8 +12,8 @@ public class RestoreProtocol extends Protocol {
 	 * Create a RestoreProtocol instance
 	 * @param mcChannel multicast channel all protocols subscribe to
 	 */
-	public RestoreProtocol(MCChannel mcChannel, MDRChannel mdrChannel) {
-		super(mcChannel);
+	public RestoreProtocol(String proVer, int peerID, MCChannel mcChannel, MDRChannel mdrChannel) {
+		super(proVer, peerID, mcChannel);
 		this.mdrChannel = mdrChannel;
 	}
 	

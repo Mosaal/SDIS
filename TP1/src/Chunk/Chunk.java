@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 import Utils.Utils;
 
@@ -43,8 +42,8 @@ public class Chunk {
 	 * Split a given file into chunks
 	 * @param filePath path of the file to be split
 	 */
-	public static ArrayList<Chunk> splitIntoChinks(String filePath) {
-		ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+	public static Chunk[] splitIntoChinks(String filePath, String fileID) {
+		Chunk[] chunks = null;
 		
 		try {
 			// Split file into array of bytes
@@ -53,9 +52,10 @@ public class Chunk {
 			int temp = (int) Math.ceil((double) data.length / (double) Utils.BUFFER_MAX_SIZE);
 			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
 			
+			chunks = new Chunk[temp];
 			for (int i = 0; i < temp; i++) {
 				bis.read(buf);
-				chunks.add(new Chunk(i, "lol", buf));
+				chunks[i] = new Chunk(i, fileID, buf);
 				buf = new byte[Utils.BUFFER_MAX_SIZE];
 			}
 			

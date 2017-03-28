@@ -8,8 +8,8 @@ public class ReclaimProtocol extends Protocol {
 	 * Creates a ReclaimProtocol instance
 	 * @param mcChannel multicast control channel all protocols subscribe to
 	 */
-	public ReclaimProtocol(MCChannel mcChannel) {
-		super(mcChannel);
+	public ReclaimProtocol(String proVer, int peerID, MCChannel mcChannel) {
+		super(proVer, peerID, mcChannel);
 	}
 	
 	// Instance methods

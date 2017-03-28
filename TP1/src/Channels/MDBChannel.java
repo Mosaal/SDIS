@@ -2,7 +2,6 @@ package Channels;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 
 import Utils.Utils;
 
@@ -18,21 +17,10 @@ public class MDBChannel extends MChannel {
 		mcastThread.start();
 	}
 	
-	/**
-	 * 
-	 * @param message
-	 * @return
-	 */
-	public boolean send(byte[] message) {
-		try { dataSocket.send(new DatagramPacket(message, message.length, InetAddress.getByName(ipAddress), port)); }
-		catch (IOException e) { return false; }
-		return true;
-	}
-	
+	/** Thread that is constantly listening for PUTCHUNK type messages */
 	Thread mcastThread = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			System.out.println("I started on the mdb channel...");
 			while (true) {
 				try {
 					// Receive packet
@@ -43,12 +31,9 @@ public class MDBChannel extends MChannel {
 					byte[] data = packet.getData();
 					String str = new String(data, 0, packet.getLength());
 					
-					System.out.println(str);
-					// Process string and its data
-					if (str.contains(Utils.PUTCHUNK_STRING)) {
-						
-					}
-					
+					// Parse string and its data
+					if (str.contains(Utils.PUTCHUNK_STRING))
+						messageQueue.get(Utils.PUTCHUNK_INT).add(data);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

@@ -11,7 +11,6 @@ public class Utils {
 	public static final int BACKUP_INT = 3;
 	public static final int DELETE_INT = 4;
 	public static final int RECLAIM_INT = 5;
-	public static final int BUFFER_MAX_SIZE = 64000;
 	
 	public static final String STATE_STRING = "STATE";
 	public static final String RESTORE_STRING = "RESTORE";
@@ -19,15 +18,24 @@ public class Utils {
 	public static final String DELETE_STRING = "DELETE";
 	public static final String RECLAIM_STRING = "RECLAIM";
 	
+	public static final int PUTCHUNK_INT = 0;
+	public static final int STORED_INT = 1;
+	public static final int GETCHUNK_INT = 2;
+	public static final int CHUNK_INT = 3;
+	public static final int REMOVED_INT = 5;
+	
 	public static final String PUTCHUNK_STRING = "PUTCHUNK";
 	public static final String STORED_STRING = "STORED";
 	public static final String GETCHUNK_STRING = "GETCHUNK";
 	public static final String CHUNK_STRING = "CHUNK";
 	public static final String REMOVED_STRING = "REMOVED";
 	
+	public static final int NUMBER_OF_TYPES = 6;
+	public static final int BUFFER_MAX_SIZE = 64000;
+	
 	// Static methods
 	/** Returns a random number between 0 and 400 */
-	public static int randomDelay() { return new Random().nextInt(401); }
+	public static int randomDelay() { return new Random().nextInt(400); }
 	
 	/**
 	 * Checks if a file with a given path exists
@@ -80,7 +88,7 @@ public class Utils {
 		
 		byte[] temp = header.getBytes();
 		byte[] sep = new byte[] { 0xD, 0xA };
-		byte[] message = new byte[header.getBytes().length + 2 + body.length];
+		byte[] message = new byte[header.getBytes().length + sep.length + body.length];
 		
 		System.arraycopy(temp, 0, message, 0, temp.length);
 		System.arraycopy(sep, 0, message, temp.length, sep.length);

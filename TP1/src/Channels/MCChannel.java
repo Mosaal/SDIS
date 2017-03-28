@@ -17,11 +17,12 @@ public class MCChannel extends MChannel {
 		mcastThread.start();
 	}
 	
+	/**
+	 * Thread that is constantly listening for STORED, GETCHUNK, DELETE and REMOVED type messages
+	 */
 	Thread mcastThread = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			System.out.println("I started on the mc channel...");
-			
 			while (true) {
 				try {
 					// Receive packet
@@ -33,15 +34,14 @@ public class MCChannel extends MChannel {
 					String str = new String(data, 0, packet.getLength());
 					
 					// Process string and its data
-					if (str.contains(Utils.STORED_STRING)) {
-						
-					} else if (str.contains(Utils.GETCHUNK_STRING)) {
-						
-					} else if (str.contains(Utils.DELETE_STRING)) {
-						
-					} else if (str.contains(Utils.REMOVED_STRING)) {
-						
-					}
+					if (str.contains(Utils.STORED_STRING))
+						messageQueue.get(Utils.STORED_INT).add(data);
+					else if (str.contains(Utils.GETCHUNK_STRING))
+						messageQueue.get(Utils.GETCHUNK_INT).add(data);
+					else if (str.contains(Utils.DELETE_STRING))
+						messageQueue.get(Utils.DELETE_INT).add(data);
+					else if (str.contains(Utils.REMOVED_STRING))
+						messageQueue.get(Utils.REMOVED_INT).add(data);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

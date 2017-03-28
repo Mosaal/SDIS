@@ -17,10 +17,12 @@ public class MDRChannel extends MChannel {
 		mcastThread.start();
 	}
 	
+	/**
+	 * Thread that is constantly listening for CHUNK type messages
+	 */
 	Thread mcastThread = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			System.out.println("I started on the mdr channel...");
 			while (true) {
 				try {
 					// Receive packet
@@ -32,9 +34,8 @@ public class MDRChannel extends MChannel {
 					String str = new String(data, 0, packet.getLength());
 					
 					// Process string and its data
-					if (str.contains(Utils.CHUNK_STRING)) {
-						
-					}
+					if (str.contains(Utils.CHUNK_STRING))
+						messageQueue.get(Utils.CHUNK_INT).add(data);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
