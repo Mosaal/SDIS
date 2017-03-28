@@ -34,7 +34,7 @@ public class MCChannel extends MChannel {
 					
 					// Process string and its data
 					if (str.contains(Utils.STORED_STRING)) {
-						
+						System.out.println("questa merda");
 					} else if (str.contains(Utils.GETCHUNK_STRING)) {
 						
 					} else if (str.contains(Utils.DELETE_STRING)) {

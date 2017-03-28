@@ -1,5 +1,7 @@
 package Chunk;
 
+import java.util.LinkedList;
+
 public class Chunk {
 
 	// Instance variables
@@ -28,4 +30,9 @@ public class Chunk {
 
 	/** Returns the data array */
 	public final byte[] getData() { return data; }
+	
+	public static LinkedList<Chunk> divideIntoChinks(String filePath) {
+		LinkedList<Chunk> chunks = new LinkedList<Chunk>();
+		return chunks;
+	}
 }
