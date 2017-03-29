@@ -1,6 +1,12 @@
 package Utils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class Utils {
@@ -30,7 +36,6 @@ public class Utils {
 	public static final String CHUNK_STRING = "CHUNK";
 	public static final String REMOVED_STRING = "REMOVED";
 	
-	public static final int NUMBER_OF_TYPES = 6;
 	public static final int BUFFER_MAX_SIZE = 64000;
 	
 	// Static methods
@@ -61,6 +66,40 @@ public class Utils {
 		try { Double.parseDouble(str); }
 		catch (NumberFormatException e) { return false; }
 		return true;
+	}
+	
+	/**
+	 * Split a given file into chunks
+	 * @param filePath path of the file to be split
+	 */
+	public static LinkedList<byte[]> splitIntoChinks(String filePath) {
+		LinkedList<byte[]> chunks = new LinkedList<byte[]>();
+		
+		try {
+			byte[] buf = null;
+			byte[] data = Files.readAllBytes(Paths.get(filePath));
+			int totalChunks = (int) Math.ceil((double) data.length / (double) Utils.BUFFER_MAX_SIZE);
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
+			
+			int holder = data.length;
+			for (int i = 0; i < totalChunks; i++) {
+				if (holder < Utils.BUFFER_MAX_SIZE) {
+					buf = new byte[holder];
+				} else {
+					holder -= Utils.BUFFER_MAX_SIZE;
+					buf = new byte[Utils.BUFFER_MAX_SIZE];
+				}
+				
+				bis.read(buf);
+				chunks.add(buf);
+			}
+			
+			bis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return chunks;
 	}
 	
 	/**

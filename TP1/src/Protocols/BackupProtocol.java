@@ -1,8 +1,9 @@
 package Protocols;
 
+import java.util.LinkedList;
+
 import Channels.MCChannel;
 import Channels.MDBChannel;
-import Chunk.Chunk;
 import Utils.Utils;
 
 public class BackupProtocol extends Protocol {
@@ -12,7 +13,10 @@ public class BackupProtocol extends Protocol {
 	
 	/**
 	 * Creates a BackupProtocol instance
+	 * @param proVer protocol version
+	 * @param peerID the ID of the Peer
 	 * @param mcChannel multicast control channel all protocols subscribe to
+	 * @param mdbChannel multicast data backup channel this protocol subscribes to
 	 */
 	public BackupProtocol(String proVer, int peerID, MCChannel mcChannel, MDBChannel mdbChannel) {
 		super(proVer, peerID, mcChannel);
@@ -33,18 +37,15 @@ public class BackupProtocol extends Protocol {
 	 */
 	public boolean backupFile(String filePath, int repDeg) {
 		// Get file ID
-		// TODO: apply SHA256 to some bit string
 		String fileID = "lol";
 		
 		// Separate data on chunks
-		Chunk[] chunks = Chunk.splitIntoChinks(filePath, fileID);
+		LinkedList<byte[]> chunks = Utils.splitIntoChinks(filePath);
 		
 		// Send them one by one
-		// int retries = 0;
 		int waitInterval = 1000;
-		
-		for (int i = 0; i < chunks.length; i++) {
-			mdbChannel.send(Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, i, repDeg, chunks[i].getData()));
+		for (int i = 0; i < chunks.size(); i++) {
+			mdbChannel.send(Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, i, repDeg, chunks.get(i)));
 		
 			try {
 				Thread.sleep(waitInterval);
@@ -56,7 +57,7 @@ public class BackupProtocol extends Protocol {
 		return true;
 	}
 	
-	/** Thread that is constantly processing STORED messages */
+	/** Thread that is constantly processing STORED type messages */
 	Thread processStored = new Thread(new Runnable() {
 		@Override
 		public void run() {
@@ -78,7 +79,7 @@ public class BackupProtocol extends Protocol {
 		}
 	});
 	
-	/** Thread that is constantly processing PUTCHUNK messages */
+	/** Thread that is constantly processing PUTCHUNK type messages */
 	Thread processPutchunk = new Thread(new Runnable() {
 		@Override
 		public void run() {
