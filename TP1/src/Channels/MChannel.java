@@ -12,8 +12,8 @@ public abstract class MChannel {
 
 	// Instance variables
 	protected byte[] buf;
-	protected final int port;
-	protected final String ipAddress;
+	protected int port;
+	protected String ipAddress;
 	
 	// Multicast variables
 	protected DatagramPacket packet;
@@ -25,7 +25,7 @@ public abstract class MChannel {
 	 * @param ipAddress IP address for the multicast socket
 	 * @param port port number for the multicast socket
 	 */
-	public MChannel(final String ipAddress, final int port) {
+	public MChannel(String ipAddress, int port) {
 		this.port = port;
 		this.ipAddress = ipAddress;
 		buf = new byte[Utils.BUFFER_MAX_SIZE];
@@ -46,10 +46,10 @@ public abstract class MChannel {
 	public byte[] getBuffer() { return buf; }
 	
 	/** Returns the port number the multicast socket is on */
-	public final int getPort() { return port; }
+	public int getPort() { return port; }
 	
 	/** Returns the IP address */
-	public final String getAddress() { return ipAddress; }
+	public String getAddress() { return ipAddress; }
 	
 	/** Returns the data packet */
 	public DatagramPacket getPacket() { return packet; }

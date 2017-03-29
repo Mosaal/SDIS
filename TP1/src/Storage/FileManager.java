@@ -33,5 +33,5 @@ public class FileManager {
 	
 	// Instance methods
 	/** Returns the ID */
-	public final int getPeerID() { return peerID; }
+	public int getPeerID() { return peerID; }
 }

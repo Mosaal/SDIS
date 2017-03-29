@@ -17,7 +17,7 @@ public class MCChannel extends MChannel {
 	 * @param ipAddress IP address for the multicast socket
 	 * @param port port number for the multicast socket
 	 */
-	public MCChannel(final String ipAddress, final int port) {
+	public MCChannel(String ipAddress, int port) {
 		super(ipAddress, port);
 		
 		messageQueue = new HashMap<Integer, LinkedList<byte[]>>();

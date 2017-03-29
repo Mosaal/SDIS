@@ -16,7 +16,7 @@ public class MDRChannel extends MChannel {
 	 * @param ipAddress IP address for the multicast socket
 	 * @param port port number for the multicast socket
 	 */
-	public MDRChannel(final String ipAddress, final int port) {
+	public MDRChannel(String ipAddress, int port) {
 		super(ipAddress, port);
 		messageQueue = new LinkedList<byte[]>();
 		mcastThread.start();
