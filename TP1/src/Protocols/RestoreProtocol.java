@@ -32,13 +32,13 @@ public class RestoreProtocol extends Protocol {
 		return true;
 	}
 	
-	/** Thread that is constantly processing CHUNK type messages */
+	/** Thread that is constantly processing GETCHUNK type messages */
 	Thread processChunk = new Thread(new Runnable() {
 		@Override
 		public void run() {
 			// Receive data if its there to be received
 			byte[] data = null;
-			do { data = mcChannel.receive(Utils.CHUNK_INT); }
+			do { data = mcChannel.receive(Utils.GETCHUNK_INT); }
 			while (data == null);
 			
 			// Process it
@@ -52,7 +52,7 @@ public class RestoreProtocol extends Protocol {
 		}
 	});
 	
-	/** Thread that is constantly processing GETCHUNK type messages */
+	/** Thread that is constantly processing CHUNK type messages */
 	Thread processGetchunk = new Thread(new Runnable() {
 		@Override
 		public void run() {

@@ -1,5 +1,9 @@
 package Protocols;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 
 import Channels.MCChannel;
@@ -37,21 +41,30 @@ public class BackupProtocol extends Protocol {
 	 */
 	public boolean backupFile(String filePath, int repDeg) {
 		// Get file ID
-		String fileID = "lol";
+		String fileID = null;
+		try { fileID = filePath + Files.getOwner(Paths.get(filePath)).getName() + new File(filePath).lastModified(); }
+		catch (IOException e1) { e1.printStackTrace(); }
+		fileID = Utils.encryptString(fileID);
 		
-		// Separate data on chunks
+		// Split file into chunks
 		LinkedList<byte[]> chunks = Utils.splitIntoChinks(filePath);
 		
 		// Send them one by one
 		int waitInterval = 1000;
 		for (int i = 0; i < chunks.size(); i++) {
-			mdbChannel.send(Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, i, repDeg, chunks.get(i)));
-		
-			try {
-				Thread.sleep(waitInterval);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			// Create message and send it
+			byte[] msg = Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, i, repDeg, chunks.get(i));
+			mdbChannel.send(msg);
+			
+			// Wait for a few seconds
+			try { Thread.sleep(waitInterval); }
+			catch (InterruptedException e) { e.printStackTrace(); }
+			
+			// Check if actual replication degree matches the desired one
+			// if (currRepDeg < repDeg && retries < 5)
+			// { i--; retries++; waitInterval *= 2; }
+			// else
+			// { retries = 0; currRepDeg = 0; waitInterval = 1000; }
 		}
 
 		return true;

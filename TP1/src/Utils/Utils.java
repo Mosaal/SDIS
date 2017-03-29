@@ -4,8 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -69,6 +69,30 @@ public class Utils {
 	}
 	
 	/**
+	 * Applies SHA256, a cryptographic hash function, to some bit string
+	 * @param someBitString the bit string to be encrypted
+	 */
+	public static String encryptString(String someBitString) {
+		String ret = null;
+		
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			digest.update(someBitString.getBytes());
+			byte[] bytes = digest.digest();
+			
+			StringBuffer hexString = new StringBuffer();
+			for (int i = 0; i < bytes.length; i++)
+				hexString.append(Integer.toHexString(0xFF & bytes[i]));
+			
+			ret = hexString.toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		
+		return ret;
+	}
+	
+	/**
 	 * Split a given file into chunks
 	 * @param filePath path of the file to be split
 	 */
@@ -77,22 +101,25 @@ public class Utils {
 		
 		try {
 			byte[] buf = null;
-			byte[] data = Files.readAllBytes(Paths.get(filePath));
-			int totalChunks = (int) Math.ceil((double) data.length / (double) Utils.BUFFER_MAX_SIZE);
+			long fileSize = new File(filePath).length();
+			int totalChunks = (int) Math.ceil((double) fileSize / (double) BUFFER_MAX_SIZE);
 			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
 			
-			int holder = data.length;
+			long holder = fileSize;
 			for (int i = 0; i < totalChunks; i++) {
-				if (holder < Utils.BUFFER_MAX_SIZE) {
-					buf = new byte[holder];
+				if (holder < BUFFER_MAX_SIZE) {
+					buf = new byte[(int) holder];
 				} else {
-					holder -= Utils.BUFFER_MAX_SIZE;
-					buf = new byte[Utils.BUFFER_MAX_SIZE];
+					holder -= BUFFER_MAX_SIZE;
+					buf = new byte[BUFFER_MAX_SIZE];
 				}
 				
 				bis.read(buf);
 				chunks.add(buf);
 			}
+			
+			if (fileSize % BUFFER_MAX_SIZE == 0)
+				chunks.add(new byte[] {});
 			
 			bis.close();
 		} catch (IOException e) {
