@@ -2,10 +2,15 @@ package Channels;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 import Utils.Utils;
 
 public class MCChannel extends MChannel {
+	
+	// Instance variables
+	private HashMap<Integer, LinkedList<byte[]>> messageQueue;
 	
 	/**
 	 * Creates a MCChannel instance
@@ -14,12 +19,26 @@ public class MCChannel extends MChannel {
 	 */
 	public MCChannel(final String ipAddress, final int port) {
 		super(ipAddress, port);
+		
+		messageQueue = new HashMap<Integer, LinkedList<byte[]>>();
+		messageQueue.put(Utils.STORED_INT, new LinkedList<byte[]>());
+		messageQueue.put(Utils.GETCHUNK_INT, new LinkedList<byte[]>());
+		messageQueue.put(Utils.DELETE_INT, new LinkedList<byte[]>());
+		messageQueue.put(Utils.REMOVED_INT, new LinkedList<byte[]>());
+		
 		mcastThread.start();
 	}
 	
+	// Instance methods
 	/**
-	 * Thread that is constantly listening for STORED, GETCHUNK, DELETE and REMOVED type messages
+	 * Returns a message from the head of the queue depending on the protocol
+	 * @param protocol protocol trying to retrieve a message
 	 */
+	public synchronized byte[] receive(int protocol) {
+		return (messageQueue.get(protocol).size() > 0) ? messageQueue.get(protocol).removeFirst() : null;
+	}
+	
+	/** Thread that is constantly listening for STORED, GETCHUNK, DELETE and REMOVED type messages */
 	Thread mcastThread = new Thread(new Runnable() {
 		@Override
 		public void run() {

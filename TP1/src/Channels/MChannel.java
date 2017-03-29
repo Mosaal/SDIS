@@ -5,8 +5,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 import Utils.Utils;
 
@@ -16,7 +14,6 @@ public abstract class MChannel {
 	protected byte[] buf;
 	protected final int port;
 	protected final String ipAddress;
-	protected HashMap<Integer, LinkedList<byte[]>> messageQueue;
 	
 	// Multicast variables
 	protected DatagramPacket packet;
@@ -32,10 +29,6 @@ public abstract class MChannel {
 		this.port = port;
 		this.ipAddress = ipAddress;
 		buf = new byte[Utils.BUFFER_MAX_SIZE];
-		
-		messageQueue = new HashMap<Integer, LinkedList<byte[]>>();
-		for (int i = 0; i < Utils.NUMBER_OF_TYPES; i++)
-			messageQueue.put(i, new LinkedList<byte[]>());
 		
 		try {
 			dataSocket = new DatagramSocket();
@@ -67,9 +60,6 @@ public abstract class MChannel {
 	/** Returns the multicast socket */
 	public MulticastSocket getMCastSocket() { return mcastSocket; }
 	
-	/** Returns the message queue */
-	public HashMap<Integer, LinkedList<byte[]>> getMessageQueue() { return messageQueue; }
-	
 	/**
 	 * Sends a given message to the corresponding channel
 	 * @param message message to be sent
@@ -78,13 +68,5 @@ public abstract class MChannel {
 		try { dataSocket.send(new DatagramPacket(message, message.length, InetAddress.getByName(ipAddress), port)); }
 		catch (IOException e) { return false; }
 		return true;
-	}
-	
-	/**
-	 * Receives a message depending on the protocol
-	 * @param protocol protocol trying to retrieve a message
-	 */
-	public byte[] receive(int protocol) {
-		return (messageQueue.get(protocol).size() > 0) ? messageQueue.get(protocol).removeFirst() : null;
 	}
 }

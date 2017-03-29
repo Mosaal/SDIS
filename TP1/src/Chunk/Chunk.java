@@ -47,16 +47,23 @@ public class Chunk {
 		
 		try {
 			// Split file into array of bytes
-			byte[] buf = new byte[Utils.BUFFER_MAX_SIZE];
+			byte[] buf = null;
 			byte[] data = Files.readAllBytes(Paths.get(filePath));
 			int temp = (int) Math.ceil((double) data.length / (double) Utils.BUFFER_MAX_SIZE);
 			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
 			
+			int holder = data.length;
 			chunks = new Chunk[temp];
 			for (int i = 0; i < temp; i++) {
+				if (holder < Utils.BUFFER_MAX_SIZE) {
+					buf = new byte[holder];
+				} else {
+					holder -= Utils.BUFFER_MAX_SIZE;
+					buf = new byte[Utils.BUFFER_MAX_SIZE];
+				}
+				
 				bis.read(buf);
 				chunks[i] = new Chunk(i, fileID, buf);
-				buf = new byte[Utils.BUFFER_MAX_SIZE];
 			}
 			
 			bis.close();

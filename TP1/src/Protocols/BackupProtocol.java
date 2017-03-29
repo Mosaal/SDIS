@@ -40,10 +40,17 @@ public class BackupProtocol extends Protocol {
 		Chunk[] chunks = Chunk.splitIntoChinks(filePath, fileID);
 		
 		// Send them one by one
+		// int retries = 0;
+		int waitInterval = 1000;
+		
 		for (int i = 0; i < chunks.length; i++) {
-			// Save metadata
-			// TODO: Dont forget to change arguments
 			mdbChannel.send(Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, i, repDeg, chunks[i].getData()));
+		
+			try {
+				Thread.sleep(waitInterval);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return true;
@@ -56,17 +63,17 @@ public class BackupProtocol extends Protocol {
 			while (true) {
 				// Receive data if its there to be received
 				byte[] data = null;
-				do { data = mdbChannel.receive(Utils.STORED_INT); }
+				do { data = mcChannel.receive(Utils.STORED_INT); }
 				while (data == null);
 				
 				// Process it
 				String str = new String(data, 0, data.length);
 				String[] temp = str.split(" ");
 				
-				if (Integer.parseInt(temp[2]) != peerID)
-					System.out.println("Peer: " + temp[2] + " sent a " + temp[0]);
-				
-				// If valid reply
+				// Check who it belongs to
+				if (Integer.parseInt(temp[2]) != peerID) {
+					
+				}
 			}
 		}
 	});
@@ -78,17 +85,17 @@ public class BackupProtocol extends Protocol {
 			while (true) {
 				// Receive data if its there to be received
 				byte[] data = null;
-				do { data = mdbChannel.receive(Utils.PUTCHUNK_INT); }
+				do { data = mdbChannel.receive(); }
 				while (data == null);
 				
 				// Process it
 				String str = new String(data, 0, data.length);
 				String[] temp = str.split(" ");
 				
-				if (Integer.parseInt(temp[2]) != peerID)
-					System.out.println("Peer: " + temp[2] + " sent a " + temp[0]);
-				
-				// If valid reply
+				// Check who it belongs to
+				if (Integer.parseInt(temp[2]) != peerID) {
+					
+				}
 			}
 		}
 	});
