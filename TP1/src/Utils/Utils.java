@@ -145,13 +145,10 @@ public class Utils {
 		String header = type + " " + version + " " + senderID + " " + fileID + " ";
 		
 		if (type.equals(PUTCHUNK_STRING)) {
-			header += chunkNo + " " + repDeg + " "; // CRLFx2 and Body
-		} else if (type.equals(CHUNK_STRING)) {
-			header += chunkNo + " "; // CRLFx2 and Body
-		} else if (type.equals(DELETE_STRING)) {
-			header += ""; // CRLFx2
-		} else if (type.equals(STORED_STRING) || type.equals(GETCHUNK_STRING) || type.equals(REMOVED_STRING)) {
-			header += chunkNo + " "; // CRLFx2
+			header += chunkNo + " " + repDeg + " ";
+		} else if (type.equals(CHUNK_STRING) || type.equals(STORED_STRING)
+				|| type.equals(GETCHUNK_STRING) || type.equals(REMOVED_STRING)) {
+			header += chunkNo + " ";
 		}
 		
 		byte[] temp = header.getBytes();

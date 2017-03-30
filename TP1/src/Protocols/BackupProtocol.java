@@ -1,9 +1,6 @@
 package Protocols;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -49,10 +46,8 @@ public class BackupProtocol extends Protocol {
 	 */
 	public boolean backupFile(String filePath, int repDeg) {
 		// Get file ID
-		String fileID = null;
-		try { fileID = filePath + Files.getOwner(Paths.get(filePath)).getName() + new File(filePath).lastModified(); }
-		catch (IOException e1) { e1.printStackTrace(); }
-		fileID = Utils.encryptString(fileID);
+		File file = new File(filePath);
+		String fileID = Utils.encryptString(file.getName() + file.length() + file.lastModified());
 
 		// Split file into chunks
 		LinkedList<byte[]> chunks = Utils.splitIntoChinks(filePath);
@@ -95,6 +90,7 @@ public class BackupProtocol extends Protocol {
 		@Override
 		public void run() {
 			while (true) {
+				// TODO: once it writes to the disk things will be handled differently
 				// Receive data if its there to be received
 				String str = null;
 				do { str = mcChannel.receive(Utils.STORED_INT); }
@@ -124,6 +120,7 @@ public class BackupProtocol extends Protocol {
 	Thread processPutchunk = new Thread(new Runnable() {
 		@Override
 		public void run() {
+			// TODO: once it writes to the disk things will be handled differently
 			// Store what chunks from what files have been stored - FileID -> LinkedList(int) where int = chunkNo
 			HashMap<String, LinkedList<Integer>> putChunkConfirmations = new HashMap<String, LinkedList<Integer>>();
 
