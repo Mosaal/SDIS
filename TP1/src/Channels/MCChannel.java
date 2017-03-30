@@ -10,7 +10,7 @@ import Utils.Utils;
 public class MCChannel extends MChannel {
 	
 	// Instance variables
-	private HashMap<Integer, LinkedList<byte[]>> messageQueue;
+	private HashMap<Integer, LinkedList<String>> messageQueue;
 	
 	/**
 	 * Creates a MCChannel instance
@@ -20,11 +20,11 @@ public class MCChannel extends MChannel {
 	public MCChannel(final String ipAddress, final int port) {
 		super(ipAddress, port);
 		
-		messageQueue = new HashMap<Integer, LinkedList<byte[]>>();
-		messageQueue.put(Utils.STORED_INT, new LinkedList<byte[]>());
-		messageQueue.put(Utils.GETCHUNK_INT, new LinkedList<byte[]>());
-		messageQueue.put(Utils.DELETE_INT, new LinkedList<byte[]>());
-		messageQueue.put(Utils.REMOVED_INT, new LinkedList<byte[]>());
+		messageQueue = new HashMap<Integer, LinkedList<String>>();
+		messageQueue.put(Utils.STORED_INT, new LinkedList<String>());
+		messageQueue.put(Utils.GETCHUNK_INT, new LinkedList<String>());
+		messageQueue.put(Utils.DELETE_INT, new LinkedList<String>());
+		messageQueue.put(Utils.REMOVED_INT, new LinkedList<String>());
 		
 		mcastThread.start();
 	}
@@ -34,7 +34,7 @@ public class MCChannel extends MChannel {
 	 * Returns a message from the head of the queue depending on the protocol
 	 * @param protocol protocol trying to retrieve a message
 	 */
-	public synchronized byte[] receive(int protocol) {
+	public synchronized String receive(int protocol) {
 		return (messageQueue.get(protocol).size() > 0) ? messageQueue.get(protocol).removeFirst() : null;
 	}
 	
@@ -49,18 +49,17 @@ public class MCChannel extends MChannel {
 					mcastSocket.receive(packet);
 					
 					// Get data and turn it into string
-					byte[] data = packet.getData();
-					String str = new String(data, 0, packet.getLength());
+					String str = new String(packet.getData(), 0, packet.getLength());
 					
-					// Process string and its data
+					// Store it in its corresponding queue
 					if (str.contains(Utils.STORED_STRING))
-						messageQueue.get(Utils.STORED_INT).add(data);
+						messageQueue.get(Utils.STORED_INT).add(str);
 					else if (str.contains(Utils.GETCHUNK_STRING))
-						messageQueue.get(Utils.GETCHUNK_INT).add(data);
+						messageQueue.get(Utils.GETCHUNK_INT).add(str);
 					else if (str.contains(Utils.DELETE_STRING))
-						messageQueue.get(Utils.DELETE_INT).add(data);
+						messageQueue.get(Utils.DELETE_INT).add(str);
 					else if (str.contains(Utils.REMOVED_STRING))
-						messageQueue.get(Utils.REMOVED_INT).add(data);
+						messageQueue.get(Utils.REMOVED_INT).add(str);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

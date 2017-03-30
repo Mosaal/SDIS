@@ -15,28 +15,27 @@ public class ReclaimProtocol extends Protocol {
 		super(proVer, peerID, mcChannel);
 		processReclaim.start();
 	}
-	
+
 	// Instance methods
 	public boolean reclaimSpace(int spaceToReclaim) {
 		return true;
 	}
-	
+
 	/** Thread that is constantly processing REMOVED type messages */
 	Thread processReclaim = new Thread(new Runnable() {
 		@Override
 		public void run() {
 			// Receive data if its there to be received
-			byte[] data = null;
-			do { data = mcChannel.receive(Utils.REMOVED_INT); }
-			while (data == null);
-			
-			// Process it
-			String str = new String(data, 0, data.length);
-			String[] temp = str.split(" ");
-			
+			String str = null;
+			do { str = mcChannel.receive(Utils.REMOVED_INT); }
+			while (str == null);
+
+			// Split it
+			String[] args = str.split(" ");
+
 			// Check who it belongs to
-			if (Integer.parseInt(temp[2]) != peerID) {
-				
+			if (Integer.parseInt(args[2]) != peerID) {
+
 			}
 		}
 	});

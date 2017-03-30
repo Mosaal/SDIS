@@ -36,7 +36,9 @@ public class Utils {
 	public static final String CHUNK_STRING = "CHUNK";
 	public static final String REMOVED_STRING = "REMOVED";
 	
+	public static final int MAX_RETRIES = 5;
 	public static final int BUFFER_MAX_SIZE = 64000;
+	public static final int INITIAL_WAIT_INTERVAL = 1000;
 	
 	// Static methods
 	/** Returns a random number between 0 and 400 */

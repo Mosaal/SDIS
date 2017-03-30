@@ -26,16 +26,15 @@ public class DeleteProtocol extends Protocol {
 		@Override
 		public void run() {
 			// Receive data if its there to be received
-			byte[] data = null;
-			do { data = mcChannel.receive(Utils.DELETE_INT); }
-			while (data == null);
+			String str = null;
+			do { str = mcChannel.receive(Utils.DELETE_INT); }
+			while (str == null);
 			
-			// Process it
-			String str = new String(data, 0, data.length);
-			String[] temp = str.split(" ");
+			// Split it
+			String[] args = str.split(" ");
 			
 			// Check who it belongs to
-			if (Integer.parseInt(temp[2]) != peerID) {
+			if (Integer.parseInt(args[2]) != peerID) {
 				
 			}
 		}

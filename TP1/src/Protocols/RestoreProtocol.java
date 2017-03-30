@@ -8,7 +8,7 @@ public class RestoreProtocol extends Protocol {
 
 	// Instance variables
 	private MDRChannel mdrChannel;
-	
+
 	/**
 	 * Creates a RestoreProtocol instance
 	 * @param proVer protocol version
@@ -19,54 +19,52 @@ public class RestoreProtocol extends Protocol {
 	public RestoreProtocol(String proVer, int peerID, MCChannel mcChannel, MDRChannel mdrChannel) {
 		super(proVer, peerID, mcChannel);
 		this.mdrChannel = mdrChannel;
-		
+
 		processChunk.start();
 		processGetchunk.start();
 	}
-	
+
 	// Instance methods
 	/** Returns the multicast data recovery channel */
 	public MDRChannel getMDRChannel() { return mdrChannel; }
-	
+
 	public boolean restoreFile(String fileName) {
 		return true;
 	}
-	
+
 	/** Thread that is constantly processing GETCHUNK type messages */
 	Thread processChunk = new Thread(new Runnable() {
 		@Override
 		public void run() {
 			// Receive data if its there to be received
-			byte[] data = null;
-			do { data = mcChannel.receive(Utils.GETCHUNK_INT); }
-			while (data == null);
-			
-			// Process it
-			String str = new String(data, 0, data.length);
-			String[] temp = str.split(" ");
-			
+			String str = null;
+			do { str = mcChannel.receive(Utils.GETCHUNK_INT); }
+			while (str == null);
+
+			// Split it
+			String[] args = str.split(" ");
+
 			// Check who it belongs to
-			if (Integer.parseInt(temp[2]) != peerID) {
-				
+			if (Integer.parseInt(args[2]) != peerID) {
+
 			}
 		}
 	});
-	
+
 	/** Thread that is constantly processing CHUNK type messages */
 	Thread processGetchunk = new Thread(new Runnable() {
 		@Override
 		public void run() {
 			// Receive data if its there to be received
-			byte[] data = null;
-			do { data = mdrChannel.receive(); }
-			while (data == null);
+			String str = null;
+			do { str = mdrChannel.receive(); }
+			while (str == null);
 			
-			// Process it
-			String str = new String(data, 0, data.length);
-			String[] temp = str.split(" ");
+			// Split it
+			String[] args = str.split(" ");
 			
 			// Check who it belongs to
-			if (Integer.parseInt(temp[2]) != peerID) {
+			if (Integer.parseInt(args[2]) != peerID) {
 				
 			}
 		}

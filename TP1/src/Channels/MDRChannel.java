@@ -9,7 +9,7 @@ import Utils.Utils;
 public class MDRChannel extends MChannel {
 
 	// Instance variables
-	private LinkedList<byte[]> messageQueue;
+	private LinkedList<String> messageQueue;
 
 	/**
 	 * Creates a MDRChannel instance
@@ -18,13 +18,13 @@ public class MDRChannel extends MChannel {
 	 */
 	public MDRChannel(final String ipAddress, final int port) {
 		super(ipAddress, port);
-		messageQueue = new LinkedList<byte[]>();
+		messageQueue = new LinkedList<String>();
 		mcastThread.start();
 	}
 
 	// Instance methods
 	/** Returns a message from the head of the queue */
-	public synchronized byte[] receive() {
+	public synchronized String receive() {
 		return (messageQueue.size() > 0) ? messageQueue.removeFirst() : null;
 	}
 
@@ -39,12 +39,11 @@ public class MDRChannel extends MChannel {
 					mcastSocket.receive(packet);
 
 					// Get data and turn it into string
-					byte[] data = packet.getData();
-					String str = new String(data, 0, packet.getLength());
+					String str = new String(packet.getData(), 0, packet.getLength());
 
 					// Process string and its data
 					if (str.contains(Utils.CHUNK_STRING))
-						messageQueue.add(data);
+						messageQueue.add(str);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
