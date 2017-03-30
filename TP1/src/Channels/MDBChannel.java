@@ -16,7 +16,7 @@ public class MDBChannel extends MChannel {
 	 * @param ipAddress IP address for the multicast socket
 	 * @param port port number for the multicast socket
 	 */
-	public MDBChannel(final String ipAddress, final int port) {
+	public MDBChannel(String ipAddress, int port) {
 		super(ipAddress, port);
 		messageQueue = new LinkedList<String>();
 		mcastThread.start();

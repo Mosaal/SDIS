@@ -141,7 +141,7 @@ public class Utils {
 	 * @param repDeg the replication degree
 	 * @param body the body of the message (if it has any)
 	 */
-	public static final byte[] createMessage(final String type, final String version, final int senderID, final String fileID, final int chunkNo, final int repDeg, final byte[] body) {
+	public static byte[] createMessage(String type, String version, int senderID, String fileID, int chunkNo, int repDeg, byte[] body) {
 		String header = type + " " + version + " " + senderID + " " + fileID + " ";
 		
 		if (type.equals(PUTCHUNK_STRING)) {
@@ -156,7 +156,7 @@ public class Utils {
 		
 		byte[] temp = header.getBytes();
 		byte[] sep = new byte[] { 0xD, 0xA };
-		byte[] message = new byte[header.getBytes().length + sep.length + body.length];
+		byte[] message = new byte[temp.length + sep.length + body.length];
 		
 		System.arraycopy(temp, 0, message, 0, temp.length);
 		System.arraycopy(sep, 0, message, temp.length, sep.length);
