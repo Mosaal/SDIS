@@ -1,6 +1,10 @@
 package Storage;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.LinkedList;
 
 public class FileManager {
 
@@ -8,6 +12,7 @@ public class FileManager {
 	private static final String PEER = "Peer#";
 	private static final String CHUNK = "Chunk#";
 	private static final String STORAGE = "Storage";
+	private static final String INFORMATION = "ChunkInformation.txt";
 
 	// Static methods
 	/**
@@ -24,28 +29,29 @@ public class FileManager {
 	 * |   |   |-Chunk#1 [FILE]<br>
 	 * |   |   |-...<br>
 	 * |   |-...<br>
+	 * |-ChunkInformation [FILE]<br>
 	 * |-<br>
 	 * 
 	 * @param peerID the name of the peer's parent directory
+	 * @throws IOException 
 	 */
-	public static void createPeerDirectory(int peerID) {
+	public static void createPeerDirectory(int peerID) throws IOException {
 		File parent = new File(PEER + Integer.toString(peerID));
 		
-		// Create directory if it doesn't exist
+		// Create main directory if it doesn't exist
 		if (!parent.exists() || !parent.isDirectory()) {
 			parent.mkdir();
 			
-			// Create Storage
+			// Create sub-directories and sub-files
 			new File(parent.getName() + "/" + STORAGE).mkdir();
-			
-			// Create the rest
+			new File(parent.getName() + "/" + INFORMATION).createNewFile();
 		} else {
-			// Check for Storage
+			// Check for sub-directories and sub-files
 			File storage = new File(parent.getName() + "/" + STORAGE);
-			if (!storage.exists() || !storage.isDirectory())
-				storage.mkdir();
+			if (!storage.exists() || !storage.isDirectory()) storage.mkdir();
 			
-			// Check for the rest
+			File info = new File(parent.getName() + "/" + INFORMATION);
+			if (!info.exists()) info.createNewFile();
 		}
 	}
 	
@@ -89,6 +95,52 @@ public class FileManager {
 	}
 	
 	/**
+	 * Restores a file with its given chunks
+	 * @param fileName name of the file to be restored
+	 * @param chunks list of byte arrays with the data of the file to be restored
+	 */
+	public static boolean restoreFile(String fileName, LinkedList<byte[]> chunks) {
+		try {
+			// Write each byte array to the file
+			FileOutputStream fos = new FileOutputStream(fileName);
+			
+			for (int i = 0; i < chunks.size(); i++)
+				fos.write(chunks.get(i));
+			
+			fos.close();
+		} catch (IOException e) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Retrieves a given chunk of a file
+	 * @param fileID ID of the file the chunk belongs to
+	 * @param chunkNo the number of the chunk to be retrieved
+	 */
+	public static byte[] getChunk(int peerID, String fileID, int chunkNo) {
+		// Get chunk file
+		String parentPath = PEER + Integer.toString(peerID) + "/" + STORAGE + "/" + fileID;
+		File file = new File(parentPath + "/" + CHUNK + Integer.toString(chunkNo));
+		
+		try {
+			// Create byte array and file reader
+			byte[] data = new byte[(int) file.length()];
+			FileInputStream fis = new FileInputStream(parentPath + "/" + CHUNK + Integer.toString(chunkNo));
+			
+			// Read file data
+			fis.read(data);
+			fis.close();
+			
+			return data;
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * Stored a given chunk in its corresponding storage
 	 * @param peerID the name of the peer's parent directory
 	 * @param fileID the ID of the file the chunk belongs to
@@ -102,15 +154,33 @@ public class FileManager {
 		// Check if file storage already exists
 		if (dir.exists() && dir.isDirectory()) {
 			// Add chunk file
-			File chunk = new File(parentPath + "/" + CHUNK + Integer.toString(chunkNo));
-			// TODO: Write data to the file
+			try {
+				// Create chunk name
+				String chunkName = parentPath + "/" + CHUNK + Integer.toString(chunkNo);
+				FileOutputStream fos = new FileOutputStream(chunkName);
+				
+				// Write data to file
+				fos.write(data);
+				fos.close();
+			} catch (IOException e) {
+				return false;
+			}
 		} else {
 			// Create it if it doesn't
-			dir.mkdir();
+			dir.mkdirs();
 			
 			// Add chunk file
-			File chunk = new File(parentPath + "/" + CHUNK + Integer.toString(chunkNo));
-			// TODO: Write data to the file
+			try {
+				// Create chunk name
+				String chunkName = parentPath + "/" + CHUNK + Integer.toString(chunkNo);
+				FileOutputStream fos = new FileOutputStream(chunkName);
+				
+				// Write data to file
+				fos.write(data);
+				fos.close();
+			} catch (IOException e) {
+				return false;
+			}
 		}
 		
 		return true;

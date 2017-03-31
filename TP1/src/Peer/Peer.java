@@ -90,7 +90,8 @@ public class Peer {
 		int tcpPort = Integer.parseInt(args[TCP]);
 		
 		// Create Peer's main directory
-		FileManager.createPeerDirectory(peerID);
+		try { FileManager.createPeerDirectory(peerID); }
+		catch (IOException e1) { e1.printStackTrace(); }
 
 		// Start Peer thread
 		Thread peerThread = new Thread(new PeerRunnable(proVer, peerID, tcpPort, mc, mdb, mdr));
