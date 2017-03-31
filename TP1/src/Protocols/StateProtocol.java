@@ -12,7 +12,7 @@ public class StateProtocol extends Protocol {
 	 */
 	public StateProtocol(String proVer, int peerID, MCChannel mcChannel) {
 		super(proVer, peerID, mcChannel);
-		processState.start();
+		// processState.start();
 	}
 	
 	// Instance methods
@@ -21,10 +21,10 @@ public class StateProtocol extends Protocol {
 	}
 	
 	/**  */
-	Thread processState = new Thread(new Runnable() {
-		@Override
-		public void run() {
-			// TODO: que caralho se faz aqui
-		}
-	});
+//	Thread processState = new Thread(new Runnable() {
+//		@Override
+//		public void run() {
+//			// TODO: que caralho se faz aqui
+//		}
+//	});
 }

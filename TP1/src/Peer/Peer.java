@@ -98,7 +98,7 @@ public class Peer {
 		peerThread.start();
 
 		// Give the user the option to cancel the Peer
-		System.out.println("Press the [Enter] key to stop executing...");
+		System.out.println("<Press the [Enter] key to stop executing>");
 		try { System.in.read(); } 
 		catch (IOException e) { e.printStackTrace(); }
 		

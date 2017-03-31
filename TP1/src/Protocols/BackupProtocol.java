@@ -69,8 +69,11 @@ public class BackupProtocol extends Protocol {
 			byte[] msg = Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, i, repDeg, chunks.get(i));
 			mdbChannel.send(msg);
 
+			// Info print
+			if (retries == 1)
+				System.out.println("[ BACKUP ] " + chunks.get(i).length + "B");
+			
 			// Wait for a few seconds
-			System.out.println("[ CHUNK #" + i + " ] " + chunks.get(i).length + " bytes sent");
 			try { Thread.sleep(waitInterval); }
 			catch (InterruptedException e) { e.printStackTrace(); }
 
@@ -86,6 +89,17 @@ public class BackupProtocol extends Protocol {
 			}
 		}
 
+		return true;
+	}
+	
+	/**
+	 * Backup a specified chunk of a file
+	 * @param filePath path of the file the chunk belongs to
+	 * @param chunkNo the number of the chunk
+	 */
+	public boolean backupChunk(String filePath, int chunkNo) {
+		
+		
 		return true;
 	}
 

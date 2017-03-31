@@ -39,8 +39,11 @@ public class DeleteProtocol extends Protocol {
 		// Get file ID
 		File file = new File(fileName);
 		String fileID = Utils.encryptString(file.getName() + file.length() + file.lastModified());
+		// TODO: not suposed to generate ID again
+		// Must store them in a file in relation to the file name
 
 		// Send a DELETE type message 5 times
+		System.out.println("[ DELETE ] " + fileName);
 		for (int i = 0; i < Utils.MAX_RETRIES; i++) {
 			// Create message and send it
 			byte[] msg = Utils.createMessage(Utils.DELETE_STRING, proVer, peerID, fileID, i, 0, new byte[] {});

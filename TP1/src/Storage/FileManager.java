@@ -12,7 +12,7 @@ public class FileManager {
 	private static final String PEER = "Peer#";
 	private static final String CHUNK = "Chunk#";
 	private static final String STORAGE = "Storage";
-	private static final String INFORMATION = "ChunkInformation.txt";
+	private static final String REPLICATION = "ChunkReplication.txt";
 
 	// Static methods
 	/**
@@ -44,13 +44,13 @@ public class FileManager {
 			
 			// Create sub-directories and sub-files
 			new File(parent.getName() + "/" + STORAGE).mkdir();
-			new File(parent.getName() + "/" + INFORMATION).createNewFile();
+			new File(parent.getName() + "/" + REPLICATION).createNewFile();
 		} else {
 			// Check for sub-directories and sub-files
 			File storage = new File(parent.getName() + "/" + STORAGE);
 			if (!storage.exists() || !storage.isDirectory()) storage.mkdir();
 			
-			File info = new File(parent.getName() + "/" + INFORMATION);
+			File info = new File(parent.getName() + "/" + REPLICATION);
 			if (!info.exists()) info.createNewFile();
 		}
 	}

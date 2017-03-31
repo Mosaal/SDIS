@@ -13,7 +13,7 @@ public class ReclaimProtocol extends Protocol {
 	 */
 	public ReclaimProtocol(String proVer, int peerID, MCChannel mcChannel) {
 		super(proVer, peerID, mcChannel);
-		processReclaim.start();
+		// processReclaim.start();
 	}
 
 	// Instance methods

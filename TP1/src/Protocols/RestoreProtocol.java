@@ -20,8 +20,8 @@ public class RestoreProtocol extends Protocol {
 		super(proVer, peerID, mcChannel);
 		this.mdrChannel = mdrChannel;
 
-		processChunk.start();
-		processGetchunk.start();
+		// processChunk.start();
+		// processGetchunk.start();
 	}
 
 	// Instance methods

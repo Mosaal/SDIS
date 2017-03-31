@@ -106,7 +106,7 @@ public class PeerRunnable implements Runnable {
 				out = new PrintWriter(clientSocket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				
-				System.out.println("A Client connected successfully.\n");
+				System.out.println("A Client connected successfully.");
 			} catch (IOException e) {
 				System.out.println("Error on setup.");
 				System.exit(-1);
@@ -156,10 +156,10 @@ public class PeerRunnable implements Runnable {
 				
 				// Send a reply confirming what happened
 				if (success) {
-					System.out.println("\nThe request was processed successfully. Closing connection...");
+					System.out.println("The request was processed successfully. Closing connection...");
 					out.println("OK");
 				} else {
-					System.out.println("\nThere was an error processing the request. Closing connection...");
+					System.out.println("There was an error processing the request. Closing connection...");
 					out.println("ERROR");
 				}
 			} catch (IOException e) {
