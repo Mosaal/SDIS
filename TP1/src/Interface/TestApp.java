@@ -14,6 +14,7 @@ public class TestApp {
 	private static final int TCP = 0;
 	private static final int PROT = 1;
 	private static final int FILE = 2;
+	private static final int SPAC = 2;
 	private static final int REPL = 3;
 	
 	/** Prints the correct way to initialize and execute an instance of this class */
@@ -56,27 +57,17 @@ public class TestApp {
 			break;
 		case 3:
 			if (args[PROT].equals(Utils.RECLAIM_STRING)) {
-				if (!Utils.isStringInteger(args[FILE])) {
-					System.out.println("ERROR: Argument '" + args[FILE] + "' is not an integer.");
+				if (!Utils.isStringInteger(args[SPAC])) {
+					System.out.println("ERROR: Argument '" + args[SPAC] + "' is not an integer.");
 					return false;
 				}
-			} else if (args[PROT].equals(Utils.RESTORE_STRING) || args[PROT].equals(Utils.DELETE_STRING)) {
-				if (!Utils.fileExists(args[FILE])) {
-					System.out.println("ERROR: The file '" + args[FILE] + "' does not exist.");
-					return false;
-				}
-			} else {
+			} else if (!args[PROT].equals(Utils.RESTORE_STRING) && !args[PROT].equals(Utils.DELETE_STRING)) {
 				System.out.println("ERROR: '" + args[PROT] + "' is not a valid argument.");
 				return false;
 			}
 			break;
 		case 4:
 			if (args[PROT].equals(Utils.BACKUP_STRING)) {
-				if (!Utils.fileExists(args[FILE])) {
-					System.out.println("ERROR: The file '" + args[FILE] + "' does not exist.");
-					return false;
-				}
-
 				if (!Utils.isStringInteger(args[REPL])) {
 					System.out.println("ERROR: Argument '" + args[REPL] + "' is not an integer.");
 					return false;
@@ -136,7 +127,7 @@ public class TestApp {
 			request += " " + args[FILE];
 			break;
 		case Utils.RECLAIM_STRING:
-			request += " " + args[FILE];
+			request += " " + args[SPAC];
 			break;
 		}
 

@@ -1,6 +1,7 @@
 package Peer;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -121,6 +122,16 @@ public class PeerRunnable implements Runnable {
 					System.out.println("Invalid request received. Closing connection...\n");
 					out.println("ERROR");
 					continue;
+				}
+				
+				// If backup check if file exists
+				if (Integer.parseInt(res[0]) == Utils.BACKUP_INT) {
+					File file = new File(res[1]);					
+					if (!file.exists() || !file.isFile()) {
+						System.out.println("The file '" + res[1] + "' does not exist or it is a directory. Closing connection...");
+						out.println("ERROR");
+						continue;
+					}
 				}
 				
 				// Call for the corresponding protocol
