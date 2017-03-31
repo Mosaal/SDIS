@@ -12,9 +12,7 @@ public class Player {
 	 * Creates a Player instance
 	 * @param ID the unique identifier of the player
 	 */
-	public Player(final int ID) {
-		this.ID = ID;
-	}
+	public Player(final int ID) { this.ID = ID; }
 	
 	// Instance methods
 	/** Returns the ID of the player */
