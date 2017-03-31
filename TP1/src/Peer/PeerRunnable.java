@@ -100,7 +100,7 @@ public class PeerRunnable implements Runnable {
 		while (true) {
 			try {
 				// Wait for a connection
-				System.out.println("\nWaiting for a Client...");
+				System.out.println("Waiting for a Client...");
 				
 				clientSocket = serverSocket.accept();
 				out = new PrintWriter(clientSocket.getOutputStream(), true);

@@ -98,7 +98,7 @@ public class Utils {
 	 * Split a given file into chunks
 	 * @param filePath path of the file to be split
 	 */
-	public static LinkedList<byte[]> splitIntoChinks(String filePath) {
+	public static LinkedList<byte[]> splitIntoChunks(String filePath) {
 		LinkedList<byte[]> chunks = new LinkedList<byte[]>();
 		
 		try {
@@ -146,8 +146,7 @@ public class Utils {
 		
 		if (type.equals(PUTCHUNK_STRING)) {
 			header += chunkNo + " " + repDeg + " ";
-		} else if (type.equals(CHUNK_STRING) || type.equals(STORED_STRING)
-				|| type.equals(GETCHUNK_STRING) || type.equals(REMOVED_STRING)) {
+		} else if (type.equals(CHUNK_STRING) || type.equals(STORED_STRING) || type.equals(GETCHUNK_STRING) || type.equals(REMOVED_STRING)) {
 			header += chunkNo + " ";
 		}
 		

@@ -2,6 +2,7 @@ package Peer;
 
 import java.io.IOException;
 
+import Storage.FileManager;
 import Utils.Utils;
 
 public class Peer {
@@ -81,14 +82,19 @@ public class Peer {
 		}
 		
 		// Initialize everything
+		String proVer = args[PRO];
 		String[] mc = args[MCC].split(":");
 		String[] mdb = args[MDB].split(":");
 		String[] mdr = args[MDR].split(":");
 		int peerID = Integer.parseInt(args[SER]);
 		int tcpPort = Integer.parseInt(args[TCP]);
+		
+		// Create Peer's main directory
+		FileManager.createPeerDirectory(peerID);
 
-		// Start Peer loop
-		new Thread(new PeerRunnable(args[PRO], peerID, tcpPort, mc, mdb, mdr)).start();
+		// Start Peer thread
+		Thread peerThread = new Thread(new PeerRunnable(proVer, peerID, tcpPort, mc, mdb, mdr));
+		peerThread.start();
 
 		// Give the user the option to cancel the Peer
 		System.out.println("Press the [Enter] key to stop executing...");

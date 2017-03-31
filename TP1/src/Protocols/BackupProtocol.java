@@ -1,7 +1,6 @@
 package Protocols;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -13,7 +12,8 @@ public class BackupProtocol extends Protocol {
 
 	// Instance variables
 	private MDBChannel mdbChannel;
-	private HashMap<String, int[]> storedConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
+	private volatile HashMap<String, LinkedList<Integer>> storedConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
+	private volatile HashMap<String, LinkedList<Integer>> putChunkConfirmations; // FileID -> (List of chunk numbers)
 
 	/**
 	 * Creates a BackupProtocol instance
@@ -26,7 +26,8 @@ public class BackupProtocol extends Protocol {
 		super(proVer, peerID, mcChannel);
 
 		this.mdbChannel = mdbChannel;
-		storedConfirmations = new HashMap<String, int[]>();
+		storedConfirmations = new HashMap<String, LinkedList<Integer>>();
+		putChunkConfirmations = new HashMap<String, LinkedList<Integer>>();
 
 		processStored.start();
 		processPutchunk.start();
@@ -37,8 +38,11 @@ public class BackupProtocol extends Protocol {
 	public MDBChannel getMDBChannel() { return mdbChannel; }
 
 	/** Returns the hashmap of the replication degree for the stored chunks of each file */
-	public HashMap<String, int[]> getStoredConfirmations() { return storedConfirmations; }
+	public HashMap<String, LinkedList<Integer>> getStoredConfirmations() { return storedConfirmations; }
 
+	/** Returns the hashmap for the backed up chunks of each file */
+	public HashMap<String, LinkedList<Integer>> getPutChunkConfirmations() { return putChunkConfirmations; }
+	
 	/**
 	 * Backup a given file
 	 * @param filePath path of the file to be backed up
@@ -50,11 +54,11 @@ public class BackupProtocol extends Protocol {
 		String fileID = Utils.encryptString(file.getName() + file.length() + file.lastModified());
 
 		// Split file into chunks
-		LinkedList<byte[]> chunks = Utils.splitIntoChinks(filePath);
+		LinkedList<byte[]> chunks = Utils.splitIntoChunks(filePath);
 
 		// Store sent chunks in a hashmap for later confirmation
-		int[] temp = new int[chunks.size()];
-		Arrays.fill(temp, 0);
+		LinkedList<Integer> temp = new LinkedList<Integer>();
+		for (int i = 0; i < chunks.size(); i++) temp.add(0);
 		storedConfirmations.put(fileID, temp);
 
 		// Send them one by one
@@ -71,8 +75,8 @@ public class BackupProtocol extends Protocol {
 			catch (InterruptedException e) { e.printStackTrace(); }
 
 			// Check if current replication degree matches the desired one
-			System.out.println(Arrays.toString(storedConfirmations.get(fileID)));
-			if (storedConfirmations.get(fileID)[i] < repDeg && retries < Utils.MAX_RETRIES) {
+			// System.out.println(Arrays.toString(storedConfirmations.get(fileID).toArray()));
+			if (storedConfirmations.get(fileID).get(i) < repDeg && retries < Utils.MAX_RETRIES) {
 				i--;
 				retries++;
 				waitInterval *= 2;
@@ -107,8 +111,8 @@ public class BackupProtocol extends Protocol {
 
 					// Check if it contains the specified file
 					if (storedConfirmations.containsKey(fileID)) {
-						int[] temp = storedConfirmations.get(fileID);
-						temp[chunkNo]++;
+						LinkedList<Integer> temp = storedConfirmations.get(fileID);
+						temp.set(chunkNo, temp.get(chunkNo).intValue() + 1);
 						storedConfirmations.put(fileID, temp);
 					}
 				}
@@ -120,10 +124,6 @@ public class BackupProtocol extends Protocol {
 	Thread processPutchunk = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			// TODO: once it writes to the disk things will be handled differently
-			// Store what chunks from what files have been stored - FileID -> LinkedList(int) where int = chunkNo
-			HashMap<String, LinkedList<Integer>> putChunkConfirmations = new HashMap<String, LinkedList<Integer>>();
-
 			while (true) {
 				// Receive data if its there to be received
 				String str = null;
