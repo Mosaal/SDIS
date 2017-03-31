@@ -42,11 +42,11 @@ public abstract class MChannel {
 	}
 	
 	// Instance methods
-	/** Returns the buffer used in the packet */
-	public byte[] getBuffer() { return buf; }
-	
 	/** Returns the port number the multicast socket is on */
 	public int getPort() { return port; }
+	
+	/** Returns the buffer used in the packet */
+	public byte[] getBuffer() { return buf; }
 	
 	/** Returns the IP address */
 	public String getAddress() { return ipAddress; }
