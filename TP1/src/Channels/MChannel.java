@@ -11,8 +11,8 @@ import Utils.Utils;
 public abstract class MChannel {
 
 	// Instance variables
-	protected byte[] buf;
 	protected int port;
+	protected byte[] buf;
 	protected String ipAddress;
 	
 	// Multicast variables
