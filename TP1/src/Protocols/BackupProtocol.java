@@ -160,7 +160,7 @@ public class BackupProtocol extends Protocol {
 							continue;
 						} else {
 							// Write to disk and send confirmation
-							if (FileManager.storeChunk(peerID, fileID, chunkNo, str.getBytes())) {
+							if (FileManager.storeChunk(peerID, fileID, chunkNo, Utils.getChunkData(str))) {
 								// Add to confirmed chunks list
 								LinkedList<Integer> temp = putChunkConfirmations.get(fileID);
 								temp.add(chunkNo);
@@ -173,7 +173,7 @@ public class BackupProtocol extends Protocol {
 						}
 					} else {
 						// Write to disk and send confirmation
-						if (FileManager.storeChunk(peerID, fileID, chunkNo, str.getBytes())) {
+						if (FileManager.storeChunk(peerID, fileID, chunkNo, Utils.getChunkData(str))) {
 							// Add to confirmed chunks list
 							LinkedList<Integer> temp = new LinkedList<Integer>();
 							temp.add(chunkNo);
