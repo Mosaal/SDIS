@@ -18,12 +18,9 @@ public class DeleteProtocol extends Protocol {
 	 * @param peerID the ID of the Peer
 	 * @param mcChannel multicast control channel all protocols subscribe to
 	 */
-	public DeleteProtocol(String proVer, int peerID, MCChannel mcChannel) {
+	public DeleteProtocol(String proVer, int peerID, LinkedList<String> currStoredFiles, MCChannel mcChannel) {
 		super(proVer, peerID, mcChannel);
-
-		currStoredFiles = new LinkedList<String>();
-		updateFilesList();
-		
+		this.currStoredFiles = currStoredFiles;
 		processDelete.start();
 	}
 
@@ -39,7 +36,7 @@ public class DeleteProtocol extends Protocol {
 		// Get file ID
 		File file = new File(fileName);
 		String fileID = Utils.encryptString(file.getName() + file.length() + file.lastModified());
-		// TODO: not suposed to generate ID again
+		// TODO: not supposed to generate ID again
 		// Must store them in a file in relation to the file name
 
 		// Send a DELETE type message 5 times
@@ -48,27 +45,13 @@ public class DeleteProtocol extends Protocol {
 			// Create message and send it
 			byte[] msg = Utils.createMessage(Utils.DELETE_STRING, proVer, peerID, fileID, i, 0, new byte[] {});
 			mcChannel.send(msg);
-			
+
 			// Introduce a random delay in order not to flood the other Peers
 			try { Thread.sleep(Utils.randomDelay()); }
 			catch (InterruptedException e) { e.printStackTrace(); }
 		}
 
 		return true;
-	}
-	
-	/** Updates the list with the currently stored files */
-	private void updateFilesList() {
-		// Get files currently stored
-		String[] files = FileManager.getFiles(peerID);
-		
-		// Add them to the list
-		if (files != null) {
-			for (int i = 0; i < files.length; i++) {
-				if (!currStoredFiles.contains(files[i]))
-					currStoredFiles.add(files[i]);
-			}
-		}
 	}
 
 	/** Thread that is constantly processing DELETE type messages */
@@ -86,11 +69,9 @@ public class DeleteProtocol extends Protocol {
 
 				// Check who it belongs to
 				if (Integer.parseInt(args[2]) != peerID) {
-					// Get file ID
+					// Get file ID and update files list
 					String fileID = args[3];
-					
-					// Update files list
-					updateFilesList();
+					currStoredFiles = FileManager.getFiles(peerID);
 
 					// Check if it has any chunk of this file
 					if (currStoredFiles.contains(fileID)) {

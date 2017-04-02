@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import Channels.MCChannel;
 import Channels.MDBChannel;
+import Storage.FileManager;
 import Utils.Utils;
 
 public class BackupProtocol extends Protocol {
@@ -27,7 +28,7 @@ public class BackupProtocol extends Protocol {
 
 		this.mdbChannel = mdbChannel;
 		storedConfirmations = new HashMap<String, LinkedList<Integer>>();
-		putChunkConfirmations = new HashMap<String, LinkedList<Integer>>();
+		putChunkConfirmations = FileManager.getStoredChunks(peerID);
 
 		processStored.start();
 		processPutchunk.start();
@@ -42,7 +43,7 @@ public class BackupProtocol extends Protocol {
 
 	/** Returns the hashmap for the backed up chunks of each file */
 	public HashMap<String, LinkedList<Integer>> getPutChunkConfirmations() { return putChunkConfirmations; }
-	
+
 	/**
 	 * Backup a given file
 	 * @param filePath path of the file to be backed up
@@ -72,13 +73,12 @@ public class BackupProtocol extends Protocol {
 			// Info print
 			if (retries == 1)
 				System.out.println("[ BACKUP ] " + chunks.get(i).length + "B");
-			
+
 			// Wait for a few seconds
 			try { Thread.sleep(waitInterval); }
 			catch (InterruptedException e) { e.printStackTrace(); }
 
 			// Check if current replication degree matches the desired one
-			// System.out.println(Arrays.toString(storedConfirmations.get(fileID).toArray()));
 			if (storedConfirmations.get(fileID).get(i) < repDeg && retries < Utils.MAX_RETRIES) {
 				i--;
 				retries++;
@@ -91,15 +91,15 @@ public class BackupProtocol extends Protocol {
 
 		return true;
 	}
-	
+
 	/**
 	 * Backup a specified chunk of a file
 	 * @param filePath path of the file the chunk belongs to
 	 * @param chunkNo the number of the chunk
 	 */
 	public boolean backupChunk(String filePath, int chunkNo) {
-		
-		
+
+
 		return true;
 	}
 
@@ -108,7 +108,6 @@ public class BackupProtocol extends Protocol {
 		@Override
 		public void run() {
 			while (true) {
-				// TODO: once it writes to the disk things will be handled differently
 				// Receive data if its there to be received
 				String str = null;
 				do { str = mcChannel.receive(Utils.STORED_INT); }
@@ -125,6 +124,7 @@ public class BackupProtocol extends Protocol {
 
 					// Check if it contains the specified file
 					if (storedConfirmations.containsKey(fileID)) {
+						// Add to confirmed stored list
 						LinkedList<Integer> temp = storedConfirmations.get(fileID);
 						temp.set(chunkNo, temp.get(chunkNo).intValue() + 1);
 						storedConfirmations.put(fileID, temp);
@@ -159,19 +159,31 @@ public class BackupProtocol extends Protocol {
 						if (putChunkConfirmations.get(fileID).contains(chunkNo)) {
 							continue;
 						} else {
-							LinkedList<Integer> temp = putChunkConfirmations.get(fileID);
-							temp.add(chunkNo);
-							putChunkConfirmations.put(fileID, temp);
+							// Write to disk and send confirmation
+							if (FileManager.storeChunk(peerID, fileID, chunkNo, str.getBytes())) {
+								// Add to confirmed chunks list
+								LinkedList<Integer> temp = putChunkConfirmations.get(fileID);
+								temp.add(chunkNo);
+								putChunkConfirmations.put(fileID, temp);
+
+								// Create STORED message and send it
+								byte[] reply = Utils.createMessage(Utils.STORED_STRING, proVer, peerID, fileID, chunkNo, repDeg, new byte[] {});
+								mcChannel.send(reply);
+							}
 						}
 					} else {
-						LinkedList<Integer> temp = new LinkedList<Integer>();
-						temp.add(chunkNo);
-						putChunkConfirmations.put(fileID, temp);
-					}
+						// Write to disk and send confirmation
+						if (FileManager.storeChunk(peerID, fileID, chunkNo, str.getBytes())) {
+							// Add to confirmed chunks list
+							LinkedList<Integer> temp = new LinkedList<Integer>();
+							temp.add(chunkNo);
+							putChunkConfirmations.put(fileID, temp);
 
-					// Create STORED message and send it
-					byte[] reply = Utils.createMessage(Utils.STORED_STRING, proVer, peerID, fileID, chunkNo, repDeg, new byte[] {});
-					mcChannel.send(reply);
+							// Create STORED message and send it
+							byte[] reply = Utils.createMessage(Utils.STORED_STRING, proVer, peerID, fileID, chunkNo, repDeg, new byte[] {});
+							mcChannel.send(reply);
+						}
+					}
 				}
 			}
 		}

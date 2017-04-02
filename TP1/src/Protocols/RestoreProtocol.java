@@ -1,5 +1,7 @@
 package Protocols;
 
+import java.util.LinkedList;
+
 import Channels.MCChannel;
 import Channels.MDRChannel;
 import Utils.Utils;
@@ -8,6 +10,7 @@ public class RestoreProtocol extends Protocol {
 
 	// Instance variables
 	private MDRChannel mdrChannel;
+	private volatile LinkedList<String> currStoredFiles;
 
 	/**
 	 * Creates a RestoreProtocol instance
@@ -16,9 +19,11 @@ public class RestoreProtocol extends Protocol {
 	 * @param mcChannel multicast control channel all protocols subscribe to
 	 * @param mdrChannel multicast data recovery channel this protocol subscribes to
 	 */
-	public RestoreProtocol(String proVer, int peerID, MCChannel mcChannel, MDRChannel mdrChannel) {
+	public RestoreProtocol(String proVer, int peerID, LinkedList<String> currStoredFiles, MCChannel mcChannel, MDRChannel mdrChannel) {
 		super(proVer, peerID, mcChannel);
+
 		this.mdrChannel = mdrChannel;
+		this.currStoredFiles = currStoredFiles;
 
 		// processChunk.start();
 		// processGetchunk.start();
@@ -27,6 +32,9 @@ public class RestoreProtocol extends Protocol {
 	// Instance methods
 	/** Returns the multicast data recovery channel */
 	public MDRChannel getMDRChannel() { return mdrChannel; }
+
+	/** Returns the hashmap of currently stored chunks of each file */
+	public LinkedList<String> getCurrStoredChunks() { return currStoredFiles; }
 
 	public boolean restoreFile(String fileName) {
 		return true;
@@ -59,13 +67,13 @@ public class RestoreProtocol extends Protocol {
 			String str = null;
 			do { str = mdrChannel.receive(); }
 			while (str == null);
-			
+
 			// Split it
 			String[] args = str.split(" ");
-			
+
 			// Check who it belongs to
 			if (Integer.parseInt(args[2]) != peerID) {
-				
+
 			}
 		}
 	});

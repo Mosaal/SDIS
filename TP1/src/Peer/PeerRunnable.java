@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
 
 import Channels.MCChannel;
 import Channels.MDBChannel;
@@ -16,6 +17,7 @@ import Protocols.DeleteProtocol;
 import Protocols.ReclaimProtocol;
 import Protocols.RestoreProtocol;
 import Protocols.StateProtocol;
+import Storage.FileManager;
 import Utils.Utils;
 
 public class PeerRunnable implements Runnable {
@@ -24,23 +26,23 @@ public class PeerRunnable implements Runnable {
 	private int tcpPort;
 	private PrintWriter out;
 	private BufferedReader in;
-	
+
 	// TCP sockets
 	private Socket clientSocket;
 	private ServerSocket serverSocket;
-	
+
 	// Multicast channels
 	private MCChannel mcChannel;
 	private MDBChannel mdbChannel;
 	private MDRChannel mdrChannel;
-	
+
 	// Protocols
 	private StateProtocol stateProtocol;
 	private BackupProtocol backupProtocol;
 	private DeleteProtocol deleteProtocol;
 	private RestoreProtocol restoreProtocol;
 	private ReclaimProtocol reclaimProtocol;
-	
+
 	/**
 	 * Creates a PeerRunnable instance
 	 * @param port port where the TCP server will open
@@ -50,18 +52,19 @@ public class PeerRunnable implements Runnable {
 	 */
 	public PeerRunnable(String proVer, int peerID, int tcpPort, String[] mc, String[] mdb, String[] mdr) {
 		this.tcpPort = tcpPort;
-		
+		LinkedList<String> currStoredFiles = FileManager.getFiles(peerID);
+
 		mcChannel = new MCChannel(mc[0], Integer.parseInt(mc[1]));
 		mdbChannel = new MDBChannel(mdb[0], Integer.parseInt(mdb[1]));
 		mdrChannel = new MDRChannel(mdr[0], Integer.parseInt(mdr[1]));
-		
+
 		stateProtocol = new StateProtocol(proVer, peerID, mcChannel);
-		deleteProtocol = new DeleteProtocol(proVer, peerID, mcChannel);
 		reclaimProtocol = new ReclaimProtocol(proVer, peerID, mcChannel);
 		backupProtocol = new BackupProtocol(proVer, peerID, mcChannel, mdbChannel);
-		restoreProtocol = new RestoreProtocol(proVer, peerID, mcChannel, mdrChannel);
+		deleteProtocol = new DeleteProtocol(proVer, peerID, currStoredFiles, mcChannel);
+		restoreProtocol = new RestoreProtocol(proVer, peerID, currStoredFiles, mcChannel, mdrChannel);
 	}
-	
+
 	/**
 	 * Parses the string received as a request
 	 * @param request string to be parsed
@@ -69,7 +72,7 @@ public class PeerRunnable implements Runnable {
 	private String[] parseRequest(String request) {
 		if (request.contains(" ")) {
 			String[] args = request.split(" ");
-			
+
 			if (args.length == 2) {
 				if (args[0].equals(Utils.RESTORE_STRING))
 					return new String[] { "2", args[1] };
@@ -83,10 +86,10 @@ public class PeerRunnable implements Runnable {
 		} else if (request.equals(Utils.STATE_STRING)) {
 			return new String[] { "1" };
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public void run() {
 		// Initialize TCP server
@@ -101,29 +104,29 @@ public class PeerRunnable implements Runnable {
 			try {
 				// Wait for a connection
 				System.out.println("Waiting for a Client...");
-				
+
 				clientSocket = serverSocket.accept();
 				out = new PrintWriter(clientSocket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-				
+
 				System.out.println("A Client connected successfully.");
 			} catch (IOException e) {
 				System.out.println("Error on setup.");
 				System.exit(-1);
 			}
-			
+
 			try {
 				// A connection was made. Wait and parse request
 				String request = in.readLine();
 				String[] res = parseRequest(request);
-				
+
 				// Check if result is null
 				if (res == null) {
 					System.out.println("Invalid request received. Closing connection...\n");
 					out.println("ERROR");
 					continue;
 				}
-				
+
 				// If backup check if file exists
 				if (Integer.parseInt(res[0]) == Utils.BACKUP_INT) {
 					File file = new File(res[1]);					
@@ -133,7 +136,7 @@ public class PeerRunnable implements Runnable {
 						continue;
 					}
 				}
-				
+
 				// Call for the corresponding protocol
 				boolean success = false;
 				switch (Integer.parseInt(res[0])) {
@@ -153,7 +156,7 @@ public class PeerRunnable implements Runnable {
 					success = reclaimProtocol.reclaimSpace(Integer.parseInt(res[1]));
 					break;
 				}
-				
+
 				// Send a reply confirming what happened
 				if (success) {
 					System.out.println("The request was processed successfully. Closing connection...");
