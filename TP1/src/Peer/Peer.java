@@ -2,8 +2,7 @@ package Peer;
 
 import java.io.IOException;
 
-import Storage.FileManager;
-import Utils.Utils;
+import Utils.*;
 
 public class Peer {
 

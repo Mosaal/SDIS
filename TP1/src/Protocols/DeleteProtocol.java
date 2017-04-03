@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.LinkedList;
 
 import Channels.MCChannel;
-import Storage.FileManager;
-import Utils.Utils;
+import Utils.*;
 
 public class DeleteProtocol extends Protocol {
 

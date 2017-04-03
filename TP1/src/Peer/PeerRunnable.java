@@ -17,8 +17,7 @@ import Protocols.DeleteProtocol;
 import Protocols.ReclaimProtocol;
 import Protocols.RestoreProtocol;
 import Protocols.StateProtocol;
-import Storage.FileManager;
-import Utils.Utils;
+import Utils.*;
 
 public class PeerRunnable implements Runnable {
 
