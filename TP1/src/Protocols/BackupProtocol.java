@@ -66,13 +66,13 @@ public class BackupProtocol extends Protocol {
 		int retries = 1;
 		int waitInterval = Utils.INITIAL_WAIT_INTERVAL;
 		for (int i = 0; i < chunks.size(); i++) {
-			// Create PUTCHUNK message and send it
-			byte[] msg = Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, i, repDeg, chunks.get(i));
-			mdbChannel.send(msg);
-
 			// Info print
 			if (retries == 1)
 				System.out.println("[ PUTCHUNK ] " + chunks.get(i).length + "B");
+
+			// Create PUTCHUNK message and send it
+			byte[] msg = Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, i, repDeg, chunks.get(i));
+			mdbChannel.send(msg);
 
 			// Wait for a few seconds
 			try { Thread.sleep(waitInterval); }
@@ -161,7 +161,7 @@ public class BackupProtocol extends Protocol {
 						} else {
 							// Write to disk and send confirmation
 							byte[] chunk = Utils.getChunkData(str);
-							
+
 							if (FileManager.storeChunk(peerID, fileID, chunkNo, chunk)) {
 								// Add to confirmed chunks list
 								LinkedList<Integer> temp = putChunkConfirmations.get(fileID);
@@ -177,7 +177,7 @@ public class BackupProtocol extends Protocol {
 					} else {
 						// Write to disk and send confirmation
 						byte[] chunk = Utils.getChunkData(str);
-						
+
 						if (FileManager.storeChunk(peerID, fileID, chunkNo, chunk)) {
 							// Add to confirmed chunks list
 							LinkedList<Integer> temp = new LinkedList<Integer>();

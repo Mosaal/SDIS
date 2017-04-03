@@ -269,6 +269,10 @@ public class FileManager {
 		String parentPath = PEER + Integer.toString(peerID) + "/" + STORAGE + "/" + fileID;
 		File file = new File(parentPath + "/" + CHUNK + Integer.toString(chunkNo));
 
+		// Return null if chunk doesn't exist
+		if (!file.exists())
+			return null;
+		
 		try {
 			// Create byte array and file reader
 			byte[] data = new byte[(int) file.length()];
