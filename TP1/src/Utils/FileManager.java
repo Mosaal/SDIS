@@ -18,6 +18,7 @@ public class FileManager {
 	private static final String PEER = "Peer#";
 	private static final String CHUNK = "Chunk#";
 	private static final String STORAGE = "Storage";
+	private static final String FILE_MAP = "FileIDMap.txt";
 	private static final String STORED = "StoredChunks.txt";
 	// private static final String REPLICATION = "ChunkReplication.txt";
 
@@ -36,9 +37,9 @@ public class FileManager {
 	 * |   |   |-Chunk#1 [FILE]<br>
 	 * |   |   |-...<br>
 	 * |   |-...<br>
+	 * |-FileIDMap [FILE]<br>
 	 * |-StoredChunks [FILE]<br>
 	 * |-ChunkInformation [FILE]<br>
-	 * |-<br>
 	 * 
 	 * @param peerID the name of the peer's parent directory
 	 * @throws IOException 
@@ -53,6 +54,7 @@ public class FileManager {
 			// Create sub-directories and sub-files
 			new File(parent.getName() + "/" + STORAGE).mkdir();
 			new File(parent.getName() + "/" + STORED).createNewFile();
+			new File(parent.getName() + "/" + FILE_MAP).createNewFile();
 			// new File(parent.getName() + "/" + REPLICATION).createNewFile();
 		} else {
 			// Check for sub-directories and sub-files
@@ -61,6 +63,9 @@ public class FileManager {
 
 			// File repInfo = new File(parent.getName() + "/" + REPLICATION);
 			// if (!repInfo.exists()) repInfo.createNewFile();
+
+			File fileMap = new File(parent.getName() + "/" + FILE_MAP);
+			if (!fileMap.exists()) fileMap.createNewFile();
 
 			File stored = new File(parent.getName() + "/" + STORED);
 			if (!stored.exists()) stored.createNewFile();
@@ -99,9 +104,29 @@ public class FileManager {
 	public static boolean deleteFile(int peerID, String fileID) {
 		String parentPath = PEER + Integer.toString(peerID) + "/" + STORAGE + "/" + fileID;
 		File dir = new File(parentPath);
+		File storedFile = new File(PEER + Integer.toString(peerID) + "/" + STORED);
 
 		// Check if it exists
 		if (dir.exists() && dir.isDirectory()) {
+			try {
+				// Delete references from Stored file
+				LinkedList<String> temp = new LinkedList<String>();
+				for (String line: Files.readAllLines(Paths.get(storedFile.getPath()))) {
+					if (line.isEmpty()) continue;
+
+					if (!line.contains(fileID))
+						temp.add(line);
+				}
+
+				// Rewrite to stored file
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(storedFile.getPath(), false)));
+				for (int i = 0; i < temp.size(); i++)
+					out.println(temp.get(i));
+				out.close();
+			} catch (IOException e) {
+				return false;
+			}
+
 			// Delete all chunks
 			String[] chunks = dir.list();
 			for (int i = 0; i < chunks.length; i++)
@@ -134,6 +159,104 @@ public class FileManager {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Gets the fileName to fileID hashmap of the backed up files
+	 * @param peerID the name of the main directory
+	 */
+	public static HashMap<String, String> getFileID(int peerID) {
+		HashMap<String, String> temp = new HashMap<String, String>();
+		String fileMapPath = PEER + Integer.toString(peerID) + "/" + FILE_MAP;
+		File fileMap = new File(fileMapPath);
+
+		// Check if it exists
+		if (fileMap.exists()) {
+			try {
+				// Add them to the hashmap: FileName -> FileID
+				for (String line: Files.readAllLines(Paths.get(fileMap.getPath()))) {
+					if (line.isEmpty()) continue;
+
+					String[] info = line.split(":");
+					temp.put(info[0], info[1]);
+				}
+			} catch (IOException e) {
+				return temp;
+			}
+		} else {
+			// Create it if it doesn't
+			try { fileMap.createNewFile(); }
+			catch (IOException e) { return temp; }
+		}
+
+		return temp;
+	}
+
+	/**
+	 * Stored the fileName to fileID relation in the corresponding file
+	 * @param peerID the name of the main directory
+	 * @param fileName the name of the file
+	 * @param fileID the ID generated for the file
+	 */
+	public static void storeFileID(int peerID, String fileName, String fileID) {
+		String fileMapPath = PEER + Integer.toString(peerID) + "/" + FILE_MAP;
+		File fileMap = new File(fileMapPath);
+
+		try {
+			// Check if it exists
+			if (fileMap.exists()) {
+				// Write data to the file
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileMapPath, true)));
+				out.println(fileName + ":" + fileID);
+				out.close();
+			} else {
+				// Create it if it doesn't
+				fileMap.createNewFile();
+
+				// Write data to the file
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileMapPath, true)));
+				out.println(fileName + ":" + fileID);
+				out.close();
+			}
+		} catch (IOException e) {
+			return;
+		}
+	}
+
+	/**
+	 * Delete the fileName to fileID relation in the corresponding file
+	 * @param peerID the name of the main directory
+	 * @param fileID the ID of the file whose relation is going to get deleted
+	 */
+	public static void deleteFileID(int peerID, String fileID) {
+		String fileMapPath = PEER + Integer.toString(peerID) + "/" + FILE_MAP;
+		File fileMap = new File(fileMapPath);
+
+		try {
+			// Check if it exists
+			if (fileMap.exists()) {
+				// Delete references from FileMap file
+				LinkedList<String> temp = new LinkedList<String>();
+				for (String line: Files.readAllLines(Paths.get(fileMap.getPath()))) {
+					if (line.isEmpty()) continue;
+
+					if (!line.contains(fileID))
+						temp.add(line);
+				}
+
+				// Rewrite to stored file
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileMap.getPath(), false)));
+				for (int i = 0; i < temp.size(); i++)
+					out.println(temp.get(i));
+				out.close();
+			} else {
+				// Create it if it doesn't
+				fileMap.createNewFile();
+				return;
+			}
+		} catch (IOException e) {
+			return;
+		}
 	}
 
 	/**

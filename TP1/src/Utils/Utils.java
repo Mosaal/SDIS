@@ -37,7 +37,8 @@ public class Utils {
 	public static final String REMOVED_STRING = "REMOVED";
 
 	public static final int MAX_RETRIES = 5;
-	public static final int BUFFER_MAX_SIZE = 64000;
+	public static final int CHUNK_MAX_SIZE = 64000;
+	public static final int BUFFER_MAX_SIZE = 65000;
 	public static final int INITIAL_WAIT_INTERVAL = 1000;
 
 	// Static methods
@@ -127,23 +128,23 @@ public class Utils {
 		try {
 			byte[] buf = null;
 			long fileSize = new File(filePath).length();
-			int totalChunks = (int) Math.ceil((double) fileSize / (double) BUFFER_MAX_SIZE);
+			int totalChunks = (int) Math.ceil((double) fileSize / (double) CHUNK_MAX_SIZE);
 			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(filePath)));
 
 			long holder = fileSize;
 			for (int i = 0; i < totalChunks; i++) {
-				if (holder < BUFFER_MAX_SIZE) {
+				if (holder < CHUNK_MAX_SIZE) {
 					buf = new byte[(int) holder];
 				} else {
-					holder -= BUFFER_MAX_SIZE;
-					buf = new byte[BUFFER_MAX_SIZE];
+					holder -= CHUNK_MAX_SIZE;
+					buf = new byte[CHUNK_MAX_SIZE];
 				}
 
 				bis.read(buf);
 				chunks.add(buf);
 			}
 
-			if (fileSize % BUFFER_MAX_SIZE == 0)
+			if (fileSize % CHUNK_MAX_SIZE == 0)
 				chunks.add(new byte[] {});
 
 			bis.close();

@@ -1,6 +1,5 @@
 package Protocols;
 
-import java.io.File;
 import java.util.LinkedList;
 
 import Channels.MCChannel;
@@ -33,10 +32,13 @@ public class DeleteProtocol extends Protocol {
 	 */
 	public boolean deleteFile(String fileName) {
 		// Get file ID
-		File file = new File(fileName);
-		String fileID = Utils.encryptString(file.getName() + file.length() + file.lastModified());
-		// TODO: not supposed to generate ID again
-		// Must store them in a file in relation to the file name
+		String fileID = FileManager.getFileID(peerID).get(fileName);
+		if (fileID == null) {
+			System.out.println("Cannot order the deletion of a file this Peer hasn't backed up.");
+			return true;
+		} else {
+			FileManager.deleteFileID(peerID, fileID);
+		}
 
 		// Send a DELETE type message 5 times
 		System.out.println("[ DELETE ] " + fileName);

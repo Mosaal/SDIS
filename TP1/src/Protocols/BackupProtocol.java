@@ -52,6 +52,7 @@ public class BackupProtocol extends Protocol {
 		// Get file ID
 		File file = new File(filePath);
 		String fileID = Utils.encryptString(file.getName() + file.length() + file.lastModified());
+		FileManager.storeFileID(peerID, new File(filePath).getName(), fileID);
 
 		// Split file into chunks
 		LinkedList<byte[]> chunks = Utils.splitIntoChunks(filePath);
@@ -71,7 +72,7 @@ public class BackupProtocol extends Protocol {
 
 			// Info print
 			if (retries == 1)
-				System.out.println("[ BACKUP ] " + chunks.get(i).length + "B");
+				System.out.println("[ PUTCHUNK ] " + chunks.get(i).length + "B");
 
 			// Wait for a few seconds
 			try { Thread.sleep(waitInterval); }
@@ -159,26 +160,32 @@ public class BackupProtocol extends Protocol {
 							continue;
 						} else {
 							// Write to disk and send confirmation
-							if (FileManager.storeChunk(peerID, fileID, chunkNo, Utils.getChunkData(str))) {
+							byte[] chunk = Utils.getChunkData(str);
+							
+							if (FileManager.storeChunk(peerID, fileID, chunkNo, chunk)) {
 								// Add to confirmed chunks list
 								LinkedList<Integer> temp = putChunkConfirmations.get(fileID);
 								temp.add(chunkNo);
 								putChunkConfirmations.put(fileID, temp);
 
 								// Create STORED message and send it
+								System.out.println("[ STORED ] " + chunk.length + "B");
 								byte[] reply = Utils.createMessage(Utils.STORED_STRING, proVer, peerID, fileID, chunkNo, repDeg, new byte[] {});
 								mcChannel.send(reply);
 							}
 						}
 					} else {
 						// Write to disk and send confirmation
-						if (FileManager.storeChunk(peerID, fileID, chunkNo, Utils.getChunkData(str))) {
+						byte[] chunk = Utils.getChunkData(str);
+						
+						if (FileManager.storeChunk(peerID, fileID, chunkNo, chunk)) {
 							// Add to confirmed chunks list
 							LinkedList<Integer> temp = new LinkedList<Integer>();
 							temp.add(chunkNo);
 							putChunkConfirmations.put(fileID, temp);
 
 							// Create STORED message and send it
+							System.out.println("[ STORED ] " + chunk.length + "B");
 							byte[] reply = Utils.createMessage(Utils.STORED_STRING, proVer, peerID, fileID, chunkNo, repDeg, new byte[] {});
 							mcChannel.send(reply);
 						}
