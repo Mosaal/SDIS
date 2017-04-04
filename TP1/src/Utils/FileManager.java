@@ -110,6 +110,42 @@ public class FileManager {
 		}
 	}
 	
+	/**
+	 * Deletes the all of the lines referencing a given fileID
+	 * @param peerID the name of the main directory
+	 * @param fileID the ID of the file whose reference is going to get deleted
+	 */
+	public static void deletePerceivedReplication(int peerID, String fileID) {
+		LinkedList<String> lines = new LinkedList<String>();
+		String perPath = PEER + Integer.toString(peerID) + "/" + REPLICATION;
+		File perFile = new File(perPath);
+		
+		// Check if it exists
+		if (perFile.exists()) {
+			try {
+				// Retrieve data already in file
+				for (String line: Files.readAllLines(Paths.get(perFile.getPath()))) {
+					if (line.isEmpty()) continue;
+					
+					if (!line.contains(fileID))
+						lines.add(line);
+				}
+				
+				// Write new data to the file
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(perFile.getPath(), false)));
+				for (int i = 0; i < lines.size(); i++)
+					out.println(lines.get(i));
+				out.close();
+			} catch (IOException e) {
+				return;
+			}
+		} else {
+			// Create it if it doesn't
+			try { perFile.createNewFile(); }
+			catch (IOException e) { return; }
+		}
+	}
+	
 	// TODO: function that retrieves the perceived replication degrees
 	// public static 
 	

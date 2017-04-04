@@ -38,6 +38,7 @@ public class DeleteProtocol extends Protocol {
 			return true;
 		} else {
 			FileManager.deleteFileID(peerID, fileID);
+			FileManager.deletePerceivedReplication(peerID, fileID);
 		}
 
 		// Send a DELETE type message 5 times
@@ -76,8 +77,10 @@ public class DeleteProtocol extends Protocol {
 
 					// Check if it has any chunk of this file
 					if (currStoredFiles.contains(fileID)) {
-						if (FileManager.deleteFile(peerID, fileID))
+						if (FileManager.deleteFile(peerID, fileID)) {
+							FileManager.deletePerceivedReplication(peerID, fileID);
 							currStoredFiles.remove(fileID);
+						}
 					}
 				}
 			}
