@@ -20,7 +20,7 @@ public class FileManager {
 	private static final String STORAGE = "Storage";
 	private static final String FILE_MAP = "FileIDMap.txt";
 	private static final String STORED = "StoredChunks.txt";
-	// private static final String REPLICATION = "ChunkReplication.txt";
+	private static final String REPLICATION = "ChunkReplication.txt";
 
 	// Static methods
 	/**
@@ -55,14 +55,14 @@ public class FileManager {
 			new File(parent.getName() + "/" + STORAGE).mkdir();
 			new File(parent.getName() + "/" + STORED).createNewFile();
 			new File(parent.getName() + "/" + FILE_MAP).createNewFile();
-			// new File(parent.getName() + "/" + REPLICATION).createNewFile();
+			new File(parent.getName() + "/" + REPLICATION).createNewFile();
 		} else {
 			// Check for sub-directories and sub-files
 			File storage = new File(parent.getName() + "/" + STORAGE);
 			if (!storage.exists() || !storage.isDirectory()) storage.mkdir();
 
-			// File repInfo = new File(parent.getName() + "/" + REPLICATION);
-			// if (!repInfo.exists()) repInfo.createNewFile();
+			File repInfo = new File(parent.getName() + "/" + REPLICATION);
+			if (!repInfo.exists()) repInfo.createNewFile();
 
 			File fileMap = new File(parent.getName() + "/" + FILE_MAP);
 			if (!fileMap.exists()) fileMap.createNewFile();
@@ -71,6 +71,50 @@ public class FileManager {
 			if (!stored.exists()) stored.createNewFile();
 		}
 	}
+
+	/**
+	 * Stores the perceived replication degree for a given chunk
+	 * @param peerID the name of the main directory
+	 * @param fileID the ID of the file the chunk belongs to
+	 * @param chunkNo the number of the chunk
+	 * @param dRD the desired replication degree
+	 * @param pRD the perceived replication degree
+	 */
+	public static void storePerceivedReplication(int peerID, String fileID, int chunkNo, int dRD, int pRD) {
+		LinkedList<String> lines = new LinkedList<String>();
+		File perFile = new File(PEER + Integer.toString(peerID) + "/" + REPLICATION);
+
+		// Check if it exists
+		try { if (!perFile.exists()) perFile.createNewFile(); }
+		catch (IOException e) { return; }
+		
+		try {
+			// Retrieve data already in file
+			for (String line: Files.readAllLines(Paths.get(perFile.getPath()))) {
+				if (line.isEmpty()) continue;
+				
+				if (!line.contains(fileID + ":" + chunkNo))
+					lines.add(line);
+			}
+			
+			// Add the new line
+			lines.add(fileID + ":" + chunkNo + ":" + Integer.toString(dRD) + ":" + Integer.toString(pRD));
+			
+			// Write new data to the file
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(perFile.getPath(), false)));
+			for (int i = 0; i < lines.size(); i++)
+				out.println(lines.get(i));
+			out.close();
+		} catch (IOException e) {
+			return;
+		}
+	}
+	
+	// TODO: function that retrieves the perceived replication degrees
+	// public static 
+	
+	// TODO: function that updates the perceived replication degrees
+	// public static
 
 	/**
 	 * Returns all of the files currently in storage
@@ -272,7 +316,7 @@ public class FileManager {
 		// Return null if chunk doesn't exist
 		if (!file.exists())
 			return null;
-		
+
 		try {
 			// Create byte array and file reader
 			byte[] data = new byte[(int) file.length()];

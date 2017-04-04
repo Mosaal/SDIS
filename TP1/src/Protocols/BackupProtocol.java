@@ -12,6 +12,8 @@ public class BackupProtocol extends Protocol {
 
 	// Instance variables
 	private MDBChannel mdbChannel;
+	private volatile HashMap<String, Integer> desiredRepDegrees;
+	private volatile HashMap<String, LinkedList<Integer>> otherConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
 	private volatile HashMap<String, LinkedList<Integer>> storedConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
 	private volatile HashMap<String, LinkedList<Integer>> putChunkConfirmations; // FileID -> (List of chunk numbers)
 
@@ -26,8 +28,10 @@ public class BackupProtocol extends Protocol {
 		super(proVer, peerID, mcChannel);
 
 		this.mdbChannel = mdbChannel;
-		storedConfirmations = new HashMap<String, LinkedList<Integer>>();
+		desiredRepDegrees = new HashMap<String, Integer>();
 		putChunkConfirmations = FileManager.getStoredChunks(peerID);
+		otherConfirmations = new HashMap<String, LinkedList<Integer>>();
+		storedConfirmations = new HashMap<String, LinkedList<Integer>>();
 
 		processStored.start();
 		processPutchunk.start();
@@ -36,8 +40,14 @@ public class BackupProtocol extends Protocol {
 	// Instance methods
 	/** Returns the multicast data backup channel */
 	public MDBChannel getMDBChannel() { return mdbChannel; }
+	
+	/** Returns the hashmap of the desired replication degrees */
+	public HashMap<String, Integer> getDesiredRepDegrees() { return desiredRepDegrees; }
 
-	/** Returns the hashmap of the replication degree for the stored chunks of each file */
+	/** Returns the hashmap of the replication degree for the stored chunks of each file (not belonging to this Peer) */
+	public HashMap<String, LinkedList<Integer>> getOtherConfirmations() { return otherConfirmations; }
+
+	/** Returns the hashmap of the replication degree for the stored chunks of each file (belonging to this Peer) */
 	public HashMap<String, LinkedList<Integer>> getStoredConfirmations() { return storedConfirmations; }
 
 	/** Returns the hashmap for the backed up chunks of each file */
@@ -54,6 +64,9 @@ public class BackupProtocol extends Protocol {
 		String fileID = Utils.encryptString(file.getName() + file.length() + file.lastModified());
 		FileManager.storeFileID(peerID, new File(filePath).getName(), fileID);
 
+		// Store desired replication degree
+		desiredRepDegrees.put(fileID, repDeg);
+		
 		// Split file into chunks
 		LinkedList<byte[]> chunks = Utils.splitIntoChunks(filePath);
 
@@ -116,12 +129,12 @@ public class BackupProtocol extends Protocol {
 				// Split it
 				String[] args = str.split(" ");
 
+				// Parse fileID and chunkNo
+				String fileID = args[3];
+				int chunkNo = Integer.parseInt(args[4]);
+
 				// Check who it belongs to
 				if (Integer.parseInt(args[2]) != peerID) {
-					// Parse fileID and chunkNo
-					String fileID = args[3];
-					int chunkNo = Integer.parseInt(args[4]);
-
 					// Check if it contains the specified file
 					if (storedConfirmations.containsKey(fileID)) {
 						// Add to confirmed stored list
@@ -130,6 +143,22 @@ public class BackupProtocol extends Protocol {
 						storedConfirmations.put(fileID, temp);
 					}
 				}
+
+				// Store perceived replication degree
+				if (otherConfirmations.containsKey(fileID)) {
+					// Add to confirmed other list
+					LinkedList<Integer> temp = otherConfirmations.get(fileID);
+					if (chunkNo >= temp.size()) temp.add(1);
+					else temp.set(chunkNo, temp.get(chunkNo).intValue() + 1);
+					otherConfirmations.put(fileID, temp);
+				} else {
+					LinkedList<Integer> temp = new LinkedList<Integer>();
+					temp.add(1);
+					otherConfirmations.put(fileID, temp);
+				}
+				
+				// Write to file
+				FileManager.storePerceivedReplication(peerID, fileID, chunkNo, desiredRepDegrees.get(fileID).intValue(), otherConfirmations.get(fileID).get(chunkNo));
 			}
 		}
 	});
@@ -153,6 +182,9 @@ public class BackupProtocol extends Protocol {
 					String fileID = args[3];
 					int chunkNo = Integer.parseInt(args[4]);
 					int repDeg = Integer.parseInt(args[5]);
+					
+					// Store desired replication degree
+					desiredRepDegrees.put(fileID, repDeg);
 
 					// Check if this chunk has already been stored
 					if (putChunkConfirmations.containsKey(fileID)) {
