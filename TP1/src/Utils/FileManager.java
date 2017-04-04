@@ -146,11 +146,33 @@ public class FileManager {
 		}
 	}
 	
-	// TODO: function that retrieves the perceived replication degrees
-	// public static 
-	
-	// TODO: function that updates the perceived replication degrees
-	// public static
+	/**
+	 * Returns the information in the replication file
+	 * @param peerID the name of the main directory
+	 */
+	public static LinkedList<String> getPerceivedReplication(int peerID) {
+		LinkedList<String> lines = new LinkedList<String>();
+		File perFile = new File(PEER + Integer.toString(peerID) + "/" + REPLICATION);
+		
+		// Check if it exists
+		if (perFile.exists()) {
+			try {
+				// Retrieve data in file
+				for (String line: Files.readAllLines(Paths.get(perFile.getPath()))) {
+					if (line.isEmpty()) continue;
+					lines.add(line);
+				}
+			} catch (IOException e) {
+				return lines;
+			}
+		} else {
+			// Create it if it doesn't
+			try { perFile.createNewFile(); }
+			catch (IOException e) { return lines; }
+		}
+		
+		return lines;
+	}
 
 	/**
 	 * Returns all of the files currently in storage

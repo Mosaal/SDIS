@@ -30,12 +30,12 @@ public class DeleteProtocol extends Protocol {
 	 * Deletes all of the chunks of a given file
 	 * @param fileName name of file to be deleted
 	 */
-	public boolean deleteFile(String fileName) {
+	public String deleteFile(String fileName) {
 		// Get file ID
 		String fileID = FileManager.getFileID(peerID).get(fileName);
 		if (fileID == null) {
 			System.out.println("Cannot order the deletion of a file this Peer hasn't backed up.");
-			return true;
+			return "ERROR";
 		} else {
 			FileManager.deleteFileID(peerID, fileID);
 			FileManager.deletePerceivedReplication(peerID, fileID);
@@ -53,7 +53,7 @@ public class DeleteProtocol extends Protocol {
 			catch (InterruptedException e) { e.printStackTrace(); }
 		}
 
-		return true;
+		return "OK";
 	}
 
 	/** Thread that is constantly processing DELETE type messages */

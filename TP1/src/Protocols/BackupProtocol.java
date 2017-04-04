@@ -58,7 +58,7 @@ public class BackupProtocol extends Protocol {
 	 * @param filePath path of the file to be backed up
 	 * @param repDeg desired replication degree
 	 */
-	public boolean backupFile(String filePath, int repDeg) {
+	public String backupFile(String filePath, int repDeg) {
 		// Get file ID
 		File file = new File(filePath);
 		String fileID = Utils.encryptString(file.getName() + file.length() + file.lastModified());
@@ -102,7 +102,7 @@ public class BackupProtocol extends Protocol {
 			}
 		}
 
-		return true;
+		return "OK";
 	}
 
 	/**

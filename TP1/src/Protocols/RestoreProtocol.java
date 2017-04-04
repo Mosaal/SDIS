@@ -54,12 +54,12 @@ public class RestoreProtocol extends Protocol {
 	 * Restores a file to his original state
 	 * @param fileName name of the file to be restored
 	 */
-	public boolean restoreFile(String fileName) {
+	public String restoreFile(String fileName) {
 		// Get file ID
 		String fileID = FileManager.getFileID(peerID).get(fileName);
 		if (fileID == null) {
 			System.out.println("Cannot order the restoration of a file this Peer hasn't backed up.");
-			return true;
+			return "ERROR";
 		}
 
 		// Store fileID for later confirmation
@@ -89,10 +89,10 @@ public class RestoreProtocol extends Protocol {
 		// Once we have all the chunks, restore the file
 		if (!FileManager.restoreFile(fileName, chunkConfirmations.get(fileID))) {
 			System.out.println("A problem ocurred trying to restore the file '" + fileName + "'.");
-			return false;
+			return "ERROR";
 		}
 		
-		return true;
+		return "OK";
 	}
 
 	/** Thread that is constantly processing CHUNK type messages */

@@ -136,11 +136,17 @@ public class TestApp {
 
 		try {
 			// Wait and parse reply
-			String reply = in.readLine();
-			if (reply.equals("OK")) {
-				System.out.println("Request successful.");
-			} else if (reply.equals("ERROR")) {
-				System.out.println("An error ocurred while processing the request.");
+			String reply = null;
+			while ((reply = in.readLine()) != null) {
+				if (reply.equals("OK")) {
+					System.out.println("Request successful.");
+				} else if (reply.equals("ERROR")) {
+					System.out.println("An error ocurred while processing the request.");
+				} else if (reply.equals("END")) {
+					break; // Get out of the Loop
+				} else {
+					System.out.println(reply);
+				}
 			}
 		} catch (IOException e) {
 			System.out.println("Failed to read reply from the Peer.");

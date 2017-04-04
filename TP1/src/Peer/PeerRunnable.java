@@ -137,32 +137,36 @@ public class PeerRunnable implements Runnable {
 				}
 
 				// Call for the corresponding protocol
-				boolean success = false;
+				String reply = null;
 				switch (Integer.parseInt(res[0])) {
 				case Utils.STATE_INT:
-					success = stateProtocol.getState();
+					reply = stateProtocol.getState();
 					break;
 				case Utils.RESTORE_INT:
-					success = restoreProtocol.restoreFile(res[1]);
+					reply = restoreProtocol.restoreFile(res[1]);
 					break;
 				case Utils.BACKUP_INT:
-					success = backupProtocol.backupFile(res[1], Integer.parseInt(res[2]));
+					reply = backupProtocol.backupFile(res[1], Integer.parseInt(res[2]));
 					break;
 				case Utils.DELETE_INT:
-					success = deleteProtocol.deleteFile(res[1]);
+					reply = deleteProtocol.deleteFile(res[1]);
 					break;
 				case Utils.RECLAIM_INT:
-					success = reclaimProtocol.reclaimSpace(Integer.parseInt(res[1]));
+					reply = reclaimProtocol.reclaimSpace(Integer.parseInt(res[1]));
 					break;
 				}
-
+				
 				// Send a reply confirming what happened
-				if (success) {
+				if (reply.equals("OK")) {
 					System.out.println("The request was processed successfully. Closing connection...");
-					out.println("OK");
-				} else {
+					out.println("OK\nEND");
+				} else if (reply.equals("ERROR")) {
 					System.out.println("There was an error processing the request. Closing connection...");
-					out.println("ERROR");
+					out.println("ERROR\nEND");
+				} else {
+					System.out.println("The request was processed successfully. Closing connection...");
+					out.println(reply);
+					out.println("END");
 				}
 			} catch (IOException e) {
 				System.out.println("Failed to read request from the Client.");

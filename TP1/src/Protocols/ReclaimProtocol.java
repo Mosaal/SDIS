@@ -17,8 +17,8 @@ public class ReclaimProtocol extends Protocol {
 	}
 
 	// Instance methods
-	public boolean reclaimSpace(int spaceToReclaim) {
-		return true;
+	public String reclaimSpace(int spaceToReclaim) {
+		return "OK";
 	}
 
 	/** Thread that is constantly processing REMOVED type messages */
