@@ -40,6 +40,10 @@ public class Utils {
 	public static final int CHUNK_MAX_SIZE = 64000;
 	public static final int BUFFER_MAX_SIZE = 65000;
 	public static final int INITIAL_WAIT_INTERVAL = 1000;
+	
+	public static final String END_MESSAGE = "END";
+	public static final String SUCCESS_MESSAGE = "OK";
+	public static final String ERROR_MESSAGE = "ERROR";
 
 	// Static methods
 	/** Returns a random number between 0 and 400 */

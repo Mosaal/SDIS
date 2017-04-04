@@ -24,13 +24,13 @@ public class RestoreProtocol extends Protocol {
 	 * @param mcChannel multicast control channel all protocols subscribe to
 	 * @param mdrChannel multicast data recovery channel this protocol subscribes to
 	 */
-	public RestoreProtocol(String proVer, int peerID, LinkedList<String> currStoredFiles, MCChannel mcChannel, MDRChannel mdrChannel) {
+	public RestoreProtocol(String proVer, int peerID, MCChannel mcChannel, MDRChannel mdrChannel) {
 		super(proVer, peerID, mcChannel);
 
 		this.stop = false;
 		this.sendNext = true;
 		this.mdrChannel = mdrChannel;
-		this.currStoredFiles = currStoredFiles;
+		currStoredFiles = new LinkedList<String>();
 		chunkConfirmations = new HashMap<String, LinkedList<byte[]>>();
 
 		processChunk.start();
@@ -55,6 +55,9 @@ public class RestoreProtocol extends Protocol {
 	 * @param fileName name of the file to be restored
 	 */
 	public String restoreFile(String fileName) {
+		// Get the most up to date information
+		currStoredFiles = FileManager.getFiles(peerID);
+		
 		// Get file ID
 		String fileID = FileManager.getFileID(peerID).get(fileName);
 		if (fileID == null) {

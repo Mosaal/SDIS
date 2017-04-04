@@ -51,17 +51,16 @@ public class PeerRunnable implements Runnable {
 	 */
 	public PeerRunnable(String proVer, int peerID, int tcpPort, String[] mc, String[] mdb, String[] mdr) {
 		this.tcpPort = tcpPort;
-		LinkedList<String> currStoredFiles = FileManager.getFiles(peerID);
 
 		mcChannel = new MCChannel(mc[0], Integer.parseInt(mc[1]));
 		mdbChannel = new MDBChannel(mdb[0], Integer.parseInt(mdb[1]));
 		mdrChannel = new MDRChannel(mdr[0], Integer.parseInt(mdr[1]));
 
 		stateProtocol = new StateProtocol(proVer, peerID, mcChannel);
+		deleteProtocol = new DeleteProtocol(proVer, peerID, mcChannel);
 		reclaimProtocol = new ReclaimProtocol(proVer, peerID, mcChannel);
 		backupProtocol = new BackupProtocol(proVer, peerID, mcChannel, mdbChannel);
-		deleteProtocol = new DeleteProtocol(proVer, peerID, currStoredFiles, mcChannel);
-		restoreProtocol = new RestoreProtocol(proVer, peerID, currStoredFiles, mcChannel, mdrChannel);
+		restoreProtocol = new RestoreProtocol(proVer, peerID, mcChannel, mdrChannel);
 	}
 
 	/**

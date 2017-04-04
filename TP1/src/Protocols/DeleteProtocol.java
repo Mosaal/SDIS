@@ -16,9 +16,9 @@ public class DeleteProtocol extends Protocol {
 	 * @param peerID the ID of the Peer
 	 * @param mcChannel multicast control channel all protocols subscribe to
 	 */
-	public DeleteProtocol(String proVer, int peerID, LinkedList<String> currStoredFiles, MCChannel mcChannel) {
+	public DeleteProtocol(String proVer, int peerID, MCChannel mcChannel) {
 		super(proVer, peerID, mcChannel);
-		this.currStoredFiles = currStoredFiles;
+		currStoredFiles = new LinkedList<String>();
 		processDelete.start();
 	}
 
@@ -31,6 +31,9 @@ public class DeleteProtocol extends Protocol {
 	 * @param fileName name of file to be deleted
 	 */
 	public String deleteFile(String fileName) {
+		// Get the most up to date information
+		currStoredFiles = FileManager.getFiles(peerID);
+		
 		// Get file ID
 		String fileID = FileManager.getFileID(peerID).get(fileName);
 		if (fileID == null) {

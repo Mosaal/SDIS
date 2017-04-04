@@ -98,7 +98,7 @@ public class FileManager {
 			}
 			
 			// Add the new line
-			lines.add(fileID + ":" + chunkNo + ":" + Integer.toString(dRD) + ":" + Integer.toString(pRD));
+			lines.add(fileID + ":" + Integer.toString(chunkNo) + ":" + Integer.toString(dRD) + ":" + Integer.toString(pRD));
 			
 			// Write new data to the file
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(perFile.getPath(), false)));
