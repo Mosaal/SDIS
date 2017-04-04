@@ -47,24 +47,6 @@ public class StateProtocol extends Protocol {
 	}
 
 	/**
-	 * Returns the key corresponding to a given value
-	 * @param fileNames the hashmap containing the file's names
-	 * @param fileID the ID of the file whose name is going to get returned
-	 */
-	private String getFileNameFromID(HashMap<String, String> fileNames, String fileID) {
-		String name = "";
-
-		for (Entry<String, String> map: fileNames.entrySet()) {
-			if (map.getValue().equals(fileID)) {
-				name = map.getKey();
-				break;
-			}
-		}
-
-		return name;
-	}
-
-	/**
 	 * Returns information about the files whose backup this Peer initiated
 	 * @param parsedInfo the information about each of the files
 	 * @param fileNames the hashmap containing the file's names
@@ -72,32 +54,20 @@ public class StateProtocol extends Protocol {
 	private String backedUpFilesInfo(HashMap<String, HashMap<Integer, int[]>> parsedInfo, HashMap<String, String> fileNames) {
 		String res = "";
 		
-		for (Entry<String, HashMap<Integer, int[]>> hash: parsedInfo.entrySet()) {
-			if (fileNames.containsValue(hash.getKey())) {
-				res += "   * Name of the file: " + getFileNameFromID(fileNames, hash.getKey()) + "\n";
-				res += "     - ID of the file: " + hash.getKey() + "\n";
+		// Check only the files the Peer has backed up
+		for (Entry<String, String> map: fileNames.entrySet()) {
+			if (parsedInfo.containsKey(map.getValue())) {
+				res += "   * Name of the file: " + map.getKey() + "\n";
+				res += "     - ID of the file: " + map.getValue() + "\n";
 				res += "       * Chunks:\n";
-
-				for (Entry<Integer, int[]> secHash: hash.getValue().entrySet()) {
-					res += "         - ID: " + secHash.getKey().intValue() + "\n";
-					res += "         - Desired RD: " + secHash.getValue()[0] + "\n";
-					res += "         - Perceived RD: " + secHash.getValue()[1] + "\n";
+				
+				for (Entry<Integer, int[]> secMap: parsedInfo.get(map.getValue()).entrySet()) {
+					res += "         - ID: " + secMap.getKey().intValue() + "\n";
+					res += "         - Desired RD: " + secMap.getValue()[0] + "\n";
+					res += "         - Perceived RD: " + secMap.getValue()[1] + "\n";
 				}
 			}
 		}
-		
-		return res;
-	}
-	
-	/**
-	 * Returns information about the files this Peer has in storage
-	 * @param storedFiles the files currently in storage
-	 * @param fileNames the hashmap containing the file's names
-	 */
-	private String storedFilesInfo(LinkedList<String> storedFiles, HashMap<String, String> fileNames) {
-		String res = "";
-		
-		// for (Entry<String, V>)
 		
 		return res;
 	}
@@ -107,7 +77,6 @@ public class StateProtocol extends Protocol {
 		String reply = "";
 		
 		// Retrieve the most up to date information
-		LinkedList<String> storedFiles = FileManager.getFiles(peerID);
 		HashMap<String, String> fileNames = FileManager.getFileID(peerID);
 		LinkedList<String> repInfo = FileManager.getPerceivedReplication(peerID);
 
@@ -115,12 +84,8 @@ public class StateProtocol extends Protocol {
 		HashMap<String, HashMap<Integer, int[]>> parsedInfo = parseInfo(repInfo);
 
 		// Adds to the string info about backed up files
-		reply += " = BACKED UP FILES = \n";
+		reply += " = PEER#" + peerID + "'S STATE = \n";
 		reply += backedUpFilesInfo(parsedInfo, fileNames); // TODO: review this shit
-		
-		// Adds to the string info about stored files
-		reply += " = STORED FILES = \n";
-		reply += storedFilesInfo(storedFiles, fileNames); // TODO: review this shit to
 
 		return reply;
 	}
