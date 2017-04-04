@@ -116,11 +116,11 @@ public class StateProtocol extends Protocol {
 
 		// Adds to the string info about backed up files
 		reply += " = BACKED UP FILES = \n";
-		reply += backedUpFilesInfo(parsedInfo, fileNames);
+		reply += backedUpFilesInfo(parsedInfo, fileNames); // TODO: review this shit
 		
 		// Adds to the string info about stored files
 		reply += " = STORED FILES = \n";
-		reply += storedFilesInfo(storedFiles, fileNames);
+		reply += storedFilesInfo(storedFiles, fileNames); // TODO: review this shit to
 
 		return reply;
 	}
