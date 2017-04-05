@@ -8,10 +8,10 @@ import java.util.LinkedList;
 import Utils.Utils;
 
 public class MCChannel extends MChannel {
-	
+
 	// Instance variables
 	private HashMap<Integer, LinkedList<String>> messageQueue;
-	
+
 	/**
 	 * Creates a MCChannel instance
 	 * @param ipAddress IP address for the multicast socket
@@ -19,16 +19,16 @@ public class MCChannel extends MChannel {
 	 */
 	public MCChannel(String ipAddress, int port) {
 		super(ipAddress, port);
-		
+
 		messageQueue = new HashMap<Integer, LinkedList<String>>();
 		messageQueue.put(Utils.STORED_INT, new LinkedList<String>());
 		messageQueue.put(Utils.GETCHUNK_INT, new LinkedList<String>());
 		messageQueue.put(Utils.DELETE_INT, new LinkedList<String>());
 		messageQueue.put(Utils.REMOVED_INT, new LinkedList<String>());
-		
+
 		mcastThread.start();
 	}
-	
+
 	// Instance methods
 	/**
 	 * Returns a message from the head of the queue depending on the protocol
@@ -37,7 +37,7 @@ public class MCChannel extends MChannel {
 	public synchronized String receive(int protocol) {
 		return (messageQueue.get(protocol).size() > 0) ? messageQueue.get(protocol).removeFirst() : null;
 	}
-	
+
 	/** Thread that is constantly listening for STORED, GETCHUNK, DELETE and REMOVED type messages */
 	Thread mcastThread = new Thread(new Runnable() {
 		@Override
@@ -47,10 +47,10 @@ public class MCChannel extends MChannel {
 					// Receive packet
 					packet = new DatagramPacket(buf, Utils.BUFFER_MAX_SIZE);
 					mcastSocket.receive(packet);
-					
+
 					// Get data and turn it into string
 					String str = new String(packet.getData(), 0, packet.getLength());
-					
+
 					// Store it in its corresponding queue
 					if (str.contains(Utils.STORED_STRING))
 						messageQueue.get(Utils.STORED_INT).add(str);

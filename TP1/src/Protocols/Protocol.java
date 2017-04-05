@@ -23,10 +23,10 @@ public abstract class Protocol {
 	// Instance methods
 	/** Returns the ID of the Peer */
 	public int getPeerID() { return peerID; }
-	
+
 	/** Returns the protocol's version */
 	public String getProVer() { return proVer; }
-	
+
 	/** Returns the multicast control channel */
 	public MCChannel getMCChannel() { return mcChannel; }
 }

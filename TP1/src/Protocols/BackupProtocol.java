@@ -40,7 +40,7 @@ public class BackupProtocol extends Protocol {
 	// Instance methods
 	/** Returns the multicast data backup channel */
 	public MDBChannel getMDBChannel() { return mdbChannel; }
-	
+
 	/** Returns the hashmap of the desired replication degrees */
 	public HashMap<String, Integer> getDesiredRepDegrees() { return desiredRepDegrees; }
 
@@ -66,7 +66,7 @@ public class BackupProtocol extends Protocol {
 
 		// Store desired replication degree
 		desiredRepDegrees.put(fileID, repDeg);
-		
+
 		// Split file into chunks
 		LinkedList<byte[]> chunks = Utils.splitIntoChunks(filePath);
 
@@ -102,7 +102,7 @@ public class BackupProtocol extends Protocol {
 			}
 		}
 
-		return "OK";
+		return Utils.SUCCESS_MESSAGE;
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class BackupProtocol extends Protocol {
 					temp.add(1);
 					otherConfirmations.put(fileID, temp);
 				}
-				
+
 				// Write to file
 				FileManager.storePerceivedReplication(peerID, fileID, chunkNo, desiredRepDegrees.get(fileID).intValue(), otherConfirmations.get(fileID).get(chunkNo));
 			}
@@ -182,7 +182,7 @@ public class BackupProtocol extends Protocol {
 					String fileID = args[3];
 					int chunkNo = Integer.parseInt(args[4]);
 					int repDeg = Integer.parseInt(args[5]);
-					
+
 					// Store desired replication degree
 					desiredRepDegrees.put(fileID, repDeg);
 

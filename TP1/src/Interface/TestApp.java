@@ -16,7 +16,7 @@ public class TestApp {
 	private static final int FILE = 2;
 	private static final int SPAC = 2;
 	private static final int REPL = 3;
-	
+
 	/** Prints the correct way to initialize and execute an instance of this class */
 	private static void printUsage() {
 		System.out.println("Usage: java -cp ./bin Interface.TestApp <ip_address>:<port> <sub_protocol> <file_path> <rep_degree>");
@@ -138,11 +138,11 @@ public class TestApp {
 			// Wait and parse reply
 			String reply = null;
 			while ((reply = in.readLine()) != null) {
-				if (reply.equals("OK")) {
+				if (reply.equals(Utils.SUCCESS_MESSAGE)) {
 					System.out.println("Request successful.");
-				} else if (reply.equals("ERROR")) {
+				} else if (reply.equals(Utils.ERROR_MESSAGE)) {
 					System.out.println("An error ocurred while processing the request.");
-				} else if (reply.equals("END")) {
+				} else if (reply.equals(Utils.END_MESSAGE)) {
 					break; // Get out of the Loop
 				} else {
 					System.out.println(reply);

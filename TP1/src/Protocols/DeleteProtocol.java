@@ -33,12 +33,12 @@ public class DeleteProtocol extends Protocol {
 	public String deleteFile(String fileName) {
 		// Get the most up to date information
 		currStoredFiles = FileManager.getFiles(peerID);
-		
+
 		// Get file ID
 		String fileID = FileManager.getFileID(peerID).get(fileName);
 		if (fileID == null) {
 			System.out.println("Cannot order the deletion of a file this Peer hasn't backed up.");
-			return "ERROR";
+			return Utils.ERROR_MESSAGE;
 		} else {
 			FileManager.deleteFileID(peerID, fileID);
 			FileManager.deletePerceivedReplication(peerID, fileID);
@@ -56,7 +56,7 @@ public class DeleteProtocol extends Protocol {
 			catch (InterruptedException e) { e.printStackTrace(); }
 		}
 
-		return "OK";
+		return Utils.SUCCESS_MESSAGE;
 	}
 
 	/** Thread that is constantly processing DELETE type messages */

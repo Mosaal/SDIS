@@ -13,7 +13,7 @@ public class Peer {
 	private static final int MCC = 3;
 	private static final int MDB = 4;
 	private static final int MDR = 5;
-	
+
 	/** Prints the correct way to initialize and execute an instance of this class */
 	public static void printUsage() {
 		System.out.println("Usage: java -cp ./bin Peers.Peer <protocol_version> <server_id> <tcp_port> <mc_channel_ip>:<port> <mdb_channel_ip>:<port> <mdr_channel_ip>:<port>");
@@ -36,7 +36,7 @@ public class Peer {
 			System.out.println("ERROR: Wrong number of arguments.");
 			return false;
 		}
-		
+
 		// Check if protocol version is a double
 		if (!Utils.isStringDouble(args[PRO])) {
 			System.out.println("ERROR: Argument '" + args[PRO] + "' is not a valid protocol version.");
@@ -79,7 +79,7 @@ public class Peer {
 			printUsage();
 			return;
 		}
-		
+
 		// Initialize everything
 		String proVer = args[PRO];
 		String[] mc = args[MCC].split(":");
@@ -87,7 +87,7 @@ public class Peer {
 		String[] mdr = args[MDR].split(":");
 		int peerID = Integer.parseInt(args[SER]);
 		int tcpPort = Integer.parseInt(args[TCP]);
-		
+
 		// Create Peer's main directory
 		try { FileManager.createPeerDirectory(peerID); }
 		catch (IOException e1) { e1.printStackTrace(); }
@@ -100,7 +100,7 @@ public class Peer {
 		System.out.println("<Press the [Enter] key to stop executing>");
 		try { System.in.read(); } 
 		catch (IOException e) { e.printStackTrace(); }
-		
+
 		// Close everything
 		System.out.println("Shutting down...");
 		System.exit(0);

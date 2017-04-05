@@ -40,7 +40,7 @@ public class MDBChannel extends MChannel {
 
 					// Get data and turn it into string
 					String str = new String(packet.getData(), 0, packet.getLength());
-					
+
 					// Parse string and its data
 					if (str.contains(Utils.PUTCHUNK_STRING))
 						messageQueue.add(str);

@@ -87,19 +87,19 @@ public class FileManager {
 		// Check if it exists
 		try { if (!perFile.exists()) perFile.createNewFile(); }
 		catch (IOException e) { return; }
-		
+
 		try {
 			// Retrieve data already in file
 			for (String line: Files.readAllLines(Paths.get(perFile.getPath()))) {
 				if (line.isEmpty()) continue;
-				
+
 				if (!line.contains(fileID + ":" + chunkNo))
 					lines.add(line);
 			}
-			
+
 			// Add the new line
 			lines.add(fileID + ":" + Integer.toString(chunkNo) + ":" + Integer.toString(dRD) + ":" + Integer.toString(pRD));
-			
+
 			// Write new data to the file
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(perFile.getPath(), false)));
 			for (int i = 0; i < lines.size(); i++)
@@ -109,7 +109,7 @@ public class FileManager {
 			return;
 		}
 	}
-	
+
 	/**
 	 * Deletes the all of the lines referencing a given fileID
 	 * @param peerID the name of the main directory
@@ -119,18 +119,18 @@ public class FileManager {
 		LinkedList<String> lines = new LinkedList<String>();
 		String perPath = PEER + Integer.toString(peerID) + "/" + REPLICATION;
 		File perFile = new File(perPath);
-		
+
 		// Check if it exists
 		if (perFile.exists()) {
 			try {
 				// Retrieve data already in file
 				for (String line: Files.readAllLines(Paths.get(perFile.getPath()))) {
 					if (line.isEmpty()) continue;
-					
+
 					if (!line.contains(fileID))
 						lines.add(line);
 				}
-				
+
 				// Write new data to the file
 				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(perFile.getPath(), false)));
 				for (int i = 0; i < lines.size(); i++)
@@ -145,7 +145,7 @@ public class FileManager {
 			catch (IOException e) { return; }
 		}
 	}
-	
+
 	/**
 	 * Returns the information in the replication file
 	 * @param peerID the name of the main directory
@@ -153,7 +153,7 @@ public class FileManager {
 	public static LinkedList<String> getPerceivedReplication(int peerID) {
 		LinkedList<String> lines = new LinkedList<String>();
 		File perFile = new File(PEER + Integer.toString(peerID) + "/" + REPLICATION);
-		
+
 		// Check if it exists
 		if (perFile.exists()) {
 			try {
@@ -170,7 +170,7 @@ public class FileManager {
 			try { perFile.createNewFile(); }
 			catch (IOException e) { return lines; }
 		}
-		
+
 		return lines;
 	}
 

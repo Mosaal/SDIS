@@ -14,7 +14,7 @@ public abstract class MChannel {
 	protected int port;
 	protected byte[] buf;
 	protected String ipAddress;
-	
+
 	// Multicast variables
 	protected DatagramPacket packet;
 	protected DatagramSocket dataSocket;
@@ -29,37 +29,37 @@ public abstract class MChannel {
 		this.port = port;
 		this.ipAddress = ipAddress;
 		buf = new byte[Utils.BUFFER_MAX_SIZE];
-		
+
 		try {
 			dataSocket = new DatagramSocket();
 			packet = new DatagramPacket(buf, Utils.BUFFER_MAX_SIZE);
-			
+
 			mcastSocket = new MulticastSocket(port);
 			mcastSocket.joinGroup(InetAddress.getByName(ipAddress));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	// Instance methods
 	/** Returns the port number the multicast socket is on */
 	public int getPort() { return port; }
-	
+
 	/** Returns the buffer used in the packet */
 	public byte[] getBuffer() { return buf; }
-	
+
 	/** Returns the IP address */
 	public String getAddress() { return ipAddress; }
-	
+
 	/** Returns the data packet */
 	public DatagramPacket getPacket() { return packet; }
-	
+
 	/** Returns the data socket */
 	public DatagramSocket getDataSocket() { return dataSocket; }
-	
+
 	/** Returns the multicast socket */
 	public MulticastSocket getMCastSocket() { return mcastSocket; }
-	
+
 	/**
 	 * Sends a given message to the corresponding channel
 	 * @param message message to be sent

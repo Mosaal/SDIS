@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
 
 import Channels.MCChannel;
 import Channels.MDBChannel;
@@ -121,7 +120,7 @@ public class PeerRunnable implements Runnable {
 				// Check if result is null
 				if (res == null) {
 					System.out.println("Invalid request received. Closing connection...\n");
-					out.println("ERROR");
+					out.println(Utils.ERROR_MESSAGE);
 					continue;
 				}
 
@@ -130,7 +129,7 @@ public class PeerRunnable implements Runnable {
 					File file = new File(res[1]);					
 					if (!file.exists() || !file.isFile()) {
 						System.out.println("The file '" + res[1] + "' does not exist or it is a directory. Closing connection...");
-						out.println("ERROR");
+						out.println(Utils.ERROR_MESSAGE);
 						continue;
 					}
 				}
@@ -154,18 +153,18 @@ public class PeerRunnable implements Runnable {
 					reply = reclaimProtocol.reclaimSpace(Integer.parseInt(res[1]));
 					break;
 				}
-				
+
 				// Send a reply confirming what happened
-				if (reply.equals("OK")) {
+				if (reply.equals(Utils.SUCCESS_MESSAGE)) {
 					System.out.println("The request was processed successfully. Closing connection...");
-					out.println("OK\nEND");
-				} else if (reply.equals("ERROR")) {
+					out.println(Utils.SUCCESS_MESSAGE + "\n" + Utils.END_MESSAGE);
+				} else if (reply.equals(Utils.ERROR_MESSAGE)) {
 					System.out.println("There was an error processing the request. Closing connection...");
-					out.println("ERROR\nEND");
+					out.println(Utils.ERROR_MESSAGE + "\n" + Utils.END_MESSAGE);
 				} else {
 					System.out.println("The request was processed successfully. Closing connection...");
 					out.println(reply);
-					out.println("END");
+					out.println(Utils.END_MESSAGE);
 				}
 			} catch (IOException e) {
 				System.out.println("Failed to read request from the Client.");

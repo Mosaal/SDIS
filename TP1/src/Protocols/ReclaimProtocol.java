@@ -80,6 +80,22 @@ public class ReclaimProtocol extends Protocol {
 	}
 
 	/**
+	 * Processes the reclaim request in terms of deleting chunks and sending messages
+	 * @param list list of chunks to be deleted
+	 */
+	private boolean processReclaim(LinkedList<String> list) {
+		/**
+		 * TODO
+		 * Store what chunks are going to be ignored
+		 * Update their perceived count on this peer
+		 * Delete the actual chunks
+		 * Send the REMOVED type messages
+		 */
+
+		return true;
+	}
+
+	/**
 	 * Reclaims the desired amount of space
 	 * @param spaceToReclaim the amount of space to be reclaimed (in KBytes)
 	 */
@@ -105,10 +121,9 @@ public class ReclaimProtocol extends Protocol {
 			totalSize += reclaimableSize(greater, files) / 1000;
 
 			// Check if it is enough
-			if (totalSize >= spaceToReclaim) {
-				// TODO: reclaim space
-				isEnough = true;
-			}
+			if (totalSize >= spaceToReclaim)
+				if (processReclaim(greater))
+					isEnough = true;
 		}
 
 		// Check if there is equals and it is enough
@@ -116,12 +131,11 @@ public class ReclaimProtocol extends Protocol {
 			totalSize += reclaimableSize(equals, files) / 1000;
 
 			// Check if it is enough
-			if (totalSize >= spaceToReclaim) {
-				// TODO: reclaim space
-				isEnough = true;
-			}
+			if (totalSize >= spaceToReclaim)
+				if (processReclaim(equals))
+					isEnough = true;
 		}
-		
+
 		// Check if is still not enough
 		if (!isEnough) {
 			// TODO: choose chunks until it is enough
@@ -133,7 +147,7 @@ public class ReclaimProtocol extends Protocol {
 		// TODO: instead of all of this I can choose random chunks
 		// Send the necessary removed messages
 		// And deal with it on the other side
-		
+
 		return Utils.SUCCESS_MESSAGE;
 	}
 
@@ -151,7 +165,10 @@ public class ReclaimProtocol extends Protocol {
 
 			// Check who it belongs to
 			if (Integer.parseInt(args[2]) != peerID) {
-
+				// TODO: Update perceived count
+				// Check if it goes bellow desired
+				// Send PUTCHUNKs if it does
+				// Do nothing if it doesn't
 			}
 		}
 	});

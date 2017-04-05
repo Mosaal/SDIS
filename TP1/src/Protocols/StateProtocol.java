@@ -53,14 +53,14 @@ public class StateProtocol extends Protocol {
 	 */
 	private String backedUpFilesInfo(HashMap<String, HashMap<Integer, int[]>> parsedInfo, HashMap<String, String> fileNames) {
 		String res = "";
-		
+
 		// Check only the files the Peer has backed up
 		for (Entry<String, String> map: fileNames.entrySet()) {
 			if (parsedInfo.containsKey(map.getValue())) {
 				res += "   * Name of the file: " + map.getKey() + "\n";
 				res += "     - ID of the file: " + map.getValue() + "\n";
 				res += "       * Chunks:\n";
-				
+
 				for (Entry<Integer, int[]> secMap: parsedInfo.get(map.getValue()).entrySet()) {
 					res += "         - ID: " + secMap.getKey().intValue() + "\n";
 					res += "         - Desired RD: " + secMap.getValue()[0] + "\n";
@@ -68,14 +68,14 @@ public class StateProtocol extends Protocol {
 				}
 			}
 		}
-		
+
 		return res;
 	}
 
 	/** Retrieves information about the internal state of the Peer */
 	public String getState() {
 		String reply = "";
-		
+
 		// Retrieve the most up to date information
 		HashMap<String, String> fileNames = FileManager.getFileID(peerID);
 		LinkedList<String> repInfo = FileManager.getPerceivedReplication(peerID);
