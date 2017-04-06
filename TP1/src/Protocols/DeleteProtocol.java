@@ -74,7 +74,7 @@ public class DeleteProtocol extends Protocol {
 				if (Integer.parseInt(args[2]) != peerID) {
 					// Get file ID and update files list
 					String fileID = args[3];
-					currStoredFiles = FileManager.getFiles(peerID);
+					currStoredFiles = FileManager.getStoredFiles(peerID);
 
 					// Check if it has any chunk of this file
 					if (currStoredFiles.contains(fileID)) {

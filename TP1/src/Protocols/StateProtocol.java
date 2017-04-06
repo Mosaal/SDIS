@@ -53,6 +53,10 @@ public class StateProtocol extends Protocol {
 	 */
 	private String backedUpFilesInfo(HashMap<String, HashMap<Integer, int[]>> parsedInfo, HashMap<String, String> fileNames) {
 		String res = "";
+		
+		// Check if its empty
+		if (fileNames.isEmpty())
+			return "    This Peer hasn't initiated a Backup yet.\n";
 
 		// Check only the files the Peer has backed up
 		for (Entry<String, String> map: fileNames.entrySet()) {
@@ -71,6 +75,32 @@ public class StateProtocol extends Protocol {
 
 		return res;
 	}
+	
+	/**
+	 * Returns information about the files this Peer has in storage
+	 * @param storedFiles list of stored files
+	 * @return
+	 */
+	private String storedFilesInfo(HashMap<String, ArrayList<Integer>> storedChunks) {
+		String res = "";
+		
+		// Check if its empty
+		if (storedChunks.isEmpty())
+			return "    This Peer has no files in storage yet.\n";
+		
+		// Add info about files in storage
+		for (Entry<String, ArrayList<Integer>> temp: storedChunks.entrySet()) {
+			res += "   * ID of the file: " + temp.getKey() + "\n";
+			res += "     * Chunks:\n";
+			
+			// Add info about each chunk
+			ArrayList<Integer> chunks = temp.getValue();
+			for (int i = 0; i < chunks.size(); i++)
+				res += "       - ID: " + chunks.get(i) + " - Size: " + FileManager.getChunk(peerID, temp.getKey(), chunks.get(i)).length + "\n";
+		}
+		
+		return res;
+	}
 
 	/** Retrieves information about the internal state of the Peer */
 	public String getState() {
@@ -79,13 +109,18 @@ public class StateProtocol extends Protocol {
 		// Retrieve the most up to date information
 		HashMap<String, String> fileNames = FileManager.getFileID(peerID);
 		ArrayList<String> repInfo = FileManager.getPerceivedReplication(peerID);
+		HashMap<String, ArrayList<Integer>> storedChunks = FileManager.getStoredChunks(peerID);
 
 		// Parse info into hashmap: FileID -> (ChunkNo -> ([0] = DesRD, [1] = PerRD))
 		HashMap<String, HashMap<Integer, int[]>> parsedInfo = parseInfo(repInfo);
 
 		// Adds to the string info about backed up files
-		reply += " = PEER#" + peerID + "'S STATE = \n";
-		reply += backedUpFilesInfo(parsedInfo, fileNames); // TODO: review this shit
+		reply += " = INITIATED BACKUPS = \n";
+		reply += backedUpFilesInfo(parsedInfo, fileNames);
+		
+		// Adds to the string info about stored files
+		reply += " = STORED FILES = \n";
+		reply += storedFilesInfo(storedChunks);
 
 		return reply;
 	}

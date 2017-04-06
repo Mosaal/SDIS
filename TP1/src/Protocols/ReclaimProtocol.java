@@ -102,7 +102,7 @@ public class ReclaimProtocol extends Protocol {
 	public String reclaimSpace(int spaceToReclaim) {
 		// Get the perceived replication for the backed up files
 		boolean isEnough = false;
-		ArrayList<String> files = FileManager.getFiles(peerID);
+		ArrayList<String> files = FileManager.getStoredFiles(peerID);
 
 		// End it if there are no files in storage
 		if (files.isEmpty()) {

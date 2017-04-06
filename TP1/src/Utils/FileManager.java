@@ -178,7 +178,7 @@ public class FileManager {
 	 * Returns all of the files currently in storage
 	 * @param peerID ID of the directory to read from
 	 */
-	public static ArrayList<String> getFiles(int peerID) {
+	public static ArrayList<String> getStoredFiles(int peerID) {
 		ArrayList<String> files = new ArrayList<String>();
 		File storedFile = new File(PEER + Integer.toString(peerID) + "/" + STORED);
 

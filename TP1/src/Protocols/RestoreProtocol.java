@@ -56,7 +56,7 @@ public class RestoreProtocol extends Protocol {
 	 */
 	public String restoreFile(String fileName) {
 		// Get the most up to date information
-		currStoredFiles = FileManager.getFiles(peerID);
+		currStoredFiles = FileManager.getStoredFiles(peerID);
 
 		// Get file ID
 		String fileID = FileManager.getFileID(peerID).get(fileName);
@@ -161,7 +161,7 @@ public class RestoreProtocol extends Protocol {
 					int chunkNo = Integer.parseInt(args[4]);
 					
 					// Get the most up to date info
-					currStoredFiles = FileManager.getFiles(peerID);
+					currStoredFiles = FileManager.getStoredFiles(peerID);
 
 					if (currStoredFiles.contains(fileID)) {
 						byte[] chunk = FileManager.getChunk(peerID, fileID, chunkNo);
