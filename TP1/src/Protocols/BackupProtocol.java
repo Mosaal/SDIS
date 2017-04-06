@@ -12,7 +12,7 @@ public class BackupProtocol extends Protocol {
 
 	// Instance variables
 	private MDBChannel mdbChannel;
-	private volatile ArrayList<String> toBeIgnored;
+	public static ArrayList<String> toBeIgnored;
 	private volatile HashMap<String, Integer> desiredRepDegrees;
 	private volatile HashMap<String, ArrayList<Integer>> otherConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
 	private volatile HashMap<String, ArrayList<Integer>> storedConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)

@@ -91,6 +91,24 @@ public class ReclaimProtocol extends Protocol {
 		 * Delete the actual chunks
 		 * Send the REMOVED type messages
 		 */
+		for (int i = 0; i < list.size(); i++) {
+			// Tell BackupProtocol not to store more of this file
+			BackupProtocol.toBeIgnored.add(list.get(i).split(":")[0]);
+			
+			// TODO
+			// Update the perceived count
+			// Something in the FileManager
+			// Keep what's there, update the new ones, remove them if they reach zero
+			
+			// TODO
+			// Delete the chunk
+			// Something in the FileManager
+			// If its the last chunk, delete its parent folder
+			
+			// TODO
+			// Send a REMOVED type message
+			// Wait 0 to 400ms before sending the next
+		}
 
 		return true;
 	}
