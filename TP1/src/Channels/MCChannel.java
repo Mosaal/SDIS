@@ -10,7 +10,7 @@ import Utils.Utils;
 public class MCChannel extends MChannel {
 
 	// Instance variables
-	private HashMap<Integer, LinkedList<String>> messageQueue;
+	private HashMap<Integer, LinkedList<byte[]>> messageQueue;
 
 	/**
 	 * Creates a MCChannel instance
@@ -20,11 +20,11 @@ public class MCChannel extends MChannel {
 	public MCChannel(String ipAddress, int port) {
 		super(ipAddress, port);
 
-		messageQueue = new HashMap<Integer, LinkedList<String>>();
-		messageQueue.put(Utils.STORED_INT, new LinkedList<String>());
-		messageQueue.put(Utils.GETCHUNK_INT, new LinkedList<String>());
-		messageQueue.put(Utils.DELETE_INT, new LinkedList<String>());
-		messageQueue.put(Utils.REMOVED_INT, new LinkedList<String>());
+		messageQueue = new HashMap<Integer, LinkedList<byte[]>>();
+		messageQueue.put(Utils.STORED_INT, new LinkedList<byte[]>());
+		messageQueue.put(Utils.GETCHUNK_INT, new LinkedList<byte[]>());
+		messageQueue.put(Utils.DELETE_INT, new LinkedList<byte[]>());
+		messageQueue.put(Utils.REMOVED_INT, new LinkedList<byte[]>());
 
 		mcastThread.start();
 	}
@@ -34,7 +34,7 @@ public class MCChannel extends MChannel {
 	 * Returns a message from the head of the queue depending on the protocol
 	 * @param protocol protocol trying to retrieve a message
 	 */
-	public synchronized String receive(int protocol) {
+	public synchronized byte[] receive(int protocol) {
 		return (messageQueue.get(protocol).size() > 0) ? messageQueue.get(protocol).removeFirst() : null;
 	}
 
@@ -57,13 +57,13 @@ public class MCChannel extends MChannel {
 
 					// Add it to the queue
 					if (str.contains(Utils.STORED_STRING))
-						messageQueue.get(Utils.STORED_INT).add(str);
+						messageQueue.get(Utils.STORED_INT).add(data);
 					else if (str.contains(Utils.GETCHUNK_STRING))
-						messageQueue.get(Utils.GETCHUNK_INT).add(str);
+						messageQueue.get(Utils.GETCHUNK_INT).add(data);
 					else if (str.contains(Utils.DELETE_STRING))
-						messageQueue.get(Utils.DELETE_INT).add(str);
+						messageQueue.get(Utils.DELETE_INT).add(data);
 					else if (str.contains(Utils.REMOVED_STRING))
-						messageQueue.get(Utils.REMOVED_INT).add(str);
+						messageQueue.get(Utils.REMOVED_INT).add(data);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

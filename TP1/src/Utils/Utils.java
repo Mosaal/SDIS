@@ -103,9 +103,8 @@ public class Utils {
 	 * Returns the part of the message that is the chunk's data
 	 * @param msg the message that contains chunk data
 	 */
-	public static byte[] getChunkData(String msg) {
+	public static byte[] getChunkData(byte[] data) {
 		int index = 0;
-		byte[] data = msg.getBytes();
 
 		// Look for [ 0xD, 0xA, 0xD, 0xA ] in the byte sequence
 		for (int i = 0; i < data.length; i++) {

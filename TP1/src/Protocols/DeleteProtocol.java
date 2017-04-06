@@ -63,9 +63,12 @@ public class DeleteProtocol extends Protocol {
 		public void run() {
 			while (true) {
 				// Receive data if its there to be received
-				String str = null;
-				do { str = mcChannel.receive(Utils.DELETE_INT); }
-				while (str == null);
+				byte[] data = null;
+				do { data = mcChannel.receive(Utils.DELETE_INT); }
+				while (data == null);
+				
+				// Make it a string
+				String str = new String(data, 0, data.length);
 
 				// Split it
 				String[] args = str.split(" ");

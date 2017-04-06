@@ -104,9 +104,12 @@ public class RestoreProtocol extends Protocol {
 		public void run() {
 			while (true) {
 				// Receive data if its there to be received
-				String str = null;
-				do { str = mdrChannel.receive(); }
-				while (str == null);
+				byte[] data = null;
+				do { data = mdrChannel.receive(); }
+				while (data == null);
+				
+				// Make it a string
+				String str = new String(data, 0, data.length);
 
 				// Split it
 				String[] args = str.split(" ");
@@ -119,7 +122,7 @@ public class RestoreProtocol extends Protocol {
 					// Check if it is waiting for the given chunk
 					if (chunkConfirmations.containsKey(fileID)) {
 						if (chunkConfirmations.get(fileID).get(chunkNo) == null) {
-							byte[] chunk = Utils.getChunkData(str);
+							byte[] chunk = Utils.getChunkData(data);
 
 							// Check the size of the chunk
 							if (chunk.length < Utils.CHUNK_MAX_SIZE) {
@@ -147,9 +150,12 @@ public class RestoreProtocol extends Protocol {
 		public void run() {
 			while (true) {
 				// Receive data if its there to be received
-				String str = null;
-				do { str = mcChannel.receive(Utils.GETCHUNK_INT); }
-				while (str == null);
+				byte[] data = null;
+				do { data = mcChannel.receive(Utils.GETCHUNK_INT); }
+				while (data == null);
+				
+				// Make it a string
+				String str = new String(data, 0, data.length);
 
 				// Split it
 				String[] args = str.split(" ");

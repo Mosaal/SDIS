@@ -124,9 +124,12 @@ public class BackupProtocol extends Protocol {
 		public void run() {
 			while (true) {
 				// Receive data if its there to be received
-				String str = null;
-				do { str = mcChannel.receive(Utils.STORED_INT); }
-				while (str == null);
+				byte[] data = null;
+				do { data = mcChannel.receive(Utils.STORED_INT); }
+				while (data == null);
+				
+				// Make it a string
+				String str = new String(data, 0, data.length);
 
 				// Split it
 				String[] args = str.split(" ");
@@ -171,9 +174,12 @@ public class BackupProtocol extends Protocol {
 		public void run() {
 			while (true) {
 				// Receive data if its there to be received
-				String str = null;
-				do { str = mdbChannel.receive(); }
-				while (str == null);
+				byte[] data = null;
+				do { data = mdbChannel.receive(); }
+				while (data == null);
+				
+				// Make it a string
+				String str = new String(data, 0, data.length);
 
 				// Split it
 				String[] args = str.split(" ");
@@ -198,7 +204,7 @@ public class BackupProtocol extends Protocol {
 							continue;
 						} else {
 							// Write to disk and send confirmation
-							byte[] chunk = Utils.getChunkData(str);
+							byte[] chunk = Utils.getChunkData(data);
 
 							if (FileManager.storeChunk(peerID, fileID, chunkNo, chunk)) {
 								// Add to confirmed chunks list
@@ -214,7 +220,7 @@ public class BackupProtocol extends Protocol {
 						}
 					} else {
 						// Write to disk and send confirmation
-						byte[] chunk = Utils.getChunkData(str);
+						byte[] chunk = Utils.getChunkData(data);
 
 						if (FileManager.storeChunk(peerID, fileID, chunkNo, chunk)) {
 							// Add to confirmed chunks list

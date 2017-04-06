@@ -9,7 +9,7 @@ import Utils.Utils;
 public class MDBChannel extends MChannel {
 
 	// Instance variables
-	private LinkedList<String> messageQueue;
+	private LinkedList<byte[]> messageQueue;
 
 	/**
 	 * Creates a MDBChannel instance
@@ -18,13 +18,13 @@ public class MDBChannel extends MChannel {
 	 */
 	public MDBChannel(String ipAddress, int port) {
 		super(ipAddress, port);
-		messageQueue = new LinkedList<String>();
+		messageQueue = new LinkedList<byte[]>();
 		mcastThread.start();
 	}
 
 	// Instance methods
 	/** Returns a message from the head of the queue */
-	public synchronized String receive() {
+	public synchronized byte[] receive() {
 		return (messageQueue.size() > 0) ? messageQueue.removeFirst() : null;
 	}
 
@@ -47,7 +47,7 @@ public class MDBChannel extends MChannel {
 
 					// Add it to the queue
 					if (str.contains(Utils.PUTCHUNK_STRING))
-						messageQueue.add(str);
+						messageQueue.add(data);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
