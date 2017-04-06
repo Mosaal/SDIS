@@ -1,8 +1,8 @@
 package Protocols;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import Channels.MCChannel;
 import Channels.MDBChannel;
@@ -12,10 +12,11 @@ public class BackupProtocol extends Protocol {
 
 	// Instance variables
 	private MDBChannel mdbChannel;
+	private volatile ArrayList<String> toBeIgnored;
 	private volatile HashMap<String, Integer> desiredRepDegrees;
-	private volatile HashMap<String, LinkedList<Integer>> otherConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
-	private volatile HashMap<String, LinkedList<Integer>> storedConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
-	private volatile HashMap<String, LinkedList<Integer>> putChunkConfirmations; // FileID -> (List of chunk numbers)
+	private volatile HashMap<String, ArrayList<Integer>> otherConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
+	private volatile HashMap<String, ArrayList<Integer>> storedConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
+	private volatile HashMap<String, ArrayList<Integer>> putChunkConfirmations; // FileID -> (List of chunk numbers)
 
 	/**
 	 * Creates a BackupProtocol instance
@@ -28,10 +29,11 @@ public class BackupProtocol extends Protocol {
 		super(proVer, peerID, mcChannel);
 
 		this.mdbChannel = mdbChannel;
+		toBeIgnored = new ArrayList<String>();
 		desiredRepDegrees = new HashMap<String, Integer>();
 		putChunkConfirmations = FileManager.getStoredChunks(peerID);
-		otherConfirmations = new HashMap<String, LinkedList<Integer>>();
-		storedConfirmations = new HashMap<String, LinkedList<Integer>>();
+		otherConfirmations = new HashMap<String, ArrayList<Integer>>();
+		storedConfirmations = new HashMap<String, ArrayList<Integer>>();
 
 		processStored.start();
 		processPutchunk.start();
@@ -45,13 +47,13 @@ public class BackupProtocol extends Protocol {
 	public HashMap<String, Integer> getDesiredRepDegrees() { return desiredRepDegrees; }
 
 	/** Returns the hashmap of the replication degree for the stored chunks of each file (not belonging to this Peer) */
-	public HashMap<String, LinkedList<Integer>> getOtherConfirmations() { return otherConfirmations; }
+	public HashMap<String, ArrayList<Integer>> getOtherConfirmations() { return otherConfirmations; }
 
 	/** Returns the hashmap of the replication degree for the stored chunks of each file (belonging to this Peer) */
-	public HashMap<String, LinkedList<Integer>> getStoredConfirmations() { return storedConfirmations; }
+	public HashMap<String, ArrayList<Integer>> getStoredConfirmations() { return storedConfirmations; }
 
 	/** Returns the hashmap for the backed up chunks of each file */
-	public HashMap<String, LinkedList<Integer>> getPutChunkConfirmations() { return putChunkConfirmations; }
+	public HashMap<String, ArrayList<Integer>> getPutChunkConfirmations() { return putChunkConfirmations; }
 
 	/**
 	 * Backup a given file
@@ -68,10 +70,10 @@ public class BackupProtocol extends Protocol {
 		desiredRepDegrees.put(fileID, repDeg);
 
 		// Split file into chunks
-		LinkedList<byte[]> chunks = Utils.splitIntoChunks(filePath);
+		ArrayList<byte[]> chunks = Utils.splitIntoChunks(filePath);
 
 		// Store sent chunks in a hashmap for later confirmation
-		LinkedList<Integer> temp = new LinkedList<Integer>();
+		ArrayList<Integer> temp = new ArrayList<Integer>();
 		for (int i = 0; i < chunks.size(); i++) temp.add(0);
 		storedConfirmations.put(fileID, temp);
 
@@ -110,8 +112,8 @@ public class BackupProtocol extends Protocol {
 	 * @param filePath path of the file the chunk belongs to
 	 * @param chunkNo the number of the chunk
 	 */
-	public boolean backupChunk(String filePath, int chunkNo) {
-
+	public static boolean backupChunk(String filePath, int chunkNo) {
+		
 
 		return true;
 	}
@@ -138,7 +140,7 @@ public class BackupProtocol extends Protocol {
 					// Check if it contains the specified file
 					if (storedConfirmations.containsKey(fileID)) {
 						// Add to confirmed stored list
-						LinkedList<Integer> temp = storedConfirmations.get(fileID);
+						ArrayList<Integer> temp = storedConfirmations.get(fileID);
 						temp.set(chunkNo, temp.get(chunkNo).intValue() + 1);
 						storedConfirmations.put(fileID, temp);
 					}
@@ -147,12 +149,12 @@ public class BackupProtocol extends Protocol {
 				// Store perceived replication degree
 				if (otherConfirmations.containsKey(fileID)) {
 					// Add to confirmed other list
-					LinkedList<Integer> temp = otherConfirmations.get(fileID);
+					ArrayList<Integer> temp = otherConfirmations.get(fileID);
 					if (chunkNo >= temp.size()) temp.add(1);
 					else temp.set(chunkNo, temp.get(chunkNo).intValue() + 1);
 					otherConfirmations.put(fileID, temp);
 				} else {
-					LinkedList<Integer> temp = new LinkedList<Integer>();
+					ArrayList<Integer> temp = new ArrayList<Integer>();
 					temp.add(1);
 					otherConfirmations.put(fileID, temp);
 				}
@@ -183,6 +185,10 @@ public class BackupProtocol extends Protocol {
 					int chunkNo = Integer.parseInt(args[4]);
 					int repDeg = Integer.parseInt(args[5]);
 
+					// Check if it must be ignored
+					if (toBeIgnored.contains(fileID))
+						continue;
+					
 					// Store desired replication degree
 					desiredRepDegrees.put(fileID, repDeg);
 
@@ -196,7 +202,7 @@ public class BackupProtocol extends Protocol {
 
 							if (FileManager.storeChunk(peerID, fileID, chunkNo, chunk)) {
 								// Add to confirmed chunks list
-								LinkedList<Integer> temp = putChunkConfirmations.get(fileID);
+								ArrayList<Integer> temp = putChunkConfirmations.get(fileID);
 								temp.add(chunkNo);
 								putChunkConfirmations.put(fileID, temp);
 
@@ -212,7 +218,7 @@ public class BackupProtocol extends Protocol {
 
 						if (FileManager.storeChunk(peerID, fileID, chunkNo, chunk)) {
 							// Add to confirmed chunks list
-							LinkedList<Integer> temp = new LinkedList<Integer>();
+							ArrayList<Integer> temp = new ArrayList<Integer>();
 							temp.add(chunkNo);
 							putChunkConfirmations.put(fileID, temp);
 

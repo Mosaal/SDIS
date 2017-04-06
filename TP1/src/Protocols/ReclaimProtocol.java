@@ -1,6 +1,6 @@
 package Protocols;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import Channels.MCChannel;
 import Utils.FileManager;
@@ -24,8 +24,8 @@ public class ReclaimProtocol extends Protocol {
 	 * Returns the chunks whose perceived replication degree is greater than the desired one
 	 * @param perRep all of the known replication values
 	 */
-	private LinkedList<String> PRDgreaterDRD(LinkedList<String> perRep) {
-		LinkedList<String> toBeDeleted = new LinkedList<String>();
+	private ArrayList<String> PRDgreaterDRD(ArrayList<String> perRep) {
+		ArrayList<String> toBeDeleted = new ArrayList<String>();
 
 		for (int i = 0; i < perRep.size(); i++) {
 			String[] args = perRep.get(i).split(":");
@@ -44,8 +44,8 @@ public class ReclaimProtocol extends Protocol {
 	 * Returns the chunks whose perceived replication degree equals the desired one
 	 * @param perRep all of the known replication values
 	 */
-	private LinkedList<String> PRDequalsDRD(LinkedList<String> perRep) {
-		LinkedList<String> toBeDeleted = new LinkedList<String>();
+	private ArrayList<String> PRDequalsDRD(ArrayList<String> perRep) {
+		ArrayList<String> toBeDeleted = new ArrayList<String>();
 
 		for (int i = 0; i < perRep.size(); i++) {
 			String[] args = perRep.get(i).split(":");
@@ -64,7 +64,7 @@ public class ReclaimProtocol extends Protocol {
 	 * Calculate the amount of reclaimable space
 	 * @param list chunks whose size is going to be checked
 	 */
-	private int reclaimableSize(LinkedList<String> list, LinkedList<String> files) {
+	private int reclaimableSize(ArrayList<String> list, ArrayList<String> files) {
 		int size = 0;
 
 		// Sum the amount of each file
@@ -83,7 +83,7 @@ public class ReclaimProtocol extends Protocol {
 	 * Processes the reclaim request in terms of deleting chunks and sending messages
 	 * @param list list of chunks to be deleted
 	 */
-	private boolean processReclaim(LinkedList<String> list) {
+	private boolean processReclaim(ArrayList<String> list) {
 		/**
 		 * TODO
 		 * Store what chunks are going to be ignored
@@ -102,7 +102,7 @@ public class ReclaimProtocol extends Protocol {
 	public String reclaimSpace(int spaceToReclaim) {
 		// Get the perceived replication for the backed up files
 		boolean isEnough = false;
-		LinkedList<String> files = FileManager.getFiles(peerID);
+		ArrayList<String> files = FileManager.getFiles(peerID);
 
 		// End it if there are no files in storage
 		if (files.isEmpty()) {
@@ -111,9 +111,9 @@ public class ReclaimProtocol extends Protocol {
 		}
 
 		// Get the most up to date information
-		LinkedList<String> perRep = FileManager.getPerceivedReplication(peerID);		
-		LinkedList<String> greater = PRDgreaterDRD(perRep);
-		LinkedList<String> equals = PRDequalsDRD(perRep);
+		ArrayList<String> perRep = FileManager.getPerceivedReplication(peerID);		
+		ArrayList<String> greater = PRDgreaterDRD(perRep);
+		ArrayList<String> equals = PRDequalsDRD(perRep);
 
 		// Check if there is greater
 		int totalSize = 0;

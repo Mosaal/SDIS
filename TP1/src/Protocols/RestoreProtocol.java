@@ -1,7 +1,7 @@
 package Protocols;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import Channels.MCChannel;
 import Channels.MDRChannel;
@@ -14,8 +14,8 @@ public class RestoreProtocol extends Protocol {
 	private MDRChannel mdrChannel;
 	private volatile boolean stop;
 	private volatile boolean sendNext;
-	private volatile LinkedList<String> currStoredFiles;
-	private volatile HashMap<String, LinkedList<byte[]>> chunkConfirmations; // FileID -> ([i] = chunk where i = chunkNo)
+	private volatile ArrayList<String> currStoredFiles;
+	private volatile HashMap<String, ArrayList<byte[]>> chunkConfirmations; // FileID -> ([i] = chunk where i = chunkNo)
 
 	/**
 	 * Creates a RestoreProtocol instance
@@ -30,8 +30,8 @@ public class RestoreProtocol extends Protocol {
 		this.stop = false;
 		this.sendNext = true;
 		this.mdrChannel = mdrChannel;
-		currStoredFiles = new LinkedList<String>();
-		chunkConfirmations = new HashMap<String, LinkedList<byte[]>>();
+		currStoredFiles = new ArrayList<String>();
+		chunkConfirmations = new HashMap<String, ArrayList<byte[]>>();
 
 		processChunk.start();
 		processGetchunk.start();
@@ -45,10 +45,10 @@ public class RestoreProtocol extends Protocol {
 	public boolean getSendNext() { return sendNext; }
 
 	/** Returns the hashmap of currently stored chunks of each file */
-	public LinkedList<String> getCurrStoredChunks() { return currStoredFiles; }
+	public ArrayList<String> getCurrStoredChunks() { return currStoredFiles; }
 
 	/** Returns the hashmap of confirmed chunks received */
-	public HashMap<String, LinkedList<byte[]>> getChunkConfirmations() { return chunkConfirmations; }
+	public HashMap<String, ArrayList<byte[]>> getChunkConfirmations() { return chunkConfirmations; }
 
 	/**
 	 * Restores a file to his original state
@@ -66,7 +66,7 @@ public class RestoreProtocol extends Protocol {
 		}
 
 		// Store fileID for later confirmation
-		LinkedList<byte[]> temp = new LinkedList<byte[]>();
+		ArrayList<byte[]> temp = new ArrayList<byte[]>();
 		temp.add(null);
 		chunkConfirmations.put(fileID, temp);
 
@@ -123,12 +123,12 @@ public class RestoreProtocol extends Protocol {
 
 							// Check the size of the chunk
 							if (chunk.length < Utils.CHUNK_MAX_SIZE) {
-								LinkedList<byte[]> temp = chunkConfirmations.get(fileID);
+								ArrayList<byte[]> temp = chunkConfirmations.get(fileID);
 								temp.set(chunkNo, chunk);
 								chunkConfirmations.put(fileID, temp);
 								stop = true;
 							} else {
-								LinkedList<byte[]> temp = chunkConfirmations.get(fileID);
+								ArrayList<byte[]> temp = chunkConfirmations.get(fileID);
 								temp.set(chunkNo, chunk);
 								temp.add(null);
 								chunkConfirmations.put(fileID, temp);

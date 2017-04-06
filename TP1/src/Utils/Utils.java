@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Utils {
@@ -126,8 +126,8 @@ public class Utils {
 	 * Split a given file into chunks
 	 * @param filePath path of the file to be split
 	 */
-	public static LinkedList<byte[]> splitIntoChunks(String filePath) {
-		LinkedList<byte[]> chunks = new LinkedList<byte[]>();
+	public static ArrayList<byte[]> splitIntoChunks(String filePath) {
+		ArrayList<byte[]> chunks = new ArrayList<byte[]>();
 
 		try {
 			byte[] buf = null;

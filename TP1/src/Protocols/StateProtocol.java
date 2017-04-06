@@ -1,8 +1,8 @@
 package Protocols;
 
-import java.util.Map.Entry;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import Channels.MCChannel;
 import Utils.FileManager;
@@ -24,7 +24,7 @@ public class StateProtocol extends Protocol {
 	 * Parses the information retrieved from the replication file
 	 * @param repInfo list with the information to be parsed
 	 */
-	private HashMap<String, HashMap<Integer, int[]>> parseInfo(LinkedList<String> repInfo) {
+	private HashMap<String, HashMap<Integer, int[]>> parseInfo(ArrayList<String> repInfo) {
 		HashMap<String, HashMap<Integer, int[]>> temp = new HashMap<String, HashMap<Integer, int[]>>();
 
 		for (int i = 0; i < repInfo.size(); i++) {
@@ -78,7 +78,7 @@ public class StateProtocol extends Protocol {
 
 		// Retrieve the most up to date information
 		HashMap<String, String> fileNames = FileManager.getFileID(peerID);
-		LinkedList<String> repInfo = FileManager.getPerceivedReplication(peerID);
+		ArrayList<String> repInfo = FileManager.getPerceivedReplication(peerID);
 
 		// Parse info into hashmap: FileID -> (ChunkNo -> ([0] = DesRD, [1] = PerRD))
 		HashMap<String, HashMap<Integer, int[]>> parsedInfo = parseInfo(repInfo);

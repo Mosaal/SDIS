@@ -1,14 +1,15 @@
 package Protocols;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import Channels.MCChannel;
-import Utils.*;
+import Utils.FileManager;
+import Utils.Utils;
 
 public class DeleteProtocol extends Protocol {
 
 	// Instance variables
-	private volatile LinkedList<String> currStoredFiles;
+	private volatile ArrayList<String> currStoredFiles;
 
 	/**
 	 * Creates a DeleteProtocol instance
@@ -18,13 +19,13 @@ public class DeleteProtocol extends Protocol {
 	 */
 	public DeleteProtocol(String proVer, int peerID, MCChannel mcChannel) {
 		super(proVer, peerID, mcChannel);
-		currStoredFiles = new LinkedList<String>();
+		currStoredFiles = new ArrayList<String>();
 		processDelete.start();
 	}
 
 	// Instance methods
 	/** Returns the hashmap of currently stored chunks of each file */
-	public LinkedList<String> getCurrStoredChunks() { return currStoredFiles; }
+	public ArrayList<String> getCurrStoredChunks() { return currStoredFiles; }
 
 	/**
 	 * Deletes all of the chunks of a given file

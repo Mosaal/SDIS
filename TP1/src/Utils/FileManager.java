@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class FileManager {
 
@@ -81,7 +81,7 @@ public class FileManager {
 	 * @param pRD the perceived replication degree
 	 */
 	public static void storePerceivedReplication(int peerID, String fileID, int chunkNo, int dRD, int pRD) {
-		LinkedList<String> lines = new LinkedList<String>();
+		ArrayList<String> lines = new ArrayList<String>();
 		File perFile = new File(PEER + Integer.toString(peerID) + "/" + REPLICATION);
 
 		// Check if it exists
@@ -116,7 +116,7 @@ public class FileManager {
 	 * @param fileID the ID of the file whose reference is going to get deleted
 	 */
 	public static void deletePerceivedReplication(int peerID, String fileID) {
-		LinkedList<String> lines = new LinkedList<String>();
+		ArrayList<String> lines = new ArrayList<String>();
 		String perPath = PEER + Integer.toString(peerID) + "/" + REPLICATION;
 		File perFile = new File(perPath);
 
@@ -150,8 +150,8 @@ public class FileManager {
 	 * Returns the information in the replication file
 	 * @param peerID the name of the main directory
 	 */
-	public static LinkedList<String> getPerceivedReplication(int peerID) {
-		LinkedList<String> lines = new LinkedList<String>();
+	public static ArrayList<String> getPerceivedReplication(int peerID) {
+		ArrayList<String> lines = new ArrayList<String>();
 		File perFile = new File(PEER + Integer.toString(peerID) + "/" + REPLICATION);
 
 		// Check if it exists
@@ -178,8 +178,8 @@ public class FileManager {
 	 * Returns all of the files currently in storage
 	 * @param peerID ID of the directory to read from
 	 */
-	public static LinkedList<String> getFiles(int peerID) {
-		LinkedList<String> files = new LinkedList<String>();
+	public static ArrayList<String> getFiles(int peerID) {
+		ArrayList<String> files = new ArrayList<String>();
 		File storedFile = new File(PEER + Integer.toString(peerID) + "/" + STORED);
 
 		try {
@@ -212,7 +212,7 @@ public class FileManager {
 		if (dir.exists() && dir.isDirectory()) {
 			try {
 				// Delete references from Stored file
-				LinkedList<String> temp = new LinkedList<String>();
+				ArrayList<String> temp = new ArrayList<String>();
 				for (String line: Files.readAllLines(Paths.get(storedFile.getPath()))) {
 					if (line.isEmpty()) continue;
 
@@ -247,7 +247,7 @@ public class FileManager {
 	 * @param fileName name of the file to be restored
 	 * @param chunks list of byte arrays with the data of the file to be restored
 	 */
-	public static boolean restoreFile(String fileName, LinkedList<byte[]> chunks) {
+	public static boolean restoreFile(String fileName, ArrayList<byte[]> chunks) {
 		try {
 			// Write each byte array to the file
 			FileOutputStream fos = new FileOutputStream(fileName);
@@ -307,6 +307,15 @@ public class FileManager {
 		try {
 			// Check if it exists
 			if (fileMap.exists()) {
+				// Check if it is in file already
+				for (String line: Files.readAllLines(Paths.get(fileMap.getPath()))) {
+					if (line.isEmpty()) continue;
+
+					// Don't add it if it is
+					if (line.equals(fileName + ":" + fileID))
+						return;
+				}
+
 				// Write data to the file
 				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileMapPath, true)));
 				out.println(fileName + ":" + fileID);
@@ -338,7 +347,7 @@ public class FileManager {
 			// Check if it exists
 			if (fileMap.exists()) {
 				// Delete references from FileMap file
-				LinkedList<String> temp = new LinkedList<String>();
+				ArrayList<String> temp = new ArrayList<String>();
 				for (String line: Files.readAllLines(Paths.get(fileMap.getPath()))) {
 					if (line.isEmpty()) continue;
 
@@ -451,9 +460,9 @@ public class FileManager {
 	 * Returns a hashmap with the chunk's numbers of the stored files
 	 * @param peerID name of the parent folder
 	 */
-	public static HashMap<String, LinkedList<Integer>> getStoredChunks(int peerID) {
+	public static HashMap<String, ArrayList<Integer>> getStoredChunks(int peerID) {
 		File storedFile = new File(PEER + Integer.toString(peerID) + "/" + STORED);
-		HashMap<String, LinkedList<Integer>> storedChunks = new HashMap<String, LinkedList<Integer>>();
+		HashMap<String, ArrayList<Integer>> storedChunks = new HashMap<String, ArrayList<Integer>>();
 
 		try {
 			for (String line: Files.readAllLines(Paths.get(storedFile.getPath()))) {
@@ -466,11 +475,11 @@ public class FileManager {
 
 				// Add to hashmap
 				if (storedChunks.containsKey(fileID)) {
-					LinkedList<Integer> temp = storedChunks.get(fileID);
+					ArrayList<Integer> temp = storedChunks.get(fileID);
 					temp.add(Integer.parseInt(info[1]));
 					storedChunks.put(fileID, temp);
 				} else {
-					LinkedList<Integer> temp = new LinkedList<Integer>();
+					ArrayList<Integer> temp = new ArrayList<Integer>();
 					temp.add(Integer.parseInt(info[1]));
 					storedChunks.put(fileID, temp);
 				}

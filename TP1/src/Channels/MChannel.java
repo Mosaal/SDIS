@@ -2,7 +2,6 @@ package Channels;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
@@ -17,7 +16,6 @@ public abstract class MChannel {
 
 	// Multicast variables
 	protected DatagramPacket packet;
-	protected DatagramSocket dataSocket;
 	protected MulticastSocket mcastSocket;
 
 	/**
@@ -31,10 +29,12 @@ public abstract class MChannel {
 		buf = new byte[Utils.BUFFER_MAX_SIZE];
 
 		try {
-			dataSocket = new DatagramSocket();
+			// Initialize packet
 			packet = new DatagramPacket(buf, Utils.BUFFER_MAX_SIZE);
-
+			
+			// Initialize multicast socket
 			mcastSocket = new MulticastSocket(port);
+			mcastSocket.setTimeToLive(1);
 			mcastSocket.joinGroup(InetAddress.getByName(ipAddress));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -54,9 +54,6 @@ public abstract class MChannel {
 	/** Returns the data packet */
 	public DatagramPacket getPacket() { return packet; }
 
-	/** Returns the data socket */
-	public DatagramSocket getDataSocket() { return dataSocket; }
-
 	/** Returns the multicast socket */
 	public MulticastSocket getMCastSocket() { return mcastSocket; }
 
@@ -65,7 +62,7 @@ public abstract class MChannel {
 	 * @param message message to be sent
 	 */
 	public boolean send(byte[] message) {
-		try { dataSocket.send(new DatagramPacket(message, message.length, InetAddress.getByName(ipAddress), port)); }
+		try { mcastSocket.send(new DatagramPacket(message, message.length, InetAddress.getByName(ipAddress), port)); }
 		catch (IOException e) { return false; }
 		return true;
 	}
