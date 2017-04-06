@@ -32,9 +32,6 @@ public class DeleteProtocol extends Protocol {
 	 * @param fileName name of file to be deleted
 	 */
 	public String deleteFile(String fileName) {
-		// Get the most up to date information
-		currStoredFiles = FileManager.getFiles(peerID);
-
 		// Get file ID
 		String fileID = FileManager.getFileID(peerID).get(fileName);
 		if (fileID == null) {

@@ -35,13 +35,17 @@ public class MDBChannel extends MChannel {
 			while (true) {
 				try {
 					// Receive packet
-					packet = new DatagramPacket(buf, Utils.BUFFER_MAX_SIZE);
+					DatagramPacket packet = new DatagramPacket(new byte[Utils.BUFFER_MAX_SIZE], Utils.BUFFER_MAX_SIZE);
 					mcastSocket.receive(packet);
+					
+					// Get data
+					byte[] data = new byte[packet.getLength()];
+					System.arraycopy(packet.getData(), 0, data, 0, packet.getLength());
 
-					// Get data and turn it into string
-					String str = new String(packet.getData(), 0, packet.getLength());
+					// Turn it into string
+					String str = new String(data, 0, data.length);
 
-					// Parse string and its data
+					// Add it to the queue
 					if (str.contains(Utils.PUTCHUNK_STRING))
 						messageQueue.add(str);
 				} catch (IOException e) {

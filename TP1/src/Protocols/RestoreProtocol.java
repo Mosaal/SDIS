@@ -159,6 +159,9 @@ public class RestoreProtocol extends Protocol {
 					// Check if it has the given chunk of the file
 					String fileID = args[3];
 					int chunkNo = Integer.parseInt(args[4]);
+					
+					// Get the most up to date info
+					currStoredFiles = FileManager.getFiles(peerID);
 
 					if (currStoredFiles.contains(fileID)) {
 						byte[] chunk = FileManager.getChunk(peerID, fileID, chunkNo);
