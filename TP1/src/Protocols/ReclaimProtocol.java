@@ -1,6 +1,7 @@
 package Protocols;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import Channels.MCChannel;
 import Utils.FileManager;
@@ -8,18 +9,25 @@ import Utils.Utils;
 
 public class ReclaimProtocol extends Protocol {
 
+	// Instance variables
+	private volatile BackupProtocol backupProtocol;
+	
 	/**
 	 * Creates a ReclaimProtocol instance
 	 * @param proVer protocol version
 	 * @param peerID the ID of the Peer
 	 * @param mcChannel multicast control channel all protocols subscribe to
 	 */
-	public ReclaimProtocol(String proVer, int peerID, MCChannel mcChannel) {
+	public ReclaimProtocol(String proVer, int peerID, MCChannel mcChannel, BackupProtocol backupProtocol) {
 		super(proVer, peerID, mcChannel);
+		this.backupProtocol = backupProtocol;
 		processReclaim.start();
 	}
 
 	// Instance methods
+	/** Returns the Peer's instance of the backup protocol */
+	public BackupProtocol getBackupProtocol() { return backupProtocol; }
+	
 	/**
 	 * Returns the chunks whose perceived replication degree is greater than the desired one
 	 * @param perRep all of the known replication values
@@ -61,19 +69,39 @@ public class ReclaimProtocol extends Protocol {
 	}
 
 	/**
+	 * Returns the chunks whose perceived replication degree is lesser than the desired one
+	 * @param perRep all of the known replication values
+	 */
+	private ArrayList<String> PRDlesserDRD(ArrayList<String> perRep) {
+		ArrayList<String> toBeDeleted = new ArrayList<String>();
+
+		for (int i = 0; i < perRep.size(); i++) {
+			String[] args = perRep.get(i).split(":");
+			int dRD = Integer.parseInt(args[2]);
+			int pRD = Integer.parseInt(args[3]);
+
+			// Add if PRD is greater than DRD
+			if (pRD < dRD)
+				toBeDeleted.add(args[0] + ":" + args[1]);
+		}
+
+		return toBeDeleted;
+	}
+
+	/**
 	 * Calculate the amount of reclaimable space
 	 * @param list chunks whose size is going to be checked
 	 */
-	private int reclaimableSize(ArrayList<String> list, ArrayList<String> files) {
+	private int reclaimableSize(ArrayList<String> list, HashMap<String, ArrayList<Integer>> storedChunks) {
 		int size = 0;
-
+		
 		// Sum the amount of each file
 		for (int i = 0; i < list.size(); i++) {
 			String[] args = list.get(i).split(":");
-
-			// Check if file is in storage
-			if (files.contains(args[0]))
-				size += FileManager.getChunk(peerID, args[0], Integer.parseInt(args[1])).length;
+			
+			if (storedChunks.containsKey(args[0]))
+				if (storedChunks.get(args[0]).contains(Integer.parseInt(args[1])))
+					size += FileManager.getChunk(peerID, args[0], Integer.parseInt(args[1])).length;
 		}
 
 		return size;
@@ -83,31 +111,40 @@ public class ReclaimProtocol extends Protocol {
 	 * Processes the reclaim request in terms of deleting chunks and sending messages
 	 * @param list list of chunks to be deleted
 	 */
-	private boolean processReclaim(ArrayList<String> list) {
-		/**
-		 * TODO
-		 * Store what chunks are going to be ignored
-		 * Update their perceived count on this peer
-		 * Delete the actual chunks
-		 * Send the REMOVED type messages
-		 */
+	private boolean processReclaim(ArrayList<String> list, int spaceToReclaim) {
+		int temp = spaceToReclaim;
+		
 		for (int i = 0; i < list.size(); i++) {
-			// Tell BackupProtocol not to store more of this file
-			BackupProtocol.toBeIgnored.add(list.get(i).split(":")[0]);
-			
-			// TODO
-			// Update the perceived count
-			// Something in the FileManager
-			// Keep what's there, update the new ones, remove them if they reach zero
-			
-			// TODO
-			// Delete the chunk
-			// Something in the FileManager
-			// If its the last chunk, delete its parent folder
-			
-			// TODO
-			// Send a REMOVED type message
-			// Wait 0 to 400ms before sending the next
+			if (temp > 0) {
+				// Get info
+				String fileID = list.get(i).split(":")[0];
+				int chunkNo = Integer.parseInt(list.get(i).split(":")[1]);
+
+				// Tell BackupProtocol not to store more of this file
+				backupProtocol.addToBeIgnored(fileID);
+
+				// Update the perceived count
+				if (FileManager.updatePerceivedReplication(peerID, fileID, chunkNo)[0] == -1)
+					return false;
+				
+				// Decrement space already reclaimed
+				temp -= FileManager.getChunk(peerID, fileID, chunkNo).length;
+
+				// Delete the chunk
+				if (!FileManager.deleteChunk(peerID, fileID, chunkNo))
+					return false;
+
+				// Send a REMOVED type message
+				System.out.println("[ REMOVED ] ID: " + fileID + " - Chunk#" + chunkNo);
+				byte[] msg = Utils.createMessage(Utils.REMOVED_STRING, proVer, peerID, fileID, chunkNo, 0, new byte[] {});
+				mcChannel.send(msg);
+				
+				// Wait for a few seconds
+				try { Thread.sleep(Utils.randomDelay()); }
+				catch (InterruptedException e) { e.printStackTrace(); }
+			} else {
+				break;
+			}
 		}
 
 		return true;
@@ -120,10 +157,10 @@ public class ReclaimProtocol extends Protocol {
 	public String reclaimSpace(int spaceToReclaim) {
 		// Get the perceived replication for the backed up files
 		boolean isEnough = false;
-		ArrayList<String> files = FileManager.getStoredFiles(peerID);
+		HashMap<String, ArrayList<Integer>> storedChunks = FileManager.getStoredChunks(peerID);
 
 		// End it if there are no files in storage
-		if (files.isEmpty()) {
+		if (storedChunks.isEmpty()) {
 			System.out.println("There are no files in storage thus no space to reclaim.");
 			return Utils.SUCCESS_MESSAGE;
 		}
@@ -132,39 +169,52 @@ public class ReclaimProtocol extends Protocol {
 		ArrayList<String> perRep = FileManager.getPerceivedReplication(peerID);		
 		ArrayList<String> greater = PRDgreaterDRD(perRep);
 		ArrayList<String> equals = PRDequalsDRD(perRep);
+		ArrayList<String> lesser = PRDlesserDRD(perRep);
 
 		// Check if there is greater
 		int totalSize = 0;
 		if (!greater.isEmpty() && !isEnough) {
-			totalSize += reclaimableSize(greater, files) / 1000;
+			totalSize += reclaimableSize(greater, storedChunks);
 
 			// Check if it is enough
-			if (totalSize >= spaceToReclaim)
-				if (processReclaim(greater))
+			if (totalSize >= (spaceToReclaim * Utils.K)) {
+				if (processReclaim(equals, spaceToReclaim))
 					isEnough = true;
+				else
+					return Utils.ERROR_MESSAGE;
+			}
 		}
 
 		// Check if there is equals and it is enough
 		if (!equals.isEmpty() && !isEnough) {
-			totalSize += reclaimableSize(equals, files) / 1000;
+			// Greater wasn't enough
+			ArrayList<String> newList = new ArrayList<String>(greater);
+			newList.addAll(equals);
+			totalSize += reclaimableSize(newList, storedChunks);
 
 			// Check if it is enough
-			if (totalSize >= spaceToReclaim)
-				if (processReclaim(equals))
+			if (totalSize >= (spaceToReclaim * Utils.K)) {
+				if (processReclaim(newList, spaceToReclaim))
 					isEnough = true;
+				else
+					return Utils.ERROR_MESSAGE;
+			}
 		}
 
-		// Check if is still not enough
-		if (!isEnough) {
-			// TODO: choose chunks until it is enough
-			// Than reclaim space
-		} else {
-			// TODO: reclaim space
-		}
+		// Check if there is equals and it is enough
+		if (!lesser.isEmpty() && !isEnough) {
+			// Greater and equals weren't enough
+			ArrayList<String> newList = new ArrayList<String>(greater);
+			newList.addAll(equals);
+			newList.addAll(lesser);
+			totalSize += reclaimableSize(newList, storedChunks);
 
-		// TODO: instead of all of this I can choose random chunks
-		// Send the necessary removed messages
-		// And deal with it on the other side
+			// Check if it is enough
+			if (processReclaim(newList, spaceToReclaim))
+				isEnough = true;
+			else
+				return Utils.ERROR_MESSAGE;
+		}
 
 		return Utils.SUCCESS_MESSAGE;
 	}
@@ -173,23 +223,36 @@ public class ReclaimProtocol extends Protocol {
 	Thread processReclaim = new Thread(new Runnable() {
 		@Override
 		public void run() {
-			// Receive data if its there to be received
-			byte[] data = null;
-			do { data = mcChannel.receive(Utils.REMOVED_INT); }
-			while (data == null);
-			
-			// Make it a string
-			String str = new String(data, 0, data.length);
+			while (true) {
+				// Receive data if its there to be received
+				byte[] data = null;
+				do { data = mcChannel.receive(Utils.REMOVED_INT); }
+				while (data == null);
 
-			// Split it
-			String[] args = str.split(" ");
+				// Make it a string
+				String str = new String(data, 0, data.length);
 
-			// Check who it belongs to
-			if (Integer.parseInt(args[2]) != peerID) {
-				// TODO: Update perceived count
-				// Check if it goes bellow desired
-				// Send PUTCHUNKs if it does
-				// Do nothing if it doesn't
+				// Split it
+				String[] args = str.split(" ");
+
+				// Check who it belongs to
+				if (Integer.parseInt(args[2]) != peerID) {
+					// Parse fileID and chunkNo
+					String fileID = args[3];
+					int chunkNo = Integer.parseInt(args[4]);
+					
+					// Update perceived count
+					int[] nPRD = FileManager.updatePerceivedReplication(peerID, fileID, chunkNo);
+					
+					// Check state of new perceived count
+					if (nPRD[0] != -1 && nPRD[0] == 0) {
+						byte[] chunk = FileManager.getChunk(peerID, fileID, chunkNo);
+						
+						// Back it up only if it has it
+						if (chunk != null)
+							backupProtocol.backupChunk(fileID, chunkNo, nPRD[1], chunk);
+					}
+				}
 			}
 		}
 	});

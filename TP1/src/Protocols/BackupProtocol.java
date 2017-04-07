@@ -12,7 +12,7 @@ public class BackupProtocol extends Protocol {
 
 	// Instance variables
 	private MDBChannel mdbChannel;
-	public static ArrayList<String> toBeIgnored;
+	public volatile ArrayList<String> toBeIgnored;
 	private volatile HashMap<String, Integer> desiredRepDegrees;
 	private volatile HashMap<String, ArrayList<Integer>> otherConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
 	private volatile HashMap<String, ArrayList<Integer>> storedConfirmations; // FileID -> ([i] = RepDeg, where i = ChunkNo)
@@ -30,10 +30,10 @@ public class BackupProtocol extends Protocol {
 
 		this.mdbChannel = mdbChannel;
 		toBeIgnored = new ArrayList<String>();
-		desiredRepDegrees = new HashMap<String, Integer>();
 		putChunkConfirmations = FileManager.getStoredChunks(peerID);
 		otherConfirmations = new HashMap<String, ArrayList<Integer>>();
 		storedConfirmations = new HashMap<String, ArrayList<Integer>>();
+		desiredRepDegrees = parsePerceivedReplication(FileManager.getPerceivedReplication(peerID));
 
 		processStored.start();
 		processPutchunk.start();
@@ -42,6 +42,9 @@ public class BackupProtocol extends Protocol {
 	// Instance methods
 	/** Returns the multicast data backup channel */
 	public MDBChannel getMDBChannel() { return mdbChannel; }
+	
+	/** Restuns the list of files to be ignored by the Peer */
+	public ArrayList<String> getToBeIgnored() { return toBeIgnored; }
 
 	/** Returns the hashmap of the desired replication degrees */
 	public HashMap<String, Integer> getDesiredRepDegrees() { return desiredRepDegrees; }
@@ -54,7 +57,24 @@ public class BackupProtocol extends Protocol {
 
 	/** Returns the hashmap for the backed up chunks of each file */
 	public HashMap<String, ArrayList<Integer>> getPutChunkConfirmations() { return putChunkConfirmations; }
+	
+	/**
+	 * Adds a fileID to the list of files to be ignored
+	 * @param ignore ID of the file to be ignored
+	 */
+	public void addToBeIgnored(String ignore) { if (!toBeIgnored.contains(ignore)) toBeIgnored.add(ignore); }
 
+	private HashMap<String, Integer> parsePerceivedReplication(ArrayList<String> perList) {
+		HashMap<String, Integer> parsed = new HashMap<String, Integer>();
+		
+		for (int i = 0; i < perList.size(); i++) {
+			// TODO
+			// FileID -> RepDeg
+		}
+		
+		return parsed;
+	}
+	
 	/**
 	 * Backup a given file
 	 * @param filePath path of the file to be backed up
@@ -112,10 +132,39 @@ public class BackupProtocol extends Protocol {
 	 * @param filePath path of the file the chunk belongs to
 	 * @param chunkNo the number of the chunk
 	 */
-	public static boolean backupChunk(String filePath, int chunkNo) {
-		
+	public void backupChunk(String fileID, int chunkNo, int repDeg, byte[] chunk) {
+		// Store desired replication degree
+		desiredRepDegrees.put(fileID, repDeg);
 
-		return true;
+		// Store sent chunks in a hashmap for later confirmation
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		for (int i = 0; i < chunkNo + 1; i++) temp.add(0);
+		storedConfirmations.put(fileID, temp);
+
+		// Send a message up to 5 times
+		int retries = 1;
+		int waitInterval = Utils.INITIAL_WAIT_INTERVAL;
+		while (retries < Utils.MAX_RETRIES) {
+			// Info print
+			if (retries == 1)
+				System.out.println("[ PUTCHUNK ] " + chunk.length + "B");
+
+			// Create PUTCHUNK message and send it
+			byte[] msg = Utils.createMessage(Utils.PUTCHUNK_STRING, proVer, peerID, fileID, chunkNo, repDeg, chunk);
+			mdbChannel.send(msg);
+
+			// Wait for a few seconds
+			try { Thread.sleep(waitInterval); }
+			catch (InterruptedException e) { e.printStackTrace(); }
+
+			// Check if current replication degree matches the desired one
+			if (storedConfirmations.get(fileID).get(chunkNo) < repDeg) {
+				retries++;
+				waitInterval *= 2;
+			} else {
+				break;
+			}
+		}
 	}
 
 	/** Thread that is constantly processing STORED type messages */
@@ -127,7 +176,7 @@ public class BackupProtocol extends Protocol {
 				byte[] data = null;
 				do { data = mcChannel.receive(Utils.STORED_INT); }
 				while (data == null);
-				
+
 				// Make it a string
 				String str = new String(data, 0, data.length);
 
@@ -153,17 +202,23 @@ public class BackupProtocol extends Protocol {
 				if (otherConfirmations.containsKey(fileID)) {
 					// Add to confirmed other list
 					ArrayList<Integer> temp = otherConfirmations.get(fileID);
-					if (chunkNo >= temp.size()) temp.add(1);
-					else temp.set(chunkNo, temp.get(chunkNo).intValue() + 1);
+					
+					if (chunkNo >= temp.size())
+						for (int i = 0; i < chunkNo + 1; i++) temp.add(1);
+					else
+						temp.set(chunkNo, temp.get(chunkNo).intValue() + 1);
+					
 					otherConfirmations.put(fileID, temp);
 				} else {
 					ArrayList<Integer> temp = new ArrayList<Integer>();
-					temp.add(1);
+					for (int i = 0; i < chunkNo + 1; i++) temp.add(1);
 					otherConfirmations.put(fileID, temp);
 				}
 
 				// Write to file
-				FileManager.storePerceivedReplication(peerID, fileID, chunkNo, desiredRepDegrees.get(fileID).intValue(), otherConfirmations.get(fileID).get(chunkNo));
+				int dRD = desiredRepDegrees.get(fileID).intValue();
+				int pRD = otherConfirmations.get(fileID).get(chunkNo);
+				FileManager.storePerceivedReplication(peerID, fileID, chunkNo, dRD, pRD);
 			}
 		}
 	});
@@ -177,7 +232,7 @@ public class BackupProtocol extends Protocol {
 				byte[] data = null;
 				do { data = mdbChannel.receive(); }
 				while (data == null);
-				
+
 				// Make it a string
 				String str = new String(data, 0, data.length);
 
@@ -194,7 +249,7 @@ public class BackupProtocol extends Protocol {
 					// Check if it must be ignored
 					if (toBeIgnored.contains(fileID))
 						continue;
-					
+
 					// Store desired replication degree
 					desiredRepDegrees.put(fileID, repDeg);
 

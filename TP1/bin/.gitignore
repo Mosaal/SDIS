@@ -1,6 +1,5 @@
 /Channels/
-/Storage/
-/Utils/
-/Protocols/
-/Peer/
 /Interface/
+/Peer/
+/Protocols/
+/Utils/

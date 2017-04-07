@@ -109,6 +109,69 @@ public class FileManager {
 			return;
 		}
 	}
+	
+	/**
+	 * Updates the perceived replication degree of a given chunk
+	 * @param peerID the name of the main directory
+	 * @param fileID the ID of the file the chunk belongs to
+	 * @param chunkNo the number of the chunk
+	 */
+	public static int[] updatePerceivedReplication(int peerID, String fileID, int chunkNo) {
+		String perPath = PEER + Integer.toString(peerID) + "/" + REPLICATION;
+		File perFile = new File(perPath);
+		
+		// Check if it exists
+		if (perFile.exists()) {
+			try {
+				int[] ret = new int[] { -1, 0 };
+				ArrayList<String> lines = new ArrayList<String>();
+				
+				// Retrieve data already in file
+				for (String line: Files.readAllLines(Paths.get(perFile.getPath()))) {
+					if (line.isEmpty()) continue;
+
+					if (!line.contains(fileID + ":" + chunkNo)) {
+						lines.add(line);
+					} else {
+						String[] res = line.split(":");
+						int desRD = Integer.parseInt(res[2]);
+						int newPerRD = Integer.parseInt(res[3]);
+						
+						// Return 0 if desired went bellow perceived, 1 if it didn't
+						if (newPerRD < desRD)
+							ret = new int[] { 0, desRD };
+						else
+							ret = new int[] { 1, desRD };
+						
+						// Check if it's greater than 0
+						if (newPerRD > 0) {
+							lines.add(res[0] + ":" + res[1] + ":" + res[2] + ":" + Integer.toString(newPerRD));
+						} else {
+							// Check it it has the chunk
+							if (getChunk(peerID, fileID, chunkNo) != null)
+								lines.add(res[0] + ":" + res[1] + ":" + res[2] + ":1");
+						}
+					}
+				}
+				
+				// Write new data to the file
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(perFile.getPath(), false)));
+				for (int i = 0; i < lines.size(); i++)
+					out.println(lines.get(i));
+				out.close();
+				
+				return ret;
+			} catch (IOException e) {
+				return new int[] { -1, 0 };
+			}
+		} else {
+			// Create it if it doesn't
+			try { perFile.createNewFile(); }
+			catch (IOException e) { return new int[] { -1, 0 }; }
+		}
+		
+		return new int[] { -1, 0 };
+	}
 
 	/**
 	 * Deletes the all of the lines referencing a given fileID
@@ -457,6 +520,38 @@ public class FileManager {
 	}
 
 	/**
+	 * Deletes a specified chunk
+	 * @param peerID the name of the main directory
+	 * @param fileID the ID of the file the chunk belongs
+	 * @param chunkNo the number of the chunk
+	 */
+	public static boolean deleteChunk(int peerID, String fileID, int chunkNo) {
+		String filePath = PEER + Integer.toString(peerID) + "/" + STORAGE + "/" + fileID;
+		String chunkPath = filePath + "/" + CHUNK + Integer.toString(chunkNo);
+		File fileDir = new File(filePath);
+		
+		// Check if the file exists
+		if (fileDir.exists() && fileDir.isDirectory()) {
+			File chunk = new File(chunkPath);
+			
+			// Check if the chunk exists
+			if (chunk.exists())
+				chunk.delete();
+			
+			// Update stored chunks file
+			updateStoredChunks(peerID, fileID, chunkNo);
+			
+			// Check if it was the last chunk
+			if (fileDir.list().length == 0)
+				fileDir.delete();
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Returns a hashmap with the chunk's numbers of the stored files
 	 * @param peerID name of the parent folder
 	 */
@@ -489,5 +584,46 @@ public class FileManager {
 		}
 
 		return storedChunks;
+	}
+	
+	/**
+	 * Updates the information in the stored chunks file
+	 * @param peerID the name of the main directory
+	 * @param fileID the ID of the file the chunk belongs to
+	 * @param chunkNo the number of the chunk
+	 */
+	public static boolean updateStoredChunks(int peerID, String fileID, int chunkNo) {
+		String storedPath = PEER + Integer.toString(peerID) + "/" + STORED;
+		File storedFile = new File(storedPath);
+		
+		// Check if it exists
+		if (storedFile.exists()) {
+			try {
+				ArrayList<String> temp = new ArrayList<String>();
+				
+				// Delete reference from file
+				for (String line: Files.readAllLines(Paths.get(storedFile.getPath()))) {
+					if (line.isEmpty()) continue;
+					
+					if (!line.equals(fileID + ":" + chunkNo))
+						temp.add(line);
+				}
+				
+				// Rewrite to stored file
+				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(storedFile.getPath(), false)));
+				for (int i = 0; i < temp.size(); i++)
+					out.println(temp.get(i));
+				out.close();
+			} catch (IOException e) {
+				return false;
+			}
+		} else {
+			// Create it if it doesn't
+			try { storedFile.createNewFile(); }
+			catch (IOException e) { return false; }
+			return true;
+		}
+		
+		return false;
 	}
 }

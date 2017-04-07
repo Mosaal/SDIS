@@ -57,9 +57,9 @@ public class PeerRunnable implements Runnable {
 
 		stateProtocol = new StateProtocol(proVer, peerID, mcChannel);
 		deleteProtocol = new DeleteProtocol(proVer, peerID, mcChannel);
-		reclaimProtocol = new ReclaimProtocol(proVer, peerID, mcChannel);
 		backupProtocol = new BackupProtocol(proVer, peerID, mcChannel, mdbChannel);
 		restoreProtocol = new RestoreProtocol(proVer, peerID, mcChannel, mdrChannel);
+		reclaimProtocol = new ReclaimProtocol(proVer, peerID, mcChannel, backupProtocol);
 	}
 
 	/**
