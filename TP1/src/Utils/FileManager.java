@@ -136,6 +136,7 @@ public class FileManager {
 						String[] res = line.split(":");
 						int desRD = Integer.parseInt(res[2]);
 						int newPerRD = Integer.parseInt(res[3]);
+						newPerRD--;
 						
 						// Return 0 if desired went bellow perceived, 1 if it didn't
 						if (newPerRD < desRD)

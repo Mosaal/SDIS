@@ -41,6 +41,9 @@ public class DeleteProtocol extends Protocol {
 			FileManager.deleteFileID(peerID, fileID);
 			FileManager.deletePerceivedReplication(peerID, fileID);
 		}
+		
+		// Check if this Peer doesn't have that file himself
+		FileManager.deleteFile(peerID, fileID);
 
 		// Send a DELETE type message 5 times
 		System.out.println("[ DELETE ] " + fileName);

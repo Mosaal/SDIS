@@ -27,13 +27,15 @@ public class BackupProtocol extends Protocol {
 	 */
 	public BackupProtocol(String proVer, int peerID, MCChannel mcChannel, MDBChannel mdbChannel) {
 		super(proVer, peerID, mcChannel);
+		
+		ArrayList<String> perList = FileManager.getPerceivedReplication(peerID);
 
 		this.mdbChannel = mdbChannel;
 		toBeIgnored = new ArrayList<String>();
+		desiredRepDegrees = parseDesiredReplication(perList);
+		otherConfirmations = parsePerceivedReplication(perList);
+		storedConfirmations = parsePerceivedReplication(perList);
 		putChunkConfirmations = FileManager.getStoredChunks(peerID);
-		otherConfirmations = new HashMap<String, ArrayList<Integer>>();
-		storedConfirmations = new HashMap<String, ArrayList<Integer>>();
-		desiredRepDegrees = parsePerceivedReplication(FileManager.getPerceivedReplication(peerID));
 
 		processStored.start();
 		processPutchunk.start();
@@ -64,12 +66,65 @@ public class BackupProtocol extends Protocol {
 	 */
 	public void addToBeIgnored(String ignore) { if (!toBeIgnored.contains(ignore)) toBeIgnored.add(ignore); }
 
-	private HashMap<String, Integer> parsePerceivedReplication(ArrayList<String> perList) {
+	/**
+	 * Sets the new perceived replication degree of a given chunk
+	 * @param fileID the ID of the file the chunk belongs to
+	 * @param chunkNo the number of the chunk
+	 */
+	public void setNewPerceivedValue(String fileID, int chunkNo) {
+		ArrayList<Integer> temp = otherConfirmations.get(fileID);
+		int oldValue = temp.get(chunkNo);
+		
+		temp.set(chunkNo, oldValue - 1);
+		otherConfirmations.put(fileID, temp);
+	}
+	
+	/**
+	 * Gets the desired replication degree from the file
+	 * @param perList the list with information about the files
+	 */
+	private HashMap<String, Integer> parseDesiredReplication(ArrayList<String> perList) {
 		HashMap<String, Integer> parsed = new HashMap<String, Integer>();
 		
+		// FileID:ChunkNo:DesRD:PerRD
 		for (int i = 0; i < perList.size(); i++) {
-			// TODO
-			// FileID -> RepDeg
+			String[] res = perList.get(i).split(":");
+			
+			// Check if it contains it already
+			if (!parsed.containsKey(res[0]))
+				parsed.put(res[0], Integer.parseInt(res[2]));
+		}
+		
+		return parsed;
+	}
+	
+	/**
+	 * Gets the perceived replication degree from the file
+	 * @param perList the list with information about the files
+	 */
+	private HashMap<String, ArrayList<Integer>> parsePerceivedReplication(ArrayList<String> perList) {
+		HashMap<String, ArrayList<Integer>> parsed = new HashMap<String, ArrayList<Integer>>();
+		
+		// FileID:ChunkNo:DesRD:PerRD
+		for (int i = 0; i < perList.size(); i++) {
+			String[] res = perList.get(i).split(":");
+			int chunkNo = Integer.parseInt(res[1]);
+			
+			if (parsed.containsKey(res[0])) {
+				ArrayList<Integer> temp = parsed.get(res[0]);
+				if (chunkNo >= temp.size())
+					for (int j = 0; j < chunkNo + 1; j++)
+						temp.add(0);
+				temp.set(chunkNo, Integer.parseInt(res[3]));
+				parsed.put(res[0], temp);
+			} else {
+				ArrayList<Integer> temp = new ArrayList<Integer>();
+				if (chunkNo >= temp.size())
+					for (int j = 0; j < chunkNo + 1; j++)
+						temp.add(0);
+				temp.set(chunkNo, Integer.parseInt(res[3]));
+				parsed.put(res[0], temp);
+			}
 		}
 		
 		return parsed;
@@ -136,17 +191,12 @@ public class BackupProtocol extends Protocol {
 		// Store desired replication degree
 		desiredRepDegrees.put(fileID, repDeg);
 
-		// Store sent chunks in a hashmap for later confirmation
-		ArrayList<Integer> temp = new ArrayList<Integer>();
-		for (int i = 0; i < chunkNo + 1; i++) temp.add(0);
-		storedConfirmations.put(fileID, temp);
-
 		// Send a message up to 5 times
-		int retries = 1;
+		int retries = 0;
 		int waitInterval = Utils.INITIAL_WAIT_INTERVAL;
 		while (retries < Utils.MAX_RETRIES) {
 			// Info print
-			if (retries == 1)
+			if (retries == 0)
 				System.out.println("[ PUTCHUNK ] " + chunk.length + "B");
 
 			// Create PUTCHUNK message and send it
@@ -158,7 +208,7 @@ public class BackupProtocol extends Protocol {
 			catch (InterruptedException e) { e.printStackTrace(); }
 
 			// Check if current replication degree matches the desired one
-			if (storedConfirmations.get(fileID).get(chunkNo) < repDeg) {
+			if (otherConfirmations.get(fileID).get(chunkNo) < repDeg) {
 				retries++;
 				waitInterval *= 2;
 			} else {
@@ -203,22 +253,29 @@ public class BackupProtocol extends Protocol {
 					// Add to confirmed other list
 					ArrayList<Integer> temp = otherConfirmations.get(fileID);
 					
-					if (chunkNo >= temp.size())
-						for (int i = 0; i < chunkNo + 1; i++) temp.add(1);
-					else
+					if (chunkNo >= temp.size()) {
+						for (int i = temp.size(); i < chunkNo + 1; i++)
+							temp.add(0);
 						temp.set(chunkNo, temp.get(chunkNo).intValue() + 1);
+					} else {
+						temp.set(chunkNo, temp.get(chunkNo).intValue() + 1);
+					}
 					
 					otherConfirmations.put(fileID, temp);
 				} else {
 					ArrayList<Integer> temp = new ArrayList<Integer>();
-					for (int i = 0; i < chunkNo + 1; i++) temp.add(1);
+					for (int i = 0; i < chunkNo + 1; i++)
+						temp.add(0);
+					temp.set(chunkNo, 1);
 					otherConfirmations.put(fileID, temp);
 				}
 
 				// Write to file
-				int dRD = desiredRepDegrees.get(fileID).intValue();
-				int pRD = otherConfirmations.get(fileID).get(chunkNo);
-				FileManager.storePerceivedReplication(peerID, fileID, chunkNo, dRD, pRD);
+				if (desiredRepDegrees.containsKey(fileID)) {
+					int dRD = desiredRepDegrees.get(fileID).intValue();
+					int pRD = otherConfirmations.get(fileID).get(chunkNo);
+					FileManager.storePerceivedReplication(peerID, fileID, chunkNo, dRD, pRD);
+				}
 			}
 		}
 	});
