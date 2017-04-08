@@ -43,7 +43,9 @@ public class PeerRunnable implements Runnable {
 
 	/**
 	 * Creates a PeerRunnable instance
-	 * @param port port where the TCP server will open
+	 * @param proVer the version of the protocol
+	 * @param peerID the ID of the Peer
+	 * @param tcpPort the port the TCP server shall operate on
 	 * @param mc string array with the arguments for the control channel
 	 * @param mdb string array with the arguments for the data backup channel
 	 * @param mdr string array with the arguments for the data recovery channel

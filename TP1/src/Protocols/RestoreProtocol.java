@@ -107,7 +107,7 @@ public class RestoreProtocol extends Protocol {
 				byte[] data = null;
 				do { data = mdrChannel.receive(); }
 				while (data == null);
-				
+
 				// Make it a string
 				String str = new String(data, 0, data.length);
 
@@ -153,7 +153,7 @@ public class RestoreProtocol extends Protocol {
 				byte[] data = null;
 				do { data = mcChannel.receive(Utils.GETCHUNK_INT); }
 				while (data == null);
-				
+
 				// Make it a string
 				String str = new String(data, 0, data.length);
 
@@ -165,7 +165,7 @@ public class RestoreProtocol extends Protocol {
 					// Check if it has the given chunk of the file
 					String fileID = args[3];
 					int chunkNo = Integer.parseInt(args[4]);
-					
+
 					// Get the most up to date info
 					currStoredFiles = FileManager.getStoredFiles(peerID);
 

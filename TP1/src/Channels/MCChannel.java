@@ -47,7 +47,7 @@ public class MCChannel extends MChannel {
 					// Receive packet
 					DatagramPacket packet = new DatagramPacket(new byte[Utils.BUFFER_MAX_SIZE], Utils.BUFFER_MAX_SIZE);
 					mcastSocket.receive(packet);
-					
+
 					// Get data
 					byte[] data = new byte[packet.getLength()];
 					System.arraycopy(packet.getData(), 0, data, 0, packet.getLength());

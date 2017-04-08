@@ -41,7 +41,7 @@ public class DeleteProtocol extends Protocol {
 			FileManager.deleteFileID(peerID, fileID);
 			FileManager.deletePerceivedReplication(peerID, fileID);
 		}
-		
+
 		// Check if this Peer doesn't have that file himself
 		FileManager.deleteFile(peerID, fileID);
 
@@ -69,7 +69,7 @@ public class DeleteProtocol extends Protocol {
 				byte[] data = null;
 				do { data = mcChannel.receive(Utils.DELETE_INT); }
 				while (data == null);
-				
+
 				// Make it a string
 				String str = new String(data, 0, data.length);
 

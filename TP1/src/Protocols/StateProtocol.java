@@ -53,7 +53,7 @@ public class StateProtocol extends Protocol {
 	 */
 	private String backedUpFilesInfo(HashMap<String, HashMap<Integer, int[]>> parsedInfo, HashMap<String, String> fileNames) {
 		String res = "";
-		
+
 		// Check if its empty
 		if (fileNames.isEmpty())
 			return "    This Peer hasn't initiated a Backup yet.\n";
@@ -75,7 +75,7 @@ public class StateProtocol extends Protocol {
 
 		return res;
 	}
-	
+
 	/**
 	 * Returns information about the files this Peer has in storage
 	 * @param storedFiles list of stored files
@@ -83,22 +83,22 @@ public class StateProtocol extends Protocol {
 	 */
 	private String storedFilesInfo(HashMap<String, ArrayList<Integer>> storedChunks) {
 		String res = "";
-		
+
 		// Check if its empty
 		if (storedChunks.isEmpty())
 			return "    This Peer has no files in storage yet.\n";
-		
+
 		// Add info about files in storage
 		for (Entry<String, ArrayList<Integer>> temp: storedChunks.entrySet()) {
 			res += "   * ID of the file: " + temp.getKey() + "\n";
 			res += "     * Chunks:\n";
-			
+
 			// Add info about each chunk
 			ArrayList<Integer> chunks = temp.getValue();
 			for (int i = 0; i < chunks.size(); i++)
 				res += "       - ID: " + chunks.get(i) + " - Size: " + FileManager.getChunk(peerID, temp.getKey(), chunks.get(i)).length + "\n";
 		}
-		
+
 		return res;
 	}
 
@@ -117,7 +117,7 @@ public class StateProtocol extends Protocol {
 		// Adds to the string info about backed up files
 		reply += " = INITIATED BACKUPS = \n";
 		reply += backedUpFilesInfo(parsedInfo, fileNames);
-		
+
 		// Adds to the string info about stored files
 		reply += " = STORED FILES = \n";
 		reply += storedFilesInfo(storedChunks);

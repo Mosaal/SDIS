@@ -166,7 +166,7 @@ public class Utils {
 	 * @param senderID the ID of the Peer
 	 * @param fileID the ID of the file
 	 * @param chunkNo the number of the chunk
-	 * @param repDeg the replication degree
+	 * @param repDeg the desired replication degree
 	 * @param body the body of the message (if it has any)
 	 */
 	public static byte[] createMessage(String type, String version, int senderID, String fileID, int chunkNo, int repDeg, byte[] body) {

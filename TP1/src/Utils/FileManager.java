@@ -74,7 +74,7 @@ public class FileManager {
 
 	/**
 	 * Stores the perceived replication degree for a given chunk
-	 * @param peerID the name of the main directory
+	 * @param peerID the name of the peer's parent directory
 	 * @param fileID the ID of the file the chunk belongs to
 	 * @param chunkNo the number of the chunk
 	 * @param dRD the desired replication degree
@@ -109,23 +109,23 @@ public class FileManager {
 			return;
 		}
 	}
-	
+
 	/**
 	 * Updates the perceived replication degree of a given chunk
-	 * @param peerID the name of the main directory
+	 * @param peerID the name of the peer's parent directory
 	 * @param fileID the ID of the file the chunk belongs to
 	 * @param chunkNo the number of the chunk
 	 */
 	public static int[] updatePerceivedReplication(int peerID, String fileID, int chunkNo) {
 		String perPath = PEER + Integer.toString(peerID) + "/" + REPLICATION;
 		File perFile = new File(perPath);
-		
+
 		// Check if it exists
 		if (perFile.exists()) {
 			try {
 				int[] ret = new int[] { -1, 0 };
 				ArrayList<String> lines = new ArrayList<String>();
-				
+
 				// Retrieve data already in file
 				for (String line: Files.readAllLines(Paths.get(perFile.getPath()))) {
 					if (line.isEmpty()) continue;
@@ -137,13 +137,13 @@ public class FileManager {
 						int desRD = Integer.parseInt(res[2]);
 						int newPerRD = Integer.parseInt(res[3]);
 						newPerRD--;
-						
+
 						// Return 0 if desired went bellow perceived, 1 if it didn't
 						if (newPerRD < desRD)
 							ret = new int[] { 0, desRD };
 						else
 							ret = new int[] { 1, desRD };
-						
+
 						// Check if it's greater than 0
 						if (newPerRD > 0) {
 							lines.add(res[0] + ":" + res[1] + ":" + res[2] + ":" + Integer.toString(newPerRD));
@@ -154,13 +154,13 @@ public class FileManager {
 						}
 					}
 				}
-				
+
 				// Write new data to the file
 				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(perFile.getPath(), false)));
 				for (int i = 0; i < lines.size(); i++)
 					out.println(lines.get(i));
 				out.close();
-				
+
 				return ret;
 			} catch (IOException e) {
 				return new int[] { -1, 0 };
@@ -170,13 +170,13 @@ public class FileManager {
 			try { perFile.createNewFile(); }
 			catch (IOException e) { return new int[] { -1, 0 }; }
 		}
-		
+
 		return new int[] { -1, 0 };
 	}
 
 	/**
 	 * Deletes the all of the lines referencing a given fileID
-	 * @param peerID the name of the main directory
+	 * @param peerID the name of the peer's parent directory
 	 * @param fileID the ID of the file whose reference is going to get deleted
 	 */
 	public static void deletePerceivedReplication(int peerID, String fileID) {
@@ -212,7 +212,7 @@ public class FileManager {
 
 	/**
 	 * Returns the information in the replication file
-	 * @param peerID the name of the main directory
+	 * @param peerID the name of the peer's parent directory
 	 */
 	public static ArrayList<String> getPerceivedReplication(int peerID) {
 		ArrayList<String> lines = new ArrayList<String>();
@@ -240,7 +240,7 @@ public class FileManager {
 
 	/**
 	 * Returns all of the files currently in storage
-	 * @param peerID ID of the directory to read from
+	 * @param peerID the name of the peer's parent directory
 	 */
 	public static ArrayList<String> getStoredFiles(int peerID) {
 		ArrayList<String> files = new ArrayList<String>();
@@ -264,7 +264,7 @@ public class FileManager {
 
 	/**
 	 * Deletes a directory with a given ID
-	 * @param peerID name of the parent folder
+	 * @param peerID the name of the peer's parent directory
 	 * @param fileID ID of the directory to be deleted
 	 */
 	public static boolean deleteFile(int peerID, String fileID) {
@@ -329,7 +329,7 @@ public class FileManager {
 
 	/**
 	 * Gets the fileName to fileID hashmap of the backed up files
-	 * @param peerID the name of the main directory
+	 * @param peerID the name of the peer's parent directory
 	 */
 	public static HashMap<String, String> getFileID(int peerID) {
 		HashMap<String, String> temp = new HashMap<String, String>();
@@ -360,7 +360,7 @@ public class FileManager {
 
 	/**
 	 * Stored the fileName to fileID relation in the corresponding file
-	 * @param peerID the name of the main directory
+	 * @param peerID the name of the peer's parent directory
 	 * @param fileName the name of the file
 	 * @param fileID the ID generated for the file
 	 */
@@ -400,7 +400,7 @@ public class FileManager {
 
 	/**
 	 * Delete the fileName to fileID relation in the corresponding file
-	 * @param peerID the name of the main directory
+	 * @param peerID the name of the peer's parent directory
 	 * @param fileID the ID of the file whose relation is going to get deleted
 	 */
 	public static void deleteFileID(int peerID, String fileID) {
@@ -522,7 +522,7 @@ public class FileManager {
 
 	/**
 	 * Deletes a specified chunk
-	 * @param peerID the name of the main directory
+	 * @param peerID the name of the peer's parent directory
 	 * @param fileID the ID of the file the chunk belongs
 	 * @param chunkNo the number of the chunk
 	 */
@@ -530,31 +530,31 @@ public class FileManager {
 		String filePath = PEER + Integer.toString(peerID) + "/" + STORAGE + "/" + fileID;
 		String chunkPath = filePath + "/" + CHUNK + Integer.toString(chunkNo);
 		File fileDir = new File(filePath);
-		
+
 		// Check if the file exists
 		if (fileDir.exists() && fileDir.isDirectory()) {
 			File chunk = new File(chunkPath);
-			
+
 			// Check if the chunk exists
 			if (chunk.exists())
 				chunk.delete();
-			
+
 			// Update stored chunks file
 			updateStoredChunks(peerID, fileID, chunkNo);
-			
+
 			// Check if it was the last chunk
 			if (fileDir.list().length == 0)
 				fileDir.delete();
-			
+
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Returns a hashmap with the chunk's numbers of the stored files
-	 * @param peerID name of the parent folder
+	 * @param peerID the name of the peer's parent directory
 	 */
 	public static HashMap<String, ArrayList<Integer>> getStoredChunks(int peerID) {
 		File storedFile = new File(PEER + Integer.toString(peerID) + "/" + STORED);
@@ -586,30 +586,30 @@ public class FileManager {
 
 		return storedChunks;
 	}
-	
+
 	/**
 	 * Updates the information in the stored chunks file
-	 * @param peerID the name of the main directory
+	 * @param peerID the name of the peer's parent directory
 	 * @param fileID the ID of the file the chunk belongs to
 	 * @param chunkNo the number of the chunk
 	 */
 	public static boolean updateStoredChunks(int peerID, String fileID, int chunkNo) {
 		String storedPath = PEER + Integer.toString(peerID) + "/" + STORED;
 		File storedFile = new File(storedPath);
-		
+
 		// Check if it exists
 		if (storedFile.exists()) {
 			try {
 				ArrayList<String> temp = new ArrayList<String>();
-				
+
 				// Delete reference from file
 				for (String line: Files.readAllLines(Paths.get(storedFile.getPath()))) {
 					if (line.isEmpty()) continue;
-					
+
 					if (!line.equals(fileID + ":" + chunkNo))
 						temp.add(line);
 				}
-				
+
 				// Rewrite to stored file
 				PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(storedFile.getPath(), false)));
 				for (int i = 0; i < temp.size(); i++)
@@ -624,7 +624,7 @@ public class FileManager {
 			catch (IOException e) { return false; }
 			return true;
 		}
-		
+
 		return false;
 	}
 }

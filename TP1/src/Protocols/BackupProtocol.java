@@ -208,7 +208,7 @@ public class BackupProtocol extends Protocol {
 				// Wait for a few seconds
 				try { Thread.sleep(waitInterval); }
 				catch (InterruptedException e) { e.printStackTrace(); }
-				
+
 				// Wait double the time
 				retries++;
 				waitInterval *= 2;
