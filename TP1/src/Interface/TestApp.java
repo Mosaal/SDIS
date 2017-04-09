@@ -19,11 +19,11 @@ public class TestApp {
 
 	/** Prints the correct way to initialize and execute an instance of this class */
 	private static void printUsage() {
-		System.out.println("Usage: java -cp ./bin Interface.TestApp <ip_address>:<port> <sub_protocol> <file_path> <rep_degree>");
+		System.out.println("Usage: java TestApp <ip_address>:<port> <sub_protocol> <file_path/space_to_reclaim> <rep_degree>");
 		System.out.println("Where:");
 		System.out.println("\t<ip_address>:<port> is the address of the service Peer followed by its Port");
 		System.out.println("\t<sub_protocol> is the operation the peer of the backup service must execute (BACKUP, RESTORE, DELETE, RECLAIM, STATE)");
-		System.out.println("\t<file_path> is either the path name of the file to BACKUP/RESTORE/DELETE or the amount of space to RECLAIM (in KByte)");
+		System.out.println("\t<file_path/space_to_reclaim> is either the path name of the file to BACKUP/RESTORE/DELETE or the amount of space to RECLAIM (in KByte)");
 		System.out.println("\t<rep_degree> is an integer that specifies the desired replication degree and applies only to the BACKUP protocol (between 1 and 9)");
 	}
 

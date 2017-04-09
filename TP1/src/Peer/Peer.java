@@ -16,7 +16,7 @@ public class Peer {
 
 	/** Prints the correct way to initialize and execute an instance of this class */
 	public static void printUsage() {
-		System.out.println("Usage: java -cp ./bin Peers.Peer <protocol_version> <server_id> <tcp_port> <mc_channel_ip>:<port> <mdb_channel_ip>:<port> <mdr_channel_ip>:<port>");
+		System.out.println("Usage: java Peer <protocol_version> <server_id> <tcp_port> <mc_channel_ip>:<port> <mdb_channel_ip>:<port> <mdr_channel_ip>:<port>");
 		System.out.println("Where:");
 		System.out.println("\t<protocol_version> is the version of the protocol used");
 		System.out.println("\t<server_id> is the unique identifier of the server");
