@@ -83,6 +83,10 @@ public class RestoreProtocol extends Protocol {
 				chunkNo++;
 				sendNext = false;
 			}
+			
+			// Wait a few seconds
+			try { Thread.sleep(Utils.INITIAL_WAIT_INTERVAL); }
+			catch (InterruptedException e) { e.printStackTrace(); }
 		}
 
 		// Reset variables for next restore request
