@@ -8,6 +8,12 @@ public class Player {
 	private final int ID;
 	private ArrayList<Card> cards;
 	
+	// Static variables
+	public static final int PLAYER_ONE = 0;
+	public static final int PLAYER_TWO = 1;
+	public static final int PLAYER_THREE = 2;
+	public static final int PLAYER_FOUR = 3;
+	
 	/**
 	 * Creates a Player instance
 	 * @param ID the unique identifier of the player
