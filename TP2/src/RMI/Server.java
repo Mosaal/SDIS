@@ -27,6 +27,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		// Initialize rooms
 		activeRooms = new HashMap<Integer, Room>();
 		
+		// Create registry
+		LocateRegistry.createRegistry(1099);
+		
 		// Initialize server
 		ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(this, 0);
 		
