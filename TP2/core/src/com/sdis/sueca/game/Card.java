@@ -1,45 +1,68 @@
 package com.sdis.sueca.game;
 
+/**
+ * An object of type Card represents a playing card from a
+ * standard card deck. The card has a suit, which
+ * can be spades, hearts, diamonds, clubs. A spade, heart,
+ * diamond, or club has one of the 13 values: ace, 2, 3, 4, 5, 6, 7,
+ * 8, 9, 10, jack, queen, or king.
+ */
 public class Card {
 
 	// Instance variables
-	private final String set;
-	private final String rank;
-	
+	private int x, y;
+	private final int value;
+	private final int suit;
+
 	// Static variables
-	public static final String ACE = "ACE";
-	public static final String TWO = "TWO";
-	public static final String THREE = "THREE";
-	public static final String FOUR = "FOUR";
-	public static final String FIVE = "FIVE";
-	public static final String SIX = "SIX";
-	public static final String SEVEN = "SEVEN";
-	public static final String EIGHT = "EIGHT";
-	public static final String NINE = "NINE";
-	public static final String TEN = "TEN";
-	public static final String JACK = "JACK";
-	public static final String QUEEN = "QUEEN";
-	public static final String KING = "KING";
-	
-	public static final String CLUBS = "CLUBS";
-	public static final String HEARTS = "HEARTS";
-	public static final String SPADES = "SPADES";
-	public static final String DIAMONDS = "DIAMONDS";
-	
+	// Values
+	public static final int ACE = 1;
+	public final static int JACK = 11;
+	public final static int QUEEN = 12;
+	public final static int KING = 13;
+
+	// Suits
+	public final static int CLUBS = 0;
+	public final static int SPADES = 1;
+	public final static int HEARTS = 2;
+	public final static int DIAMONDS = 3;
+
 	/**
 	 * Creates a Card instance
-	 * @param set the set the card belongs to
-	 * @param rank the rank the card belongs to
+	 * @param x the x coordinate of the card
+	 * @param y the y coordinate of the card
+	 * @param value the value of the card
+	 * @param suit the suit of the card
+	 * @param value
+	 * @param suit
 	 */
-	public Card(final String set, final String rank) {
-		this.set = set;
-		this.rank = rank;
+	public Card(int x, int y, final int value, final int suit) {
+		this.x = x;
+		this.y = y;
+		this.value = value;
+		this.suit = suit;
 	}
 	
 	// Instance methods
-	/** Returns the set the card belongs to */
-	public final String getSet() { return set; }
+	/** Returns the x coordinate of the card */
+	public int getX() { return x; }
+
+	/** Returns the y coordinate of the card */
+	public int getY() {	return y; }
+
+	/** Returns the value of the card */
+	public final int getValue() { return value; }
+
+	/** Returns the suit of the card */
+	public final int getSuit() { return suit; }
 	
-	/** Returns the rank the card belongs to */
-	public final String getRank() { return rank; }
+	/**
+	 * Sets the card's position
+	 * @param x the x coordinate of the card
+	 * @param y the y coordinate of the card
+	 */
+	public void setPosition(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
 }

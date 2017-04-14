@@ -2,30 +2,54 @@ package com.sdis.sueca.game;
 
 import java.util.HashMap;
 
+/**
+ * An object of type Room represents an
+ * 'isolated' place where exactly four users
+ * are playing the game 'Sueca'. It handles all of the
+ * logic for that game in specific.
+ */
 public class Room {
 
 	// Instance variables
 	private HashMap<Integer, Player> players;
-	
+
 	/** Creates a Room instance */
-	public Room() { players = new HashMap<Integer, Player>(); }
-	
-	// Instance methods
-	/** Returns the amount a active players in this Room */
-	public final int getNumberPlayers() { return players.size(); }
-	
-	/** Returns the array of this Room's currently active players */
+	public Room() {
+		players = new HashMap<Integer, Player>();
+	}
+
+	// Instance methods	
+	/** Returns the players in the room */
 	public HashMap<Integer, Player> getPlayers() { return players; }
-		
+
+	/** Returns the number of players in the room */
+	public final int getNumberOfPlayers() { return players.size(); }
+
 	/**
-	 * Removes a given Player from the Room
-	 * @param playerID the ID of the Player to be removed
+	 * Returns the player with a given ID
+	 * @param playerID the ID of the player to be returned
 	 */
-	public void removePlayer(int playerID) { players.remove(playerID); }
+	public Player getPlayerByID(final int playerID) {
+		if (players.containsKey(playerID))
+			return players.get(playerID);
+		return null;
+	}
 	
 	/**
-	 * Adds a new Player to the Room
-	 * @param newPlayer player to be added to the Room
+	 * Removes a given player from the room
+	 * @param playerID the ID of the player to be removed
 	 */
-	public void setPlayer(Player newPlayer) { players.put(newPlayer.getID(), newPlayer); }
+	public void removePlayer(final int playerID) {
+		if (players.containsKey(playerID))
+			players.remove(playerID);
+	}
+
+	/**
+	 * Adds a new player to the room
+	 * @param newPlayer player to be added to the room
+	 */
+	public void setPlayer(Player newPlayer) {
+		if (!players.containsKey(newPlayer.getID()))
+			players.put(newPlayer.getID(), newPlayer);
+	}
 }

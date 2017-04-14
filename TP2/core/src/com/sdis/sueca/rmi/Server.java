@@ -8,6 +8,9 @@ import java.util.HashMap;
 
 import com.sdis.sueca.game.Room;
 
+/**
+ * An object of type Server...
+ */
 public class Server extends UnicastRemoteObject implements ServerInterface {
 
 	// Serial Version ID
