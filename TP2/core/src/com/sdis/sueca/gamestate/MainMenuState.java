@@ -9,7 +9,6 @@ public class MainMenuState extends GameState {
 	public MainMenuState(GameStateManager gsm) {
 		super(gsm);
 		
-		// Init here
 	}
 
 	// Instance methods

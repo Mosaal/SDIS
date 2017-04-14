@@ -15,6 +15,7 @@ public class Sueca extends ApplicationAdapter {
 	public static final int WIDTH = 720;
 	public static final int HEIGHT = 480;
 	public static OrthographicCamera cam;
+	public static final float[] RGB = new float[] { 0.01f, 0.3f, 0.12f };
 
 	// Instance methods
 	@Override
@@ -31,7 +32,7 @@ public class Sueca extends ApplicationAdapter {
 	@Override
 	public void render () {
 		// Clear screen
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(RGB[0], RGB[1], RGB[2], 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		// Update and draw the current state
@@ -43,5 +44,7 @@ public class Sueca extends ApplicationAdapter {
 	public void resize(int width, int height) {}
 
 	@Override
-	public void dispose () {}
+	public void dispose () {
+		gsm.dispose();
+	}
 }

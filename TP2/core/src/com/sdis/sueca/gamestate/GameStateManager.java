@@ -37,7 +37,7 @@ public class GameStateManager {
 			gameState = new MainMenuState(this);
 			break;
 		case PLAY_GAME_STATE:
-			// switch to play game
+			gameState = new PlayGameState(this);
 			break;
 		case OPTIONS_MENU_STATE:
 			// switch to options menu
@@ -53,4 +53,7 @@ public class GameStateManager {
 	
 	/** Draw the current game state */
 	public void draw() { gameState.draw(); }
+	
+	/** Dispose the current game state's assets */
+	public void dispose() { gameState.dispose(); }
 }
