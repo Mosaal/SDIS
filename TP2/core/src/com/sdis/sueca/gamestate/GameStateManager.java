@@ -1,5 +1,7 @@
 package com.sdis.sueca.gamestate;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 /**
  * An object of type GameStateManger handles
  * all of the logic (initialization, updates, drawing, ...)
@@ -13,13 +15,10 @@ public class GameStateManager {
 	// Static variables
 	public static final int MAIN_MENU_STATE = 0;
 	public static final int PLAY_GAME_STATE = 1;
-	public static final int OPTIONS_MENU_STATE = 2;
-	public static final int HIGHSCORE_MENU_STATE = 3;
+	public static final int HIGHSCORE_MENU_STATE = 2;
 	
 	/** Creates a GameStateManager instance */
-	public GameStateManager() {
-		setState(MAIN_MENU_STATE);
-	}
+	public GameStateManager() { setState(MAIN_MENU_STATE); }
 	
 	// Instance methods
 	/**
@@ -39,9 +38,6 @@ public class GameStateManager {
 		case PLAY_GAME_STATE:
 			gameState = new PlayGameState(this);
 			break;
-		case OPTIONS_MENU_STATE:
-			// switch to options menu
-			break;
 		case HIGHSCORE_MENU_STATE:
 			// switch to highscore menu
 			break;
@@ -52,7 +48,7 @@ public class GameStateManager {
 	public void update(float deltaTime) { gameState.update(deltaTime); }
 	
 	/** Draw the current game state */
-	public void draw() { gameState.draw(); }
+	public void draw(SpriteBatch sb) { gameState.draw(sb); }
 	
 	/** Dispose the current game state's assets */
 	public void dispose() { gameState.dispose(); }

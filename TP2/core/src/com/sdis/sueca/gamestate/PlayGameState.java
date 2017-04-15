@@ -1,5 +1,7 @@
 package com.sdis.sueca.gamestate;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 public class PlayGameState extends GameState {
 
 	public PlayGameState(GameStateManager gsm) {
@@ -11,7 +13,7 @@ public class PlayGameState extends GameState {
 	}
 
 	@Override
-	public void draw() {
+	public void draw(SpriteBatch sb) {
 	}
 
 	@Override

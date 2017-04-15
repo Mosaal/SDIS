@@ -1,5 +1,10 @@
 package com.sdis.sueca.gamestate;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
+import com.sdis.sueca.gui.Sueca;
+
 /**
  * An abstract class from which all of
  * the game's states will derive from.
@@ -7,20 +12,29 @@ package com.sdis.sueca.gamestate;
 public abstract class GameState {
 
 	// Instance variables
+	protected Vector3 mouse;
 	protected GameStateManager gsm;
+	protected OrthographicCamera cam;
 	
 	/**
-	 * Creates a GameState instance
+	 * Initializes the variables common to all game states
 	 * @param gsm the state's game state manager
 	 */
-	public GameState(GameStateManager gsm) { this.gsm = gsm; }
+	public GameState(GameStateManager gsm) {
+		this.gsm = gsm;
+		mouse = new Vector3();
+		
+		cam = new OrthographicCamera(Sueca.WIDTH, Sueca.HEIGHT);
+		cam.setToOrtho(false, Sueca.WIDTH, Sueca.HEIGHT);
+		cam.update();
+	}
 	
 	// Instance methods
 	/** Updates what in the state needs to be updated */
 	public abstract void update(float deltaTime);
 	
 	/** Draws the state's interface on the screen */
-	public abstract void draw();
+	public abstract void draw(SpriteBatch sb);
 	
 	/** Handles the state's input */
 	public abstract void handleInput();

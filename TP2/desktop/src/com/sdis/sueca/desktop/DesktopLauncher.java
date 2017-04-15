@@ -10,8 +10,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		// Set configurations
-		config.title = "Sueca";
 		config.resizable = true;
+		config.title = Sueca.TITLE;
 		config.width = Sueca.WIDTH;
 		config.height = Sueca.HEIGHT;
 
