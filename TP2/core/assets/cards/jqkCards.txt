@@ -1,0 +1,89 @@
+jqkCards.png
+size: 2000, 2178
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+jack_of_clubs
+  rotate: false
+  xy: 0, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+jack_of_diamonds
+  rotate: false
+  xy: 500, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+jack_of_hearts
+  rotate: false
+  xy: 1000, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+jack_of_spades
+  rotate: false
+  xy: 1500, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+king_of_clubs
+  rotate: false
+  xy: 0, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+king_of_diamonds
+  rotate: false
+  xy: 500, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+king_of_hearts
+  rotate: false
+  xy: 1000, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+king_of_spades
+  rotate: false
+  xy: 1500, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+queen_of_clubs
+  rotate: false
+  xy: 0, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+queen_of_diamonds
+  rotate: false
+  xy: 500, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+queen_of_hearts
+  rotate: false
+  xy: 1000, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+queen_of_spades
+  rotate: false
+  xy: 1500, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1

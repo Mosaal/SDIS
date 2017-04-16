@@ -1,0 +1,285 @@
+cards.png
+size: 4000, 3630
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+2_of_clubs
+  rotate: false
+  xy: 0, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+2_of_diamonds
+  rotate: false
+  xy: 500, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+2_of_hearts
+  rotate: false
+  xy: 1000, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+2_of_spades
+  rotate: false
+  xy: 1500, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+3_of_clubs
+  rotate: false
+  xy: 2000, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+3_of_diamonds
+  rotate: false
+  xy: 2500, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+3_of_hearts
+  rotate: false
+  xy: 3000, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+3_of_spades
+  rotate: false
+  xy: 3500, 0
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+4_of_clubs
+  rotate: false
+  xy: 0, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+4_of_diamonds
+  rotate: false
+  xy: 500, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+4_of_hearts
+  rotate: false
+  xy: 1000, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+4_of_spades
+  rotate: false
+  xy: 1500, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+5_of_clubs
+  rotate: false
+  xy: 2000, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+5_of_diamonds
+  rotate: false
+  xy: 2500, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+5_of_hearts
+  rotate: false
+  xy: 3000, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+5_of_spades
+  rotate: false
+  xy: 3500, 726
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+6_of_clubs
+  rotate: false
+  xy: 0, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+6_of_diamonds
+  rotate: false
+  xy: 500, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+6_of_hearts
+  rotate: false
+  xy: 1000, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+6_of_spades
+  rotate: false
+  xy: 1500, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+7_of_clubs
+  rotate: false
+  xy: 2000, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+7_of_diamonds
+  rotate: false
+  xy: 2500, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+7_of_hearts
+  rotate: false
+  xy: 3000, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+7_of_spades
+  rotate: false
+  xy: 3500, 1452
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+8_of_clubs
+  rotate: false
+  xy: 0, 2178
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+8_of_diamonds
+  rotate: false
+  xy: 500, 2178
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+8_of_hearts
+  rotate: false
+  xy: 1000, 2178
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+8_of_spades
+  rotate: false
+  xy: 1500, 2178
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+9_of_clubs
+  rotate: false
+  xy: 2000, 2178
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+9_of_diamonds
+  rotate: false
+  xy: 2500, 2178
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+9_of_hearts
+  rotate: false
+  xy: 3000, 2178
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+9_of_spades
+  rotate: false
+  xy: 3500, 2178
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+10_of_clubs
+  rotate: false
+  xy: 0, 2904
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+10_of_diamonds
+  rotate: false
+  xy: 500, 2904
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+10_of_hearts
+  rotate: false
+  xy: 1000, 2904
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+10_of_spades
+  rotate: false
+  xy: 1500, 2904
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+ace_of_clubs
+  rotate: false
+  xy: 2000, 2904
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+ace_of_diamonds
+  rotate: false
+  xy: 2500, 2904
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+ace_of_hearts
+  rotate: false
+  xy: 3000, 2904
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
+ace_of_spades
+  rotate: false
+  xy: 3500, 2904
+  size: 500, 726
+  orig: 500, 726
+  offset: 0, 0
+  index: -1
