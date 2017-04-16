@@ -3,9 +3,7 @@
 
 *.class
 
-*.txt
-
-TP1/Peer#*
+TP1/Peer#*/*.txt
 *.ogg
 
 *.jpg
