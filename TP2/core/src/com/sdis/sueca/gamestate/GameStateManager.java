@@ -15,7 +15,8 @@ public class GameStateManager {
 	// Static variables
 	public static final int MAIN_MENU_STATE = 0;
 	public static final int PLAY_GAME_STATE = 1;
-	public static final int HIGHSCORE_MENU_STATE = 2;
+	public static final int SERVER_MENU_STATE = 2;
+	public static final int HIGHSCORE_MENU_STATE = 3;
 	
 	/** Creates a GameStateManager instance */
 	public GameStateManager() { setState(MAIN_MENU_STATE); }
@@ -37,6 +38,9 @@ public class GameStateManager {
 			break;
 		case PLAY_GAME_STATE:
 			gameState = new PlayGameState(this);
+			break;
+		case SERVER_MENU_STATE:
+			gameState = new ServerMenuState(this);
 			break;
 		case HIGHSCORE_MENU_STATE:
 			// switch to highscore menu

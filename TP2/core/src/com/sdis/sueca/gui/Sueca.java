@@ -14,8 +14,8 @@ public class Sueca extends ApplicationAdapter {
 	private GameStateManager gsm;
 	
 	// Static variables
-	public static final int WIDTH = 720;
-	public static final int HEIGHT = 480;
+	public static final int WIDTH = 1280;
+	public static final int HEIGHT = 720;
 	public static final String TITLE = "Sueca";
 
 	// Instance methods

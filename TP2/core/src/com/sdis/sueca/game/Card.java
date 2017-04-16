@@ -20,12 +20,14 @@ public class Card {
 	public final static int JACK = 11;
 	public final static int QUEEN = 12;
 	public final static int KING = 13;
+	public final static String[] VALUES = new String[] { "ace", "jack", "queen", "king" };
 
 	// Suits
 	public final static int CLUBS = 0;
 	public final static int SPADES = 1;
 	public final static int HEARTS = 2;
 	public final static int DIAMONDS = 3;
+	public final static String[] SUITS = new String[] { "clubs", "spades", "hearts", "diamonds" };
 
 	/**
 	 * Creates a Card instance
