@@ -1,4 +1,4 @@
-package com.sdis.sueca.gui;
+package com.sdis.sueca.main;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -21,11 +21,11 @@ public class Sueca extends ApplicationAdapter {
 	// Instance methods
 	@Override
 	public void create() {
-		// Setup the game
+		// Set the game
 		sb = new SpriteBatch();
 		gsm = new GameStateManager();
 		
-		// Setup the clear color
+		// Set the clear color
 		float[] RGB = Utils.toUnaryRGB(25, 77, 30);
 		Gdx.gl.glClearColor(RGB[0], RGB[1], RGB[2], 1);
 	}
@@ -35,7 +35,8 @@ public class Sueca extends ApplicationAdapter {
 		// Clear screen
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		// Update and draw the current state
+		// Manage the current game state
+		gsm.handleInput();
 		gsm.update(Gdx.graphics.getDeltaTime());
 		gsm.draw(sb);
 	}

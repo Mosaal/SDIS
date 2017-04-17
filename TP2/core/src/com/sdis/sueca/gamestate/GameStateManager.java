@@ -54,6 +54,9 @@ public class GameStateManager {
 	/** Draw the current game state */
 	public void draw(SpriteBatch sb) { gameState.draw(sb); }
 	
+	/** Handles the current game state's input */
+	public void handleInput() { gameState.handleInput(); }
+	
 	/** Dispose the current game state's assets */
 	public void dispose() { gameState.dispose(); }
 }

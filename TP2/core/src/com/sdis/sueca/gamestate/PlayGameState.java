@@ -10,17 +10,21 @@ public class PlayGameState extends GameState {
 
 	@Override
 	public void update(float deltaTime) {
+		
 	}
 
 	@Override
 	public void draw(SpriteBatch sb) {
+		
 	}
 
 	@Override
 	public void handleInput() {
+		
 	}
 
 	@Override
 	public void dispose() {
+		
 	}
 }

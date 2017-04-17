@@ -3,7 +3,7 @@ package com.sdis.sueca.gamestate;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.sdis.sueca.gui.Sueca;
+import com.sdis.sueca.main.Sueca;
 
 /**
  * An abstract class from which all of
@@ -25,7 +25,7 @@ public abstract class GameState {
 		mouse = new Vector3();
 		
 		cam = new OrthographicCamera(Sueca.WIDTH, Sueca.HEIGHT);
-		cam.setToOrtho(false, Sueca.WIDTH, Sueca.HEIGHT);
+		cam.translate(Sueca.WIDTH / 2, Sueca.HEIGHT / 2);
 		cam.update();
 	}
 	
