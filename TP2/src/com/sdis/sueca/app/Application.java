@@ -1,5 +1,8 @@
 package com.sdis.sueca.app;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 import javax.swing.JFrame;
 
 import com.sdis.sueca.gamestate.GameStateManager;
@@ -12,7 +15,7 @@ public class Application extends JFrame implements Runnable {
 	private Thread thread;
 	public boolean isRunning;
 	private GameStateManager gsm;
-	
+
 	private final int FPS = 60;
 	private final int TARGET_TIME = 1000 / FPS;
 
@@ -20,15 +23,21 @@ public class Application extends JFrame implements Runnable {
 	public Application() {
 		// Set the frame's title
 		super("Sueca");
-		
+
 		// Set the game's settings
 		isRunning = true;
 		gsm = new GameStateManager(this);
 
 		// Set the frame's settings
 		pack();
-		setSize(800, 600);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setMinimumSize(new Dimension(getWidth(), getHeight()));
+
+		// Set the frame's location
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int centerX = (int) screenSize.getWidth() / 2;
+		int centerY = (int) screenSize.getHeight() / 2;
+		setLocation(centerX - getWidth() / 2, centerY - getHeight() / 2);
 
 		// Start up game loop
 		thread = new Thread(this);

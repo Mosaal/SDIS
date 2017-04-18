@@ -9,33 +9,34 @@ public class GameStateManager {
 	private GameState gameState;
 	
 	// Static variables
-	public static final int MAIN_MENU = 0;
-	public static final int PLAY_GAME = 1;
-	public static final int SERVER_MENU = 2;
+	public static final int MAIN_MENU_STATE = 0;
+	public static final int PLAY_GAME_STATE = 1;
+	public static final int SERVER_MENU_STATE = 2;
+	public static final int HIGHSCORE_MENU_STATE = 3;
 	
 	public GameStateManager(Application root) {
 		this.root = root;
-		setState(MAIN_MENU);
+		setState(MAIN_MENU_STATE);
 	}
 	
 	public void setState(int state) {
-		if (gameState != null)
-			gameState = null;
-		
 		switch (state) {
-		case MAIN_MENU:
-			gameState = new MainState(this);
-			root.setContentPane(gameState);
+		case MAIN_MENU_STATE:
+			gameState = new MainMenuState(this);
 			break;
-		case PLAY_GAME:
-			// gameState = new PlayGame(this);
-			// root.setContentPane(gameState);
+		case PLAY_GAME_STATE:
+			gameState = new PlayGameState(this);
 			break;
-		case SERVER_MENU:
-			// gameState = new ServerMenu(this);
-			// root.setContentPane(gameState);
+		case SERVER_MENU_STATE:
+			gameState = new ServerMenuState(this);
+			break;
+		case HIGHSCORE_MENU_STATE:
+			gameState = new HighScoreMenuState(this);
 			break;
 		}
+		
+		root.setContentPane(gameState);
+		root.revalidate();
 	}
 	
 	public void handleInput() { gameState.handleInput(); }
