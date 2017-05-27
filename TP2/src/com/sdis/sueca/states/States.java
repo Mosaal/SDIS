@@ -1,0 +1,11 @@
+package com.sdis.sueca.states;
+
+public enum States {
+	MAIN_MENU_STATE,
+	INPUT_IP_ADDR_STATE,
+	WAIT_MENU_STATE,
+	PLAY_GAME_STATE,
+	SERVER_MENU_STATE,
+	HIGHSCORE_MENU_STATE,
+	GAME_OVER_STATE
+}

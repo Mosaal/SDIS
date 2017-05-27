@@ -1,70 +1,104 @@
 package com.sdis.sueca.game;
 
-/**
- * An object of type Card represents a playing card from a
- * standard card deck. The card has a suit, which
- * can be spades, hearts, diamonds, clubs. A spade, heart,
- * diamond, or club has one of the 13 values: ace, 2, 3, 4, 5, 6, 7,
- * 8, 9, 10, jack, queen, or king.
- */
-public class Card {
+import java.io.Serializable;
 
+/**
+* An object of type Card represents a playing card from a standard card deck.
+* The card has a suit, which can be spades, hearts, diamonds, clubs. A spade,
+* heart, diamond, or club has one of the 13 values: ace, 2, 3, 4, 5, 6, 7, jack, queen or king.
+*/
+public class Card implements Serializable {
+
+	private static final long serialVersionUID = -5910897295174014510L;
+	
 	// Instance variables
 	private int x, y;
-	private final int value;
-	private final int suit;
-
-	// Static variables
-	// Values
-	public static final int ACE = 1;
-	public final static int JACK = 11;
-	public final static int QUEEN = 12;
-	public final static int KING = 13;
-	public final static String[] VALUES = new String[] { "ace", "jack", "queen", "king" };
-
-	// Suits
-	public final static int CLUBS = 0;
-	public final static int SPADES = 1;
-	public final static int HEARTS = 2;
-	public final static int DIAMONDS = 3;
-	public final static String[] SUITS = new String[] { "clubs", "spades", "hearts", "diamonds" };
-
+	private final String suit;
+	private final String value;
+	private final int power, points;
+	
+	// Static variable
+	public static final String[] SUITS = { "clubs", "hearts", "spades", "diamonds" };
+	
 	/**
 	 * Creates a Card instance
-	 * @param x the x coordinate of the card
-	 * @param y the y coordinate of the card
 	 * @param value the value of the card
 	 * @param suit the suit of the card
-	 * @param value
-	 * @param suit
 	 */
-	public Card(int x, int y, final int value, final int suit) {
-		this.x = x;
-		this.y = y;
-		this.value = value;
+	public Card(final String value, final String suit) {
+		// Set card
 		this.suit = suit;
+		this.value = value;
+		
+		// Set points and power
+		if (value.equals("ace")) {
+			power = 11;
+			points = 11;
+		} else if (value.equals("7")) {
+			power = 10;
+			points = 10;
+		} else if (value.equals("king")) {
+			power = 9;
+			points = 4;
+		} else if (value.equals("jack")) {
+			power = 8;
+			points = 3;
+		} else if (value.equals("queen")) {
+			power = 7;
+			points = 2;
+		} else {
+			points = 0;
+			power = Integer.parseInt(value);
+		}
 	}
-	
+
 	// Instance methods
-	/** Returns the x coordinate of the card */
+	/** Returns the card's x coordinate */
 	public int getX() { return x; }
 
-	/** Returns the y coordinate of the card */
-	public int getY() {	return y; }
+	/** Returns the card's y coordinate */
+	public int getY() { return y; }
+	
+	/** Returns the card's power */
+	public int getPower() { return power; }
+	
+	/** Returns the card's points */
+	public int getPoints() { return points; }
 
-	/** Returns the value of the card */
-	public final int getValue() { return value; }
+	/** Returns the card's suit */
+	public String getSuit() { return suit; }
 
-	/** Returns the suit of the card */
-	public final int getSuit() { return suit; }
+	/** Returns the card's value */
+	public String getValue() { return value; }
 	
 	/**
-	 * Sets the card's position
-	 * @param x the x coordinate of the card
-	 * @param y the y coordinate of the card
+	 * Checks if the card is a trump
+	 * @param trump the suit of the trump
+	 */
+	public boolean isTrump(String trump) { return suit.equals(trump); }
+	
+	/**
+	 * Set the card's x and y coordinates
+	 * @param x the card's x coordinate
+	 * @param y the card's y coordinate
 	 */
 	public void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		
+		Card card = (Card) obj;
+		if (toString().equals(card.toString()))
+			return true;
+		
+		return false;
+	}
+	
+	@Override
+	public String toString() { return value + "_of_" + suit; }
 }
